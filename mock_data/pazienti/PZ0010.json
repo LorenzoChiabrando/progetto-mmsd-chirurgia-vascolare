@@ -1,0 +1,14 @@
+{
+    "id": "PZ0010",
+    "nome": "Elena",
+    "cognome": "Barbieri",
+    "diagnosi": "Insufficienza venosa cronica - varici recidive",
+    "codice_intervento": "39.95",
+    "descrizione_intervento": "Flebectomia selettiva + ablazione",
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Bassa",
+    "urgenza": "Bassa",
+    "stato": "In Attesa",
+    "data_inserimento": "09/04/2026",
+    "note": ""
+}

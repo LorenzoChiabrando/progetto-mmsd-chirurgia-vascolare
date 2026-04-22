@@ -1,0 +1,62 @@
+{
+    "id": "SP003",
+    "matricola": "SP19301",
+    "nome": "Verde",
+    "cognome": "Verdone",
+    "livello": "Senior",
+    "stato": "Molinette",
+    "attivita": [
+        {
+            "data": "2026-04-01",
+            "slot": "8.00-10.00",
+            "nome_paziente": "Rizzo Stefano",
+            "id_paziente": "PZ0007",
+            "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
+            "intervento": "Crossectomia + stripping safena grande",
+            "codice_intervento": "38.59",
+            "chirurgo": "Dr. Mauro M.",
+            "complessita": "Bassa",
+            "tipo_chirurgia": "Aperta",
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-04-01",
+            "slot": "10.00-12.00",
+            "nome_paziente": "Cattaneo Sara",
+            "id_paziente": "PZ0012",
+            "diagnosi": "Malformazione arterovenosa coscia sinistra",
+            "intervento": "Embolizzazione endovascolare",
+            "codice_intervento": "39.53",
+            "chirurgo": "Dr. Ferrini A.",
+            "complessita": "Media",
+            "tipo_chirurgia": "Endovascolare",
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-04-08",
+            "slot": "8.00-10.00",
+            "nome_paziente": "Marchetti Luisa",
+            "id_paziente": "PZ0004",
+            "diagnosi": "Aneurisma aorta addominale 6 cm",
+            "intervento": "Endoprotesi aortica (EVAR)",
+            "codice_intervento": "39.57",
+            "chirurgo": "Dr. Ferrini A.",
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-04-08",
+            "slot": "10.00-12.00",
+            "nome_paziente": "Lombardi Franco",
+            "id_paziente": "PZ0009",
+            "diagnosi": "Aneurisma popliteo destro con trombosi",
+            "intervento": "Resezione aneurisma popliteo + bypass",
+            "codice_intervento": "38.41",
+            "chirurgo": "Dr. Bianchi L.",
+            "complessita": "Alta",
+            "tipo_chirurgia": "Aperta",
+            "ruolo": "OR II"
+        }
+    ]
+}

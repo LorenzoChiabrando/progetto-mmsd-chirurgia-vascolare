@@ -1,0 +1,14 @@
+{
+    "id": "PZ0007",
+    "nome": "Stefano",
+    "cognome": "Rizzo",
+    "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
+    "codice_intervento": "38.59",
+    "descrizione_intervento": "Crossectomia + stripping safena grande",
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Bassa",
+    "urgenza": "Bassa",
+    "stato": "In Attesa",
+    "data_inserimento": "01/04/2026",
+    "note": ""
+}

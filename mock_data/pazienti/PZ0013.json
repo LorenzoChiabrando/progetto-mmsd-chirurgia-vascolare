@@ -1,0 +1,14 @@
+{
+    "id": "PZ0013",
+    "nome": "Paolo",
+    "cognome": "Mancini",
+    "diagnosi": "Piede diabetico - lesione neuro-ischemica",
+    "codice_intervento": "84.12",
+    "descrizione_intervento": "Amputazione transmetatarsale",
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Media",
+    "urgenza": "Alta",
+    "stato": "In Attesa",
+    "data_inserimento": "13/04/2026",
+    "note": "Infezione in atto"
+}

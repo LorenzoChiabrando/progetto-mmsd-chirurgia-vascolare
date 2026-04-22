@@ -1,0 +1,14 @@
+{
+    "id": "PZ0005",
+    "nome": "Roberto",
+    "cognome": "Conti",
+    "diagnosi": "Arteriopatia obliterante arti inferiori IV stadio",
+    "codice_intervento": "39.29",
+    "descrizione_intervento": "Bypass femoro-popliteo con vena",
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Media",
+    "urgenza": "Alta",
+    "stato": "In Attesa",
+    "data_inserimento": "07/04/2026",
+    "note": "Lesione trofica tallone sinistro"
+}

@@ -1,0 +1,14 @@
+{
+    "id": "PZ0008",
+    "nome": "Marina",
+    "cognome": "Greco",
+    "diagnosi": "Stenosi carotidea asintomatica 80%",
+    "codice_intervento": "38.12",
+    "descrizione_intervento": "Endoarterectomia carotidea",
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Alta",
+    "urgenza": "Media",
+    "stato": "In Attesa",
+    "data_inserimento": "03/04/2026",
+    "note": "Monitoraggio in corso"
+}

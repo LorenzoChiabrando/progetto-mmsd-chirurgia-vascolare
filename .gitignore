@@ -1,0 +1,12 @@
+# Claude
+.claude/
+
+# Documenti interni
+minute/
+context-documents/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

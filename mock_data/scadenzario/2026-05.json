@@ -1,0 +1,73 @@
+{
+    "metadata": {
+        "stato": "BOZZA"
+    },
+    "giro_visite": {
+        "2026-05-04": "Alga S.",
+        "2026-05-11": "JAZZ B."
+    },
+    "turni": {
+        "2026-05-04": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Gasparri A.",
+            "Sala Op. II": "Bello M.",
+            "Reparto I": "Verdone V.",
+            "Reparto II": "Massima A."
+        },
+        "2026-05-05": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Verdone V.",
+            "Sala Op. II": "JAZZ B.",
+            "Reparto I": "Gasparri A.",
+            "Reparto II": "Massima A."
+        },
+        "2026-05-06": {
+            "Tipo Guardia": "L",
+            "Sala Op. I": "Bello M.",
+            "Sala Op. II": "Massima A."
+        },
+        "2026-05-07": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "JAZZ B.",
+            "Sala Op. II": "Gasparri A.",
+            "Reparto I": "Verdone V."
+        },
+        "2026-05-08": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Massima A.",
+            "Sala Op. II": "Bello M.",
+            "Reparto I": "Gasparri A."
+        },
+        "2026-05-11": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Verdone V.",
+            "Sala Op. II": "Alga S.",
+            "Reparto I": "Bello M.",
+            "Reparto II": "Massima A."
+        },
+        "2026-05-12": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Gasparri A.",
+            "Sala Op. II": "Alga S.",
+            "Reparto I": "Verdone V.",
+            "Reparto II": "Bello M."
+        },
+        "2026-05-13": {
+            "Tipo Guardia": "L",
+            "Sala Op. I": "Massima A.",
+            "Sala Op. II": "Verdone V."
+        },
+        "2026-05-14": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Alga S.",
+            "Sala Op. II": "Bello M.",
+            "Reparto I": "Gasparri A."
+        },
+        "2026-05-15": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Verdone V.",
+            "Sala Op. II": "Massima A.",
+            "Reparto I": "Alga S."
+        }
+    }
+}

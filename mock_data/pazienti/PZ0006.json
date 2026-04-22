@@ -1,0 +1,14 @@
+{
+    "id": "PZ0006",
+    "nome": "Carla",
+    "cognome": "Esposito",
+    "diagnosi": "Occlusione arteria femorale superficiale",
+    "codice_intervento": "39.50",
+    "descrizione_intervento": "Angioplastica percutanea + stent",
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "In Attesa",
+    "data_inserimento": "08/04/2026",
+    "note": ""
+}

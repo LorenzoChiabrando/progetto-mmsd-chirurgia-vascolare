@@ -1,0 +1,14 @@
+{
+    "id": "PZ0003",
+    "nome": "Giovanni",
+    "cognome": "Ferretti",
+    "diagnosi": "Stenosi carotidea sintomatica bilaterale",
+    "codice_intervento": "38.12",
+    "descrizione_intervento": "Endoarterectomia carotidea",
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Alta",
+    "urgenza": "Alta",
+    "stato": "In Attesa",
+    "data_inserimento": "02/04/2026",
+    "note": "TIA recente"
+}

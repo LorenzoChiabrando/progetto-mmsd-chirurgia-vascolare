@@ -1,0 +1,144 @@
+{
+    "metadata": {
+        "stato": "BOZZA"
+    },
+    "giro_visite": {
+        "2026-03-30": "Bello M.",
+        "2026-04-06": "Gasparri A.",
+        "2026-04-13": "Massima A.",
+        "2026-04-20": "Gasparri A.",
+        "2026-04-27": "Verdone V."
+    },
+    "turni": {
+        "2026-04-01": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Gasparri A.",
+            "Sala Op. II": "Verdone V.",
+            "Reparto I": "JAZZ B."
+        },
+        "2026-04-02": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Gasparri A.",
+            "Sala Op. II": "Massima A.",
+            "Reparto I": "JAZZ B.",
+            "Reparto II": "Verdone V."
+        },
+        "2026-04-03": {
+            "Tipo Guardia": "L",
+            "Sala Op. I": "Massima A.",
+            "Sala Op. II": "Alga S."
+        },
+        "2026-04-06": {
+            "Tipo Guardia": "118"
+        },
+        "2026-04-07": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Massima A.",
+            "Sala Op. II": "Alga S.",
+            "Reparto I": "Bello M.",
+            "Reparto II": "Verdone V."
+        },
+        "2026-04-08": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Bello M.",
+            "Sala Op. II": "Verdone V."
+        },
+        "2026-04-09": {
+            "Tipo Guardia": "L",
+            "Sala Op. I": "Verdone V.",
+            "Sala Op. II": "JAZZ B.",
+            "Reparto I": "Alga S.",
+            "Day Hospital": "Massima A."
+        },
+        "2026-04-10": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Alga S.",
+            "Sala Op. II": "JAZZ B."
+        },
+        "2026-04-13": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Gasparri A.",
+            "Sala Op. II": "Bello M.",
+            "Reparto I": "Verdone V."
+        },
+        "2026-04-14": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Verdone V.",
+            "Sala Op. II": "JAZZ B.",
+            "Reparto I": "Gasparri A.",
+            "Reparto II": "Bello M."
+        },
+        "2026-04-15": {
+            "Tipo Guardia": "L",
+            "Sala Op. I": "Gasparri A.",
+            "Sala Op. II": "Alga S."
+        },
+        "2026-04-16": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Verdone V.",
+            "Sala Op. II": "Bello M.",
+            "Reparto I": "JAZZ B.",
+            "Day Hospital": "Alga S."
+        },
+        "2026-04-17": {
+            "Tipo Guardia": "L",
+            "Sala Op. I": "Gasparri A.",
+            "Sala Op. II": "JAZZ B."
+        },
+        "2026-04-20": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "JAZZ B.",
+            "Sala Op. II": "Massima A.",
+            "Reparto I": "Verdone V."
+        },
+        "2026-04-21": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Bello M.",
+            "Sala Op. II": "Verdone V.",
+            "Reparto I": "Massima A.",
+            "Reparto II": "JAZZ B."
+        },
+        "2026-04-22": {
+            "Tipo Guardia": "L",
+            "Sala Op. I": "Verdone V.",
+            "Sala Op. II": "JAZZ B.",
+            "Reparto I": "Alga S."
+        },
+        "2026-04-23": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Alga S.",
+            "Sala Op. II": "Verdone V.",
+            "Reparto I": "Bello M."
+        },
+        "2026-04-24": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Bello M.",
+            "Sala Op. II": "Massima A.",
+            "Reparto I": "Alga S."
+        },
+        "2026-04-27": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Gasparri A.",
+            "Sala Op. II": "Massima A.",
+            "Reparto I": "JAZZ B."
+        },
+        "2026-04-28": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Alga S.",
+            "Sala Op. II": "Bello M.",
+            "Reparto I": "Gasparri A.",
+            "Reparto II": "JAZZ B."
+        },
+        "2026-04-29": {
+            "Tipo Guardia": "L",
+            "Sala Op. I": "JAZZ B.",
+            "Sala Op. II": "Alga S."
+        },
+        "2026-04-30": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Bello M.",
+            "Sala Op. II": "Gasparri A.",
+            "Reparto I": "JAZZ B."
+        }
+    }
+}

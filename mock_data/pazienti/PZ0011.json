@@ -1,0 +1,14 @@
+{
+    "id": "PZ0011",
+    "nome": "Giuseppe",
+    "cognome": "Fontana",
+    "diagnosi": "Ischemia critica arto inferiore sinistro",
+    "codice_intervento": "39.28",
+    "descrizione_intervento": "Bypass femoro-tibiale con vena safena",
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Alta",
+    "urgenza": "Alta",
+    "stato": "In Attesa",
+    "data_inserimento": "11/04/2026",
+    "note": "Dolore a riposo, piede freddo"
+}

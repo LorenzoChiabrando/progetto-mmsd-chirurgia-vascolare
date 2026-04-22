@@ -1,0 +1,14 @@
+{
+    "id": "PZ0014",
+    "nome": "Giovanna",
+    "cognome": "Ferraro",
+    "diagnosi": "Stenosi arteria renale bilaterale",
+    "codice_intervento": "39.50",
+    "descrizione_intervento": "Angioplastica + stent renale bilaterale",
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Alta",
+    "urgenza": "Media",
+    "stato": "In Attesa",
+    "data_inserimento": "14/04/2026",
+    "note": "Ipertensione renovascolare"
+}

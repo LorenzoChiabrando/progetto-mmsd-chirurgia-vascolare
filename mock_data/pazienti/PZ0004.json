@@ -1,0 +1,14 @@
+{
+    "id": "PZ0004",
+    "nome": "Luisa",
+    "cognome": "Marchetti",
+    "diagnosi": "Aneurisma aorta addominale 6 cm",
+    "codice_intervento": "39.57",
+    "descrizione_intervento": "Endoprotesi aortica (EVAR)",
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Alta",
+    "urgenza": "Alta",
+    "stato": "In Attesa",
+    "data_inserimento": "05/04/2026",
+    "note": "Diametro in rapida crescita"
+}

@@ -1,0 +1,137 @@
+{
+    "metadata": {
+        "stato": "CONVALIDATO"
+    },
+    "giro_visite": {
+        "2026-02-02": "Verdone V.",
+        "2026-02-09": "Alga S.",
+        "2026-02-16": "JAZZ B.",
+        "2026-02-23": "Gasparri A."
+    },
+    "turni": {
+        "2026-02-02": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Gasparri A.",
+            "Sala Op. II": "Massima A.",
+            "Reparto I": "JAZZ B.",
+            "Reparto II": "Alga S."
+        },
+        "2026-02-03": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Alga S.",
+            "Sala Op. II": "JAZZ B.",
+            "Reparto I": "Gasparri A.",
+            "Reparto II": "Bello M."
+        },
+        "2026-02-04": {
+            "Tipo Guardia": "L",
+            "Sala Op. I": "Bello M.",
+            "Sala Op. II": "Massima A."
+        },
+        "2026-02-05": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Gasparri A.",
+            "Sala Op. II": "Alga S.",
+            "Reparto I": "JAZZ B."
+        },
+        "2026-02-06": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "JAZZ B.",
+            "Sala Op. II": "Bello M.",
+            "Reparto I": "Massima A."
+        },
+        "2026-02-09": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Verdone V.",
+            "Sala Op. II": "Bello M.",
+            "Reparto I": "Gasparri A.",
+            "Reparto II": "JAZZ B."
+        },
+        "2026-02-10": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Gasparri A.",
+            "Sala Op. II": "Massima A.",
+            "Reparto I": "Verdone V.",
+            "Reparto II": "JAZZ B."
+        },
+        "2026-02-11": {
+            "Tipo Guardia": "L",
+            "Sala Op. I": "JAZZ B.",
+            "Sala Op. II": "Bello M."
+        },
+        "2026-02-12": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Verdone V.",
+            "Sala Op. II": "Gasparri A.",
+            "Reparto I": "Massima A."
+        },
+        "2026-02-13": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Bello M.",
+            "Sala Op. II": "JAZZ B.",
+            "Reparto I": "Verdone V."
+        },
+        "2026-02-16": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Gasparri A.",
+            "Sala Op. II": "Alga S.",
+            "Reparto I": "Verdone V.",
+            "Reparto II": "Bello M."
+        },
+        "2026-02-17": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Verdone V.",
+            "Sala Op. II": "Massima A.",
+            "Reparto I": "Alga S.",
+            "Reparto II": "Bello M."
+        },
+        "2026-02-18": {
+            "Tipo Guardia": "L",
+            "Sala Op. I": "Bello M.",
+            "Sala Op. II": "Alga S."
+        },
+        "2026-02-19": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Massima A.",
+            "Sala Op. II": "Verdone V.",
+            "Reparto I": "Gasparri A."
+        },
+        "2026-02-20": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Gasparri A.",
+            "Sala Op. II": "Bello M.",
+            "Reparto I": "Alga S."
+        },
+        "2026-02-23": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "Verdone V.",
+            "Sala Op. II": "Massima A.",
+            "Reparto I": "JAZZ B.",
+            "Reparto II": "Alga S."
+        },
+        "2026-02-24": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Bello M.",
+            "Sala Op. II": "JAZZ B.",
+            "Reparto I": "Verdone V.",
+            "Reparto II": "Alga S."
+        },
+        "2026-02-25": {
+            "Tipo Guardia": "L",
+            "Sala Op. I": "Massima A.",
+            "Sala Op. II": "Alga S."
+        },
+        "2026-02-26": {
+            "Tipo Guardia": "118",
+            "Sala Op. I": "JAZZ B.",
+            "Sala Op. II": "Bello M.",
+            "Reparto I": "Verdone V."
+        },
+        "2026-02-27": {
+            "Tipo Guardia": "PI",
+            "Sala Op. I": "Alga S.",
+            "Sala Op. II": "Massima A.",
+            "Reparto I": "JAZZ B."
+        }
+    }
+}

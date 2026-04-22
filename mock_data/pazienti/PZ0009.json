@@ -1,0 +1,14 @@
+{
+    "id": "PZ0009",
+    "nome": "Franco",
+    "cognome": "Lombardi",
+    "diagnosi": "Aneurisma popliteo destro con trombosi",
+    "codice_intervento": "38.41",
+    "descrizione_intervento": "Resezione aneurisma popliteo + bypass",
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Alta",
+    "urgenza": "Alta",
+    "stato": "In Attesa",
+    "data_inserimento": "10/04/2026",
+    "note": "Urgente, ischemia acuta"
+}

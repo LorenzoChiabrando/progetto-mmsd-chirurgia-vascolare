@@ -1,6 +1,8 @@
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QStackedWidget
+from PySide6.QtCore import QLoggingCategory
 
+from src.app_paths import get_data_dir
 from src.controllers.controller_sale_operatorie import ControllerSaleOperatorie
 from src.models.data_manager_sale_operatorie import DataManagerSaleOperatorie
 from src.views.view_sidebar import Sidebar
@@ -57,17 +59,35 @@ class MainWindow(QMainWindow):
         self.sidebar.setCurrentRow(0)
 
     def _cambia_sezione(self, nuovo_idx):
-        """Resetta la sezione corrente alla sua pagina iniziale prima di cambiarla."""
+        """Resetta la sezione corrente e aggiorna i dati della nuova prima di mostrarla."""
         vecchio_view = self.body_stack.currentWidget()
         if hasattr(vecchio_view, 'stacked_widget'):
             vecchio_view.stacked_widget.setCurrentIndex(0)
         self.body_stack.setCurrentIndex(nuovo_idx)
+        self._aggiorna_sezione(nuovo_idx)
+
+    def _aggiorna_sezione(self, idx):
+        if idx == 3 and self.controller_pazienti:
+            self.controller_pazienti.aggiorna_lista()
+        elif idx == 1 and self.controller_libretto:
+            self.controller_libretto.aggiorna_lista()
 
     def init_pages(self):
-        self.data_manager = DataManager()
-        self.data_manager_libretto = DataManagerLibretto()
-        self.data_manager_pazienti = DataManagerPazienti()
-        self.data_manager_sale_operatorie = DataManagerSaleOperatorie()
+        d = get_data_dir()
+        self.data_manager = DataManager(
+            dir_scadenzario=str(d / "scadenzario"),
+            dir_libretti=str(d / "libretti"),
+        )
+        self.data_manager_libretto = DataManagerLibretto(
+            dir_libretti=str(d / "libretti"),
+        )
+        self.data_manager_pazienti = DataManagerPazienti(
+            dir_pazienti=str(d / "pazienti"),
+        )
+        self.data_manager_sale_operatorie = DataManagerSaleOperatorie(
+            dir_sale_operatorie=str(d / "sale_operatorie"),
+            filepath_anagrafica=str(d / "static_data" / "anagrafica_specializzandi.json"),
+        )
 
         self.view_scad = ViewScadenzario()
         self.controller_scad = ControllerScadenzario(
@@ -77,10 +97,19 @@ class MainWindow(QMainWindow):
         )
 
         self.view_libretto = ViewLibretto()
-        self.controller_libretto = ControllerLibretto(self.view_libretto, self.data_manager_libretto)
+        self.controller_libretto = ControllerLibretto(
+            self.view_libretto,
+            self.data_manager_libretto,
+            model_scadenzario=self.data_manager,
+            model_sale_operatorie=self.data_manager_sale_operatorie,
+        )
 
         self.view_pazienti = ViewPazienti()
-        self.controller_pazienti = ControllerPazienti(self.view_pazienti, self.data_manager_pazienti)
+        self.controller_pazienti = ControllerPazienti(
+            self.view_pazienti,
+            self.data_manager_pazienti,
+            model_sale_operatorie=self.data_manager_sale_operatorie,
+        )
 
         self.view_sale_operatorie = ViewSaleOperatorie()
         self.controller_sale_operatorie = ControllerSaleOperatorie(
@@ -92,12 +121,13 @@ class MainWindow(QMainWindow):
         )
 
         self.body_stack.addWidget(self.view_scad)
-        self.body_stack.addWidget(self.view_sale_operatorie)
         self.body_stack.addWidget(self.view_libretto)
+        self.body_stack.addWidget(self.view_sale_operatorie)
         self.body_stack.addWidget(self.view_pazienti)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    QLoggingCategory.setFilterRules("qt.qpa.wayland.textinput=false")
     app.setStyle("Fusion")
 
     window = MainWindow()

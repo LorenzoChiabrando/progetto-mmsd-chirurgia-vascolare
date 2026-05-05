@@ -8,7 +8,8 @@
     "tipo_chirurgia": "Endovascolare",
     "complessita": "Alta",
     "urgenza": "Alta",
-    "stato": "In Attesa",
+    "stato": "Completato",
     "data_inserimento": "05/04/2026",
-    "note": "Diametro in rapida crescita"
+    "note": "Diametro in rapida crescita",
+    "durata_intervento": 120
 }

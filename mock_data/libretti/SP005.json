@@ -8,19 +8,6 @@
     "attivita": [
         {
             "data": "2026-03-31",
-            "slot": "8.00-10.00",
-            "nome_paziente": "Ferraro Giovanna",
-            "id_paziente": "PZ0014",
-            "diagnosi": "Stenosi arteria renale bilaterale",
-            "intervento": "Angioplastica + stent renale bilaterale",
-            "codice_intervento": "39.50",
-            "chirurgo": "Dr. Bianchi L.",
-            "complessita": "Alta",
-            "tipo_chirurgia": "Endovascolare",
-            "ruolo": "OR II"
-        },
-        {
-            "data": "2026-03-31",
             "slot": "10.00-12.00",
             "nome_paziente": "Mancini Paolo",
             "id_paziente": "PZ0013",
@@ -59,7 +46,7 @@
             "ruolo": "OR II"
         },
         {
-            "data": "2026-04-02",
+            "data": "2026-03-31",
             "slot": "8.00-10.00",
             "nome_paziente": "Ferraro Giovanna",
             "id_paziente": "PZ0014",
@@ -111,17 +98,17 @@
             "ruolo": "OR II"
         },
         {
-            "data": "2026-04-03",
+            "data": "2026-04-02",
             "slot": "8.00-10.00",
-            "nome_paziente": "Mancini Paolo",
-            "id_paziente": "PZ0013",
-            "diagnosi": "Piede diabetico - lesione neuro-ischemica",
-            "intervento": "Amputazione transmetatarsale",
-            "codice_intervento": "84.12",
-            "chirurgo": "Dr. Ferrini A.",
-            "complessita": "Media",
-            "tipo_chirurgia": "Aperta",
-            "ruolo": "OR I"
+            "nome_paziente": "Ferraro Giovanna",
+            "id_paziente": "PZ0014",
+            "diagnosi": "Stenosi arteria renale bilaterale",
+            "intervento": "Angioplastica + stent renale bilaterale",
+            "codice_intervento": "39.50",
+            "chirurgo": "Dr. Bianchi L.",
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
+            "ruolo": "OR II"
         },
         {
             "data": "2026-04-03",
@@ -137,15 +124,15 @@
             "ruolo": "OR I"
         },
         {
-            "data": "2026-04-06",
+            "data": "2026-04-03",
             "slot": "8.00-10.00",
-            "nome_paziente": "Rizzo Stefano",
-            "id_paziente": "PZ0007",
-            "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
-            "intervento": "Crossectomia + stripping safena grande",
-            "codice_intervento": "38.59",
-            "chirurgo": "Dr. Mauro M.",
-            "complessita": "Bassa",
+            "nome_paziente": "Mancini Paolo",
+            "id_paziente": "PZ0013",
+            "diagnosi": "Piede diabetico - lesione neuro-ischemica",
+            "intervento": "Amputazione transmetatarsale",
+            "codice_intervento": "84.12",
+            "chirurgo": "Dr. Ferrini A.",
+            "complessita": "Media",
             "tipo_chirurgia": "Aperta",
             "ruolo": "OR I"
         },
@@ -163,15 +150,15 @@
             "ruolo": "OR I"
         },
         {
-            "data": "2026-04-09",
+            "data": "2026-04-06",
             "slot": "8.00-10.00",
-            "nome_paziente": "Mancini Paolo",
-            "id_paziente": "PZ0013",
-            "diagnosi": "Piede diabetico - lesione neuro-ischemica",
-            "intervento": "Amputazione transmetatarsale",
-            "codice_intervento": "84.12",
-            "chirurgo": "Prof. Rinaldi F.",
-            "complessita": "Media",
+            "nome_paziente": "Rizzo Stefano",
+            "id_paziente": "PZ0007",
+            "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
+            "intervento": "Crossectomia + stripping safena grande",
+            "codice_intervento": "38.59",
+            "chirurgo": "Dr. Mauro M.",
+            "complessita": "Bassa",
             "tipo_chirurgia": "Aperta",
             "ruolo": "OR I"
         },
@@ -213,6 +200,97 @@
             "complessita": "Alta",
             "tipo_chirurgia": "Endovascolare",
             "ruolo": "OR I"
+        },
+        {
+            "data": "2026-04-09",
+            "slot": "8.00-10.00",
+            "nome_paziente": "Mancini Paolo",
+            "id_paziente": "PZ0013",
+            "diagnosi": "Piede diabetico - lesione neuro-ischemica",
+            "intervento": "Amputazione transmetatarsale",
+            "codice_intervento": "84.12",
+            "chirurgo": "Prof. Rinaldi F.",
+            "complessita": "Media",
+            "tipo_chirurgia": "Aperta",
+            "ruolo": "OR I"
+        },
+        {
+            "data": "2026-04-20",
+            "slot": "10.00-12.00",
+            "nome_paziente": "Gallo Stefano",
+            "id_paziente": "PZ0019",
+            "diagnosi": "Aneurisma iliaco comune sinistro",
+            "intervento": "EVAR con estensione iliaca",
+            "codice_intervento": "38.44",
+            "chirurgo": "Dr. Bianchi L.",
+            "complessita": "Media",
+            "tipo_chirurgia": "Endovascolare",
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-04-20",
+            "slot": "8.00-10.00",
+            "nome_paziente": "Serra Massimo",
+            "id_paziente": "PZ0021",
+            "diagnosi": "Trombosi arteria poplitea sinistra",
+            "intervento": "Trombectomia poplitea con patch",
+            "codice_intervento": "38.06",
+            "chirurgo": "Prof. Rinaldi F.",
+            "complessita": "Media",
+            "tipo_chirurgia": "Aperta",
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-04-24",
+            "slot": "10.00-12.00",
+            "nome_paziente": "Marchi Sofia",
+            "id_paziente": "PZ0038",
+            "diagnosi": "Piede diabetico grado III Wagner",
+            "intervento": "Bypass tibio-peroneale + debridement",
+            "codice_intervento": "84.12",
+            "chirurgo": "Prof. Rinaldi F.",
+            "complessita": "Alta",
+            "tipo_chirurgia": "Aperta",
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-04-24",
+            "slot": "14.00-16.00",
+            "nome_paziente": "De Filippo Renzo",
+            "id_paziente": "PZ0039",
+            "diagnosi": "Fistola AV nativa insufficiente per dialisi",
+            "intervento": "Revisione FAV con patch venoso",
+            "codice_intervento": "39.42",
+            "chirurgo": "Dr. Mauro M.",
+            "complessita": "Bassa",
+            "tipo_chirurgia": "Aperta",
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-04-24",
+            "slot": "16.00-18.00",
+            "nome_paziente": "Basile Cristina",
+            "id_paziente": "PZ0040",
+            "diagnosi": "Pseudoaneurisma anastomotico aortico",
+            "intervento": "Revisione chirurgica anastomosi con patch",
+            "codice_intervento": "38.44",
+            "chirurgo": "Dr. Ferrini A.",
+            "complessita": "Alta",
+            "tipo_chirurgia": "Aperta",
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-04-24",
+            "slot": "8.00-10.00",
+            "nome_paziente": "Cavalcanti Emilio",
+            "id_paziente": "PZ0037",
+            "diagnosi": "Dissezione aortica tipo B non complicata",
+            "intervento": "TEVAR endoprotesi toracica",
+            "codice_intervento": "38.45",
+            "chirurgo": "Dr. Bianchi L.",
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
+            "ruolo": "OR II"
         }
     ]
 }

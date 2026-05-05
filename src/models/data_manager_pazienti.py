@@ -10,7 +10,6 @@ class DataManagerPazienti:
             os.makedirs(self.dir_pazienti, exist_ok=True)
 
     def get_tutti_pazienti(self):
-        """Legge tutti i file JSON presenti nella cartella pazienti"""
         pazienti = []
         for filename in os.listdir(self.dir_pazienti):
             if filename.endswith(".json"):
@@ -25,19 +24,24 @@ class DataManagerPazienti:
         return sorted(pazienti, key=lambda x: x.get('cognome', ''))
 
     def crea_nuovo_paziente(self, dati_form):
-        """Salva il nuovo paziente in un file JSON dedicato"""
         file_esistenti = [f for f in os.listdir(self.dir_pazienti) if f.endswith(".json")]
         nuovo_id = f"PZ{len(file_esistenti) + 1:04d}"
         
         data_odierna = datetime.now().strftime("%d/%m/%Y")
+
+        interventi = dati_form.get("interventi", [])
+        primo = interventi[0] if interventi else {}
+        durata_tot = sum(i.get("durata", 0) for i in interventi) or dati_form.get("durata_intervento", 90)
 
         nuovo_paziente = {
             "id": nuovo_id,
             "nome": dati_form["nome"],
             "cognome": dati_form["cognome"],
             "diagnosi": dati_form.get("diagnosi", ""),
-            "codice_intervento": dati_form.get("codice_intervento", ""),
-            "descrizione_intervento": dati_form.get("descrizione_intervento", ""),
+            "interventi": interventi,
+            "codice_intervento": primo.get("codice", dati_form.get("codice_intervento", "")),
+            "descrizione_intervento": primo.get("descrizione", dati_form.get("descrizione_intervento", "")),
+            "durata_intervento": durata_tot,
             "tipo_chirurgia": dati_form.get("tipo_chirurgia", ""),
             "complessita": dati_form.get("complessita", ""),
             "urgenza": dati_form["urgenza"],
@@ -81,12 +85,18 @@ class DataManagerPazienti:
             return None
         with open(filepath, 'r', encoding='utf-8') as f:
             paz = json.load(f)
+        interventi = dati.get("interventi", paz.get("interventi", []))
+        primo = interventi[0] if interventi else {}
+        durata_tot = sum(i.get("durata", 0) for i in interventi) or dati.get("durata_intervento", paz.get("durata_intervento", 90))
+
         paz.update({
             "nome": dati["nome"],
             "cognome": dati["cognome"],
             "diagnosi": dati.get("diagnosi", paz.get("diagnosi", "")),
-            "codice_intervento": dati.get("codice_intervento", paz.get("codice_intervento", "")),
-            "descrizione_intervento": dati.get("descrizione_intervento", paz.get("descrizione_intervento", "")),
+            "interventi": interventi,
+            "codice_intervento": primo.get("codice", dati.get("codice_intervento", paz.get("codice_intervento", ""))),
+            "descrizione_intervento": primo.get("descrizione", dati.get("descrizione_intervento", paz.get("descrizione_intervento", ""))),
+            "durata_intervento": durata_tot,
             "tipo_chirurgia": dati.get("tipo_chirurgia", paz.get("tipo_chirurgia", "")),
             "complessita": dati.get("complessita", paz.get("complessita", "")),
             "urgenza": dati["urgenza"],
@@ -96,6 +106,16 @@ class DataManagerPazienti:
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(paz, f, indent=4)
         return paz
+
+    def aggiorna_stato_paziente(self, paz_id: str, stato: str):
+        filepath = os.path.join(self.dir_pazienti, f"{paz_id}.json")
+        if not os.path.exists(filepath):
+            return
+        with open(filepath, "r", encoding="utf-8") as f:
+            paz = json.load(f)
+        paz["stato"] = stato
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(paz, f, indent=4)
 
     def elimina_paziente(self, paz_id):
         filepath = os.path.join(self.dir_pazienti, f"{paz_id}.json")

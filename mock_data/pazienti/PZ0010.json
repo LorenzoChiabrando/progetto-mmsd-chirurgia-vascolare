@@ -8,7 +8,8 @@
     "tipo_chirurgia": "Endovascolare",
     "complessita": "Bassa",
     "urgenza": "Bassa",
-    "stato": "In Attesa",
+    "stato": "Completato",
     "data_inserimento": "09/04/2026",
-    "note": ""
+    "note": "",
+    "durata_intervento": 60
 }

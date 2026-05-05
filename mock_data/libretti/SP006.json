@@ -8,19 +8,6 @@
     "attivita": [
         {
             "data": "2026-03-30",
-            "slot": "8.00-10.00",
-            "nome_paziente": "Rizzo Stefano",
-            "id_paziente": "PZ0007",
-            "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
-            "intervento": "Crossectomia + stripping safena grande",
-            "codice_intervento": "38.59",
-            "chirurgo": "Dr. Mauro M.",
-            "complessita": "Bassa",
-            "tipo_chirurgia": "Aperta",
-            "ruolo": "OR II"
-        },
-        {
-            "data": "2026-03-30",
             "slot": "10.00-12.00",
             "nome_paziente": "Cattaneo Sara",
             "id_paziente": "PZ0012",
@@ -33,15 +20,15 @@
             "ruolo": "OR II"
         },
         {
-            "data": "2026-04-03",
+            "data": "2026-03-30",
             "slot": "8.00-10.00",
-            "nome_paziente": "Mancini Paolo",
-            "id_paziente": "PZ0013",
-            "diagnosi": "Piede diabetico - lesione neuro-ischemica",
-            "intervento": "Amputazione transmetatarsale",
-            "codice_intervento": "84.12",
-            "chirurgo": "Dr. Ferrini A.",
-            "complessita": "Media",
+            "nome_paziente": "Rizzo Stefano",
+            "id_paziente": "PZ0007",
+            "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
+            "intervento": "Crossectomia + stripping safena grande",
+            "codice_intervento": "38.59",
+            "chirurgo": "Dr. Mauro M.",
+            "complessita": "Bassa",
             "tipo_chirurgia": "Aperta",
             "ruolo": "OR II"
         },
@@ -59,15 +46,15 @@
             "ruolo": "OR II"
         },
         {
-            "data": "2026-04-07",
+            "data": "2026-04-03",
             "slot": "8.00-10.00",
-            "nome_paziente": "Ferretti Giovanni",
-            "id_paziente": "PZ0003",
-            "diagnosi": "Stenosi carotidea sintomatica bilaterale",
-            "intervento": "Endoarterectomia carotidea",
-            "codice_intervento": "38.12",
-            "chirurgo": "Prof. Rinaldi F.",
-            "complessita": "Alta",
+            "nome_paziente": "Mancini Paolo",
+            "id_paziente": "PZ0013",
+            "diagnosi": "Piede diabetico - lesione neuro-ischemica",
+            "intervento": "Amputazione transmetatarsale",
+            "codice_intervento": "84.12",
+            "chirurgo": "Dr. Ferrini A.",
+            "complessita": "Media",
             "tipo_chirurgia": "Aperta",
             "ruolo": "OR II"
         },
@@ -111,15 +98,15 @@
             "ruolo": "OR II"
         },
         {
-            "data": "2026-04-10",
+            "data": "2026-04-07",
             "slot": "8.00-10.00",
-            "nome_paziente": "Rizzo Stefano",
-            "id_paziente": "PZ0007",
-            "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
-            "intervento": "Crossectomia + stripping safena grande",
-            "codice_intervento": "38.59",
-            "chirurgo": "Dr. Ferrini A.",
-            "complessita": "Bassa",
+            "nome_paziente": "Ferretti Giovanni",
+            "id_paziente": "PZ0003",
+            "diagnosi": "Stenosi carotidea sintomatica bilaterale",
+            "intervento": "Endoarterectomia carotidea",
+            "codice_intervento": "38.12",
+            "chirurgo": "Prof. Rinaldi F.",
+            "complessita": "Alta",
             "tipo_chirurgia": "Aperta",
             "ruolo": "OR II"
         },
@@ -161,6 +148,100 @@
             "complessita": "Media",
             "tipo_chirurgia": "Aperta",
             "ruolo": "OR II"
+        },
+        {
+            "data": "2026-04-10",
+            "slot": "8.00-10.00",
+            "nome_paziente": "Rizzo Stefano",
+            "id_paziente": "PZ0007",
+            "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
+            "intervento": "Crossectomia + stripping safena grande",
+            "codice_intervento": "38.59",
+            "chirurgo": "Dr. Ferrini A.",
+            "complessita": "Bassa",
+            "tipo_chirurgia": "Aperta",
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-04-23",
+            "slot": "10.00-12.00",
+            "nome_paziente": "Neri Laura",
+            "id_paziente": "PZ0034",
+            "diagnosi": "Aneurisma popliteo destro 3 cm",
+            "intervento": "Resezione aneurisma popliteo con bypass vena",
+            "codice_intervento": "38.59",
+            "chirurgo": "Dr. Mauro M.",
+            "complessita": "Media",
+            "tipo_chirurgia": "Aperta",
+            "ruolo": "OR I"
+        },
+        {
+            "data": "2026-04-23",
+            "slot": "14.00-16.00",
+            "nome_paziente": "Colombo Sergio",
+            "id_paziente": "PZ0035",
+            "diagnosi": "Occlusione femoro-poplitea bilaterale",
+            "intervento": "Bypass femoro-popliteo sopragenuale",
+            "codice_intervento": "39.29",
+            "chirurgo": "Dr. Ferrini A.",
+            "complessita": "Alta",
+            "tipo_chirurgia": "Aperta",
+            "ruolo": "OR I"
+        },
+        {
+            "data": "2026-04-23",
+            "slot": "16.00-18.00",
+            "nome_paziente": "Rizzi Beatrice",
+            "id_paziente": "PZ0036",
+            "diagnosi": "Insufficienza venosa cronica C5",
+            "intervento": "Flebectomia ambulatoriale con sclerosi",
+            "codice_intervento": "38.59",
+            "chirurgo": "Dr. Giordano S.",
+            "complessita": "Bassa",
+            "tipo_chirurgia": "Aperta",
+            "ruolo": "OR I"
+        },
+        {
+            "data": "2026-04-23",
+            "slot": "8.00-10.00",
+            "nome_paziente": "De Rosa Filippo",
+            "id_paziente": "PZ0033",
+            "diagnosi": "Stenosi carotidea asintomatica 80% destra",
+            "intervento": "Endoarterectomia carotidea con patch",
+            "codice_intervento": "38.12",
+            "chirurgo": "Prof. Rinaldi F.",
+            "complessita": "Media",
+            "tipo_chirurgia": "Aperta",
+            "ruolo": "OR I"
         }
-    ]
+    ],
+    "attivita_extra": [
+        {
+            "data": "2026-05-15",
+            "sede": "Molinette",
+            "attivita": "Attivit\u00e0 di Reparto",
+            "ruolo": "Reparto I",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "intervento": "",
+            "note": "",
+            "tipo": "extra"
+        },
+        {
+            "data": "2026-05-15",
+            "sede": "Reparto",
+            "attivita": "Attivit\u00e0 di Reparto",
+            "ruolo": "Reparto I",
+            "descrizione": "test di conferma",
+            "note": "test di conferma 2",
+            "tipo": "extra"
+        }
+    ],
+    "meta_giorni": {
+        "2026-05-15": {
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Molinette"
+        }
+    }
 }

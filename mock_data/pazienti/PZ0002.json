@@ -6,5 +6,6 @@
     "urgenza": "Media",
     "data_inserimento": "13/04/2026",
     "note": "note opzionali",
-    "stato": "Completato"
+    "stato": "Completato",
+    "durata_intervento": 90
 }

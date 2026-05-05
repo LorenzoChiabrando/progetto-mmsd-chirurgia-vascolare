@@ -20,18 +20,15 @@ class ColoredHeaderView(QHeaderView):
         painter.save()
         painter.setClipRect(rect)
 
-        # Sfondo per sezione
         bg = QColor(self._color_map.get(logical_index, "#f8fafc"))
         painter.fillRect(rect, bg)
 
-        # Bordi
         painter.setPen(QColor("#cbd5e1"))
         painter.drawLine(rect.right(), rect.top(), rect.right(), rect.bottom())
         painter.drawLine(rect.left(), rect.bottom(), rect.right(), rect.bottom())
         if logical_index == 0:
             painter.drawLine(rect.left(), rect.top(), rect.right(), rect.top())
 
-        # Testo
         text = self.model().headerData(
             logical_index, self.orientation(), Qt.ItemDataRole.DisplayRole
         )

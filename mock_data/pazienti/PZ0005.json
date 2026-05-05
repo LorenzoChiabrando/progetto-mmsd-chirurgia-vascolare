@@ -8,7 +8,8 @@
     "tipo_chirurgia": "Aperta",
     "complessita": "Media",
     "urgenza": "Alta",
-    "stato": "In Attesa",
+    "stato": "Completato",
     "data_inserimento": "07/04/2026",
-    "note": "Lesione trofica tallone sinistro"
+    "note": "Lesione trofica tallone sinistro",
+    "durata_intervento": 120
 }

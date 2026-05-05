@@ -1,0 +1,15 @@
+{
+    "id": "PZ0028",
+    "nome": "Chiara",
+    "cognome": "Gentile",
+    "diagnosi": "Linfedema primario arto inferiore sinistro",
+    "codice_intervento": "40.9",
+    "descrizione_intervento": "Linfangioplastica decompressiva",
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Bassa",
+    "urgenza": "Bassa",
+    "stato": "Completato",
+    "data_inserimento": "26/04/2026",
+    "note": "",
+    "durata_intervento": 60
+}

@@ -8,19 +8,6 @@
     "attivita": [
         {
             "data": "2026-03-31",
-            "slot": "8.00-10.00",
-            "nome_paziente": "Ferraro Giovanna",
-            "id_paziente": "PZ0014",
-            "diagnosi": "Stenosi arteria renale bilaterale",
-            "intervento": "Angioplastica + stent renale bilaterale",
-            "codice_intervento": "39.50",
-            "chirurgo": "Dr. Bianchi L.",
-            "complessita": "Alta",
-            "tipo_chirurgia": "Endovascolare",
-            "ruolo": "OR I"
-        },
-        {
-            "data": "2026-03-31",
             "slot": "10.00-12.00",
             "nome_paziente": "Mancini Paolo",
             "id_paziente": "PZ0013",
@@ -59,16 +46,16 @@
             "ruolo": "OR I"
         },
         {
-            "data": "2026-04-01",
+            "data": "2026-03-31",
             "slot": "8.00-10.00",
-            "nome_paziente": "Rizzo Stefano",
-            "id_paziente": "PZ0007",
-            "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
-            "intervento": "Crossectomia + stripping safena grande",
-            "codice_intervento": "38.59",
-            "chirurgo": "Dr. Mauro M.",
-            "complessita": "Bassa",
-            "tipo_chirurgia": "Aperta",
+            "nome_paziente": "Ferraro Giovanna",
+            "id_paziente": "PZ0014",
+            "diagnosi": "Stenosi arteria renale bilaterale",
+            "intervento": "Angioplastica + stent renale bilaterale",
+            "codice_intervento": "39.50",
+            "chirurgo": "Dr. Bianchi L.",
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
             "ruolo": "OR I"
         },
         {
@@ -85,16 +72,16 @@
             "ruolo": "OR I"
         },
         {
-            "data": "2026-04-02",
+            "data": "2026-04-01",
             "slot": "8.00-10.00",
-            "nome_paziente": "Ferraro Giovanna",
-            "id_paziente": "PZ0014",
-            "diagnosi": "Stenosi arteria renale bilaterale",
-            "intervento": "Angioplastica + stent renale bilaterale",
-            "codice_intervento": "39.50",
-            "chirurgo": "Dr. Bianchi L.",
-            "complessita": "Alta",
-            "tipo_chirurgia": "Endovascolare",
+            "nome_paziente": "Rizzo Stefano",
+            "id_paziente": "PZ0007",
+            "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
+            "intervento": "Crossectomia + stripping safena grande",
+            "codice_intervento": "38.59",
+            "chirurgo": "Dr. Mauro M.",
+            "complessita": "Bassa",
+            "tipo_chirurgia": "Aperta",
             "ruolo": "OR I"
         },
         {
@@ -137,16 +124,16 @@
             "ruolo": "OR I"
         },
         {
-            "data": "2026-04-07",
+            "data": "2026-04-02",
             "slot": "8.00-10.00",
-            "nome_paziente": "Ferretti Giovanni",
-            "id_paziente": "PZ0003",
-            "diagnosi": "Stenosi carotidea sintomatica bilaterale",
-            "intervento": "Endoarterectomia carotidea",
-            "codice_intervento": "38.12",
-            "chirurgo": "Prof. Rinaldi F.",
+            "nome_paziente": "Ferraro Giovanna",
+            "id_paziente": "PZ0014",
+            "diagnosi": "Stenosi arteria renale bilaterale",
+            "intervento": "Angioplastica + stent renale bilaterale",
+            "codice_intervento": "39.50",
+            "chirurgo": "Dr. Bianchi L.",
             "complessita": "Alta",
-            "tipo_chirurgia": "Aperta",
+            "tipo_chirurgia": "Endovascolare",
             "ruolo": "OR I"
         },
         {
@@ -189,17 +176,17 @@
             "ruolo": "OR I"
         },
         {
-            "data": "2026-04-09",
+            "data": "2026-04-07",
             "slot": "8.00-10.00",
-            "nome_paziente": "Mancini Paolo",
-            "id_paziente": "PZ0013",
-            "diagnosi": "Piede diabetico - lesione neuro-ischemica",
-            "intervento": "Amputazione transmetatarsale",
-            "codice_intervento": "84.12",
+            "nome_paziente": "Ferretti Giovanni",
+            "id_paziente": "PZ0003",
+            "diagnosi": "Stenosi carotidea sintomatica bilaterale",
+            "intervento": "Endoarterectomia carotidea",
+            "codice_intervento": "38.12",
             "chirurgo": "Prof. Rinaldi F.",
-            "complessita": "Media",
+            "complessita": "Alta",
             "tipo_chirurgia": "Aperta",
-            "ruolo": "OR II"
+            "ruolo": "OR I"
         },
         {
             "data": "2026-04-09",
@@ -239,6 +226,45 @@
             "complessita": "Alta",
             "tipo_chirurgia": "Endovascolare",
             "ruolo": "OR II"
+        },
+        {
+            "data": "2026-04-09",
+            "slot": "8.00-10.00",
+            "nome_paziente": "Mancini Paolo",
+            "id_paziente": "PZ0013",
+            "diagnosi": "Piede diabetico - lesione neuro-ischemica",
+            "intervento": "Amputazione transmetatarsale",
+            "codice_intervento": "84.12",
+            "chirurgo": "Prof. Rinaldi F.",
+            "complessita": "Media",
+            "tipo_chirurgia": "Aperta",
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-04-22",
+            "slot": "10.00-12.00",
+            "nome_paziente": "Mancini Pietro",
+            "id_paziente": "PZ0015",
+            "diagnosi": "Aneurisma aorta toracica discendente",
+            "intervento": "TEVAR endoprotesi toracica",
+            "codice_intervento": "38.45",
+            "chirurgo": "Dr. Mauro M.",
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
+            "ruolo": "OR I"
+        },
+        {
+            "data": "2026-04-22",
+            "slot": "8.00-10.00",
+            "nome_paziente": "Vitale Laura",
+            "id_paziente": "PZ0020",
+            "diagnosi": "Insufficienza venosa cronica stadio C4",
+            "intervento": "Safenectomia laser endovenosa",
+            "codice_intervento": "38.59",
+            "chirurgo": "Dr. Bianchi L.",
+            "complessita": "Bassa",
+            "tipo_chirurgia": "Endovascolare",
+            "ruolo": "OR I"
         }
     ]
 }

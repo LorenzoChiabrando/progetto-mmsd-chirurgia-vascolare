@@ -12,320 +12,342 @@
                 "OR I": "Gasparri A.",
                 "OR II": "Bello M."
             },
-            "8.00-10.00": {
-                "nome_paziente": "Ferraro Giovanna",
-                "id_paziente": "PZ0014",
-                "diagnosi": "Stenosi arteria renale bilaterale",
-                "intervento": "Angioplastica + stent renale bilaterale",
-                "codice_intervento": "39.50",
-                "chirurgo": "Dr. Bianchi L.",
-                "complessita": "Alta",
-                "tipo_chirurgia": "Endovascolare"
-            },
-            "10.00-12.00": {
-                "nome_paziente": "Lombardi Franco",
-                "id_paziente": "PZ0009",
-                "diagnosi": "Aneurisma popliteo destro con trombosi",
-                "intervento": "Resezione aneurisma popliteo + bypass",
-                "codice_intervento": "38.41",
-                "chirurgo": "Dr. Ferrini A.",
-                "complessita": "Alta",
-                "tipo_chirurgia": "Aperta"
-            }
+            "operazioni": [
+                {
+                    "nome_paziente": "Bruno Silvia",
+                    "id_paziente": "PZ0054",
+                    "diagnosi": "Aneurisma dell'arteria mesenterica superiore",
+                    "intervento": "Escissione e ricostruzione con interposizione",
+                    "codice_intervento": "38.59",
+                    "interventi": [
+                        {
+                            "codice": "38.59",
+                            "descrizione": "Escissione e ricostruzione con interposizione",
+                            "durata": 120
+                        }
+                    ],
+                    "chirurgo": "Dr. Mauro M.",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "durata": 120,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:00"
+                },
+                {
+                    "nome_paziente": "Sorrentino Maria",
+                    "id_paziente": "PZ0042",
+                    "diagnosi": "Trombosi arteria renale acuta destra",
+                    "intervento": "Embolectomia arteria renale",
+                    "codice_intervento": "38.06",
+                    "interventi": [
+                        {
+                            "codice": "38.06",
+                            "descrizione": "Embolectomia arteria renale",
+                            "durata": 120
+                        }
+                    ],
+                    "chirurgo": "Dr. Bianchi L.",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "durata": 120,
+                    "ora_inizio": "10:00",
+                    "ora_fine": "12:00"
+                },
+                {
+                    "nome_paziente": "Ferretti Claudio",
+                    "id_paziente": "PZ0043",
+                    "diagnosi": "Aneurisma aorta addominale 7 cm",
+                    "intervento": "Endoprotesi aortica EVAR biforcata",
+                    "codice_intervento": "39.57",
+                    "interventi": [
+                        {
+                            "codice": "39.57",
+                            "descrizione": "Endoprotesi aortica EVAR biforcata",
+                            "durata": 120
+                        }
+                    ],
+                    "chirurgo": "Dr. Ferrini A.",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "durata": 120,
+                    "ora_inizio": "12:00",
+                    "ora_fine": "14:00"
+                }
+            ]
         },
         "2026-05-05": {
             "specializzandi": {
                 "OR I": "Verdone V.",
                 "OR II": "JAZZ B."
             },
-            "8.00-10.00": {
-                "nome_paziente": "Marchetti Luisa",
-                "id_paziente": "PZ0004",
-                "diagnosi": "Aneurisma aorta addominale 6 cm",
-                "intervento": "Endoprotesi aortica (EVAR)",
-                "codice_intervento": "39.57",
-                "chirurgo": "Prof. Rinaldi F.",
-                "complessita": "Alta",
-                "tipo_chirurgia": "Endovascolare"
-            },
-            "10.00-12.00": {
-                "nome_paziente": "Conti Roberto",
-                "id_paziente": "PZ0005",
-                "diagnosi": "Arteriopatia obliterante arti inferiori IV stadio",
-                "intervento": "Bypass femoro-popliteo con vena",
-                "codice_intervento": "39.29",
-                "chirurgo": "Dr. Giordano S.",
-                "complessita": "Media",
-                "tipo_chirurgia": "Aperta"
-            },
-            "14.00-16.00": {
-                "nome_paziente": "Barbieri Elena",
-                "id_paziente": "PZ0010",
-                "diagnosi": "Insufficienza venosa cronica - varici recidive",
-                "intervento": "Flebectomia selettiva + ablazione",
-                "codice_intervento": "39.95",
-                "chirurgo": "Dr. Mauro M.",
-                "complessita": "Bassa",
-                "tipo_chirurgia": "Endovascolare"
-            },
-            "16.00-18.00": {
-                "nome_paziente": "Esposito Carla",
-                "id_paziente": "PZ0006",
-                "diagnosi": "Occlusione arteria femorale superficiale",
-                "intervento": "Angioplastica percutanea + stent",
-                "codice_intervento": "39.50",
-                "chirurgo": "Dr. Bianchi L.",
-                "complessita": "Media",
-                "tipo_chirurgia": "Endovascolare"
-            }
+            "operazioni": [
+                {
+                    "nome_paziente": "Ricci Paolo",
+                    "id_paziente": "PZ0053",
+                    "diagnosi": "Arteriopatia periferica con gangrena secca",
+                    "intervento": "Amputazione transtibia + bypass distale",
+                    "codice_intervento": "84.12",
+                    "interventi": [
+                        {
+                            "codice": "84.12",
+                            "descrizione": "Amputazione transtibia + bypass distale",
+                            "durata": 120
+                        }
+                    ],
+                    "chirurgo": "Dr. Giordano S.",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "durata": 120,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:00"
+                },
+                {
+                    "nome_paziente": "Napoli Tomaso",
+                    "id_paziente": "PZ0041",
+                    "diagnosi": "Arterite di Takayasu con stenosi succlavia",
+                    "intervento": "Bypass carotido-succlavio",
+                    "codice_intervento": "38.12",
+                    "interventi": [
+                        {
+                            "codice": "38.12",
+                            "descrizione": "Bypass carotido-succlavio",
+                            "durata": 120
+                        }
+                    ],
+                    "chirurgo": "Prof. Rinaldi F.",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "durata": 120,
+                    "ora_inizio": "10:00",
+                    "ora_fine": "12:00"
+                },
+                {
+                    "nome_paziente": "Silvestri Roberto",
+                    "id_paziente": "PZ0051",
+                    "diagnosi": "Fistola arterovenosa dialisi con ipertensione",
+                    "intervento": "Bendaggio FAV + angioplastica",
+                    "codice_intervento": "39.42",
+                    "interventi": [
+                        {
+                            "codice": "39.42",
+                            "descrizione": "Bendaggio FAV + angioplastica",
+                            "durata": 90
+                        }
+                    ],
+                    "chirurgo": "Prof. Rinaldi F.",
+                    "complessita": "Media",
+                    "tipo_chirurgia": "Endovascolare",
+                    "durata": 90,
+                    "ora_inizio": "12:00",
+                    "ora_fine": "13:30"
+                }
+            ]
         },
         "2026-05-06": {
             "specializzandi": {
                 "OR I": "Bello M.",
                 "OR II": "Massima A."
             },
-            "8.00-10.00": {
-                "nome_paziente": "Rizzo Stefano",
-                "id_paziente": "PZ0007",
-                "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
-                "intervento": "Crossectomia + stripping safena grande",
-                "codice_intervento": "38.59",
-                "chirurgo": "Dr. Mauro M.",
-                "complessita": "Bassa",
-                "tipo_chirurgia": "Aperta"
-            },
-            "10.00-12.00": {
-                "nome_paziente": "Cattaneo Sara",
-                "id_paziente": "PZ0012",
-                "diagnosi": "Malformazione arterovenosa coscia sinistra",
-                "intervento": "Embolizzazione endovascolare",
-                "codice_intervento": "39.53",
-                "chirurgo": "Dr. Ferrini A.",
-                "complessita": "Media",
-                "tipo_chirurgia": "Endovascolare"
-            }
+            "operazioni": [
+                {
+                    "nome_paziente": "VerdeScuro Pippo",
+                    "id_paziente": "PZ0055",
+                    "diagnosi": "diagnosi be\u00f2la",
+                    "intervento": "prova1",
+                    "codice_intervento": "39.14",
+                    "interventi": [
+                        {
+                            "codice": "39.14",
+                            "descrizione": "prova1",
+                            "durata": 90
+                        },
+                        {
+                            "codice": "39.15",
+                            "descrizione": "prova2",
+                            "durata": 90
+                        }
+                    ],
+                    "chirurgo": "Dr. Giordano S.",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "durata": 180,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "11:00"
+                },
+                {
+                    "nome_paziente": "Ferrari Monica",
+                    "id_paziente": "PZ0052",
+                    "diagnosi": "Coartazione aortica residua post-intervento",
+                    "intervento": "Redilatazione endovascolare con stent",
+                    "codice_intervento": "38.45",
+                    "interventi": [
+                        {
+                            "codice": "38.45",
+                            "descrizione": "Redilatazione endovascolare con stent",
+                            "durata": 90
+                        }
+                    ],
+                    "chirurgo": "Dr. Bianchi L.",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "durata": 90,
+                    "ora_inizio": "11:00",
+                    "ora_fine": "12:30"
+                }
+            ]
         },
         "2026-05-07": {
             "specializzandi": {
                 "OR I": "JAZZ B.",
                 "OR II": "Gasparri A."
             },
-            "8.00-10.00": {
-                "nome_paziente": "Mancini Paolo",
-                "id_paziente": "PZ0013",
-                "diagnosi": "Piede diabetico - lesione neuro-ischemica",
-                "intervento": "Amputazione transmetatarsale",
-                "codice_intervento": "84.12",
-                "chirurgo": "Dr. Giordano S.",
-                "complessita": "Media",
-                "tipo_chirurgia": "Aperta"
-            },
-            "10.00-12.00": {
-                "nome_paziente": "Ferretti Giovanni",
-                "id_paziente": "PZ0003",
-                "diagnosi": "Stenosi carotidea sintomatica bilaterale",
-                "intervento": "Endoarterectomia carotidea",
-                "codice_intervento": "38.12",
-                "chirurgo": "Prof. Rinaldi F.",
-                "complessita": "Alta",
-                "tipo_chirurgia": "Aperta"
-            },
-            "14.00-16.00": {
-                "nome_paziente": "Fontana Giuseppe",
-                "id_paziente": "PZ0011",
-                "diagnosi": "Ischemia critica arto inferiore sinistro",
-                "intervento": "Bypass femoro-tibiale con vena safena",
-                "codice_intervento": "39.28",
-                "chirurgo": "Dr. Bianchi L.",
-                "complessita": "Alta",
-                "tipo_chirurgia": "Aperta"
-            }
+            "operazioni": [
+                {
+                    "nome_paziente": "Caputo Francesco",
+                    "id_paziente": "PZ0047",
+                    "diagnosi": "Aneurisma anastomotico femorale",
+                    "intervento": "Revisione anastomosi femorale con patch",
+                    "codice_intervento": "38.44",
+                    "interventi": [
+                        {
+                            "codice": "38.44",
+                            "descrizione": "Revisione anastomosi femorale con patch",
+                            "durata": 120
+                        }
+                    ],
+                    "chirurgo": "Dr. Giordano S.",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "durata": 120,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:00"
+                },
+                {
+                    "nome_paziente": "Vitali Angela",
+                    "id_paziente": "PZ0048",
+                    "diagnosi": "Linfedema secondario post-mastectomia",
+                    "intervento": "Microchirurgia ricostruttiva linfatica",
+                    "codice_intervento": "40.9",
+                    "interventi": [
+                        {
+                            "codice": "40.9",
+                            "descrizione": "Microchirurgia ricostruttiva linfatica",
+                            "durata": 60
+                        }
+                    ],
+                    "chirurgo": "Dr. Ferrini A.",
+                    "complessita": "Bassa",
+                    "tipo_chirurgia": "Aperta",
+                    "durata": 60,
+                    "ora_inizio": "10:00",
+                    "ora_fine": "11:00"
+                }
+            ]
         },
         "2026-05-08": {
             "specializzandi": {
                 "OR I": "Massima A.",
                 "OR II": "Bello M."
             },
-            "8.00-10.00": {
-                "nome_paziente": "Greco Marina",
-                "id_paziente": "PZ0008",
-                "diagnosi": "Stenosi carotidea asintomatica 80%",
-                "intervento": "Endoarterectomia carotidea",
-                "codice_intervento": "38.12",
-                "chirurgo": "Dr. Mauro M.",
-                "complessita": "Alta",
-                "tipo_chirurgia": "Aperta"
-            },
-            "10.00-12.00": {
-                "nome_paziente": "Ferraro Giovanna",
-                "id_paziente": "PZ0014",
-                "diagnosi": "Stenosi arteria renale bilaterale",
-                "intervento": "Angioplastica + stent renale bilaterale",
-                "codice_intervento": "39.50",
-                "chirurgo": "Dr. Ferrini A.",
-                "complessita": "Alta",
-                "tipo_chirurgia": "Endovascolare"
-            }
+            "operazioni": [
+                {
+                    "nome_paziente": "Poli Giacomo",
+                    "id_paziente": "PZ0045",
+                    "diagnosi": "Varici recidive post-safenectomia bilaterali",
+                    "intervento": "Flebectomia selettiva + scleroterapia eco-guidata",
+                    "codice_intervento": "38.59",
+                    "interventi": [
+                        {
+                            "codice": "38.59",
+                            "descrizione": "Flebectomia selettiva + scleroterapia eco-guidata",
+                            "durata": 60
+                        }
+                    ],
+                    "chirurgo": "Dr. Mauro M.",
+                    "complessita": "Bassa",
+                    "tipo_chirurgia": "Aperta",
+                    "durata": 60,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:00"
+                },
+                {
+                    "nome_paziente": "Mazzoni Luca",
+                    "id_paziente": "PZ0049",
+                    "diagnosi": "Ischemia critica arto inferiore stadio IV",
+                    "intervento": "Bypass femoro-tibiale posteriore con vena",
+                    "codice_intervento": "39.29",
+                    "interventi": [
+                        {
+                            "codice": "39.29",
+                            "descrizione": "Bypass femoro-tibiale posteriore con vena",
+                            "durata": 120
+                        }
+                    ],
+                    "chirurgo": "Dr. Giordano S.",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "durata": 120,
+                    "ora_inizio": "09:00",
+                    "ora_fine": "11:00"
+                },
+                {
+                    "nome_paziente": "Coppola Sara",
+                    "id_paziente": "PZ0050",
+                    "diagnosi": "Stenosi carotidea bilaterale sintomatica 75%",
+                    "intervento": "Endoarterectomia carotidea sinistra con patch",
+                    "codice_intervento": "38.12",
+                    "interventi": [
+                        {
+                            "codice": "38.12",
+                            "descrizione": "Endoarterectomia carotidea sinistra con patch",
+                            "durata": 120
+                        }
+                    ],
+                    "chirurgo": "Prof. Rinaldi F.",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "durata": 120,
+                    "ora_inizio": "11:00",
+                    "ora_fine": "13:00"
+                }
+            ]
         },
         "2026-05-11": {
             "specializzandi": {
                 "OR I": "Verdone V.",
                 "OR II": "Alga S."
-            },
-            "8.00-10.00": {
-                "nome_paziente": "Conti Roberto",
-                "id_paziente": "PZ0005",
-                "diagnosi": "Arteriopatia obliterante arti inferiori IV stadio",
-                "intervento": "Bypass femoro-popliteo con vena",
-                "codice_intervento": "39.29",
-                "chirurgo": "Prof. Rinaldi F.",
-                "complessita": "Media",
-                "tipo_chirurgia": "Aperta"
-            },
-            "10.00-12.00": {
-                "nome_paziente": "Lombardi Franco",
-                "id_paziente": "PZ0009",
-                "diagnosi": "Aneurisma popliteo destro con trombosi",
-                "intervento": "Resezione aneurisma popliteo + bypass",
-                "codice_intervento": "38.41",
-                "chirurgo": "Dr. Giordano S.",
-                "complessita": "Alta",
-                "tipo_chirurgia": "Aperta"
             }
         },
         "2026-05-12": {
             "specializzandi": {
                 "OR I": "Gasparri A.",
                 "OR II": "Alga S."
-            },
-            "8.00-10.00": {
-                "nome_paziente": "Marchetti Luisa",
-                "id_paziente": "PZ0004",
-                "diagnosi": "Aneurisma aorta addominale 6 cm",
-                "intervento": "Endoprotesi aortica (EVAR)",
-                "codice_intervento": "39.57",
-                "chirurgo": "Dr. Bianchi L.",
-                "complessita": "Alta",
-                "tipo_chirurgia": "Endovascolare"
-            },
-            "10.00-12.00": {
-                "nome_paziente": "Rizzo Stefano",
-                "id_paziente": "PZ0007",
-                "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
-                "intervento": "Crossectomia + stripping safena grande",
-                "codice_intervento": "38.59",
-                "chirurgo": "Dr. Mauro M.",
-                "complessita": "Bassa",
-                "tipo_chirurgia": "Aperta"
-            },
-            "14.00-16.00": {
-                "nome_paziente": "Esposito Carla",
-                "id_paziente": "PZ0006",
-                "diagnosi": "Occlusione arteria femorale superficiale",
-                "intervento": "Angioplastica percutanea + stent",
-                "codice_intervento": "39.50",
-                "chirurgo": "Dr. Ferrini A.",
-                "complessita": "Media",
-                "tipo_chirurgia": "Endovascolare"
-            },
-            "16.00-18.00": {
-                "nome_paziente": "Mancini Paolo",
-                "id_paziente": "PZ0013",
-                "diagnosi": "Piede diabetico - lesione neuro-ischemica",
-                "intervento": "Amputazione transmetatarsale",
-                "codice_intervento": "84.12",
-                "chirurgo": "Dr. Giordano S.",
-                "complessita": "Media",
-                "tipo_chirurgia": "Aperta"
             }
         },
         "2026-05-13": {
             "specializzandi": {
                 "OR I": "Massima A.",
                 "OR II": "Verdone V."
-            },
-            "8.00-10.00": {
-                "nome_paziente": "Cattaneo Sara",
-                "id_paziente": "PZ0012",
-                "diagnosi": "Malformazione arterovenosa coscia sinistra",
-                "intervento": "Embolizzazione endovascolare",
-                "codice_intervento": "39.53",
-                "chirurgo": "Prof. Rinaldi F.",
-                "complessita": "Media",
-                "tipo_chirurgia": "Endovascolare"
-            },
-            "10.00-12.00": {
-                "nome_paziente": "Fontana Giuseppe",
-                "id_paziente": "PZ0011",
-                "diagnosi": "Ischemia critica arto inferiore sinistro",
-                "intervento": "Bypass femoro-tibiale con vena safena",
-                "codice_intervento": "39.28",
-                "chirurgo": "Dr. Bianchi L.",
-                "complessita": "Alta",
-                "tipo_chirurgia": "Aperta"
             }
         },
         "2026-05-14": {
             "specializzandi": {
                 "OR I": "Alga S.",
                 "OR II": "Bello M."
-            },
-            "8.00-10.00": {
-                "nome_paziente": "Ferretti Giovanni",
-                "id_paziente": "PZ0003",
-                "diagnosi": "Stenosi carotidea sintomatica bilaterale",
-                "intervento": "Endoarterectomia carotidea",
-                "codice_intervento": "38.12",
-                "chirurgo": "Dr. Mauro M.",
-                "complessita": "Alta",
-                "tipo_chirurgia": "Aperta"
-            },
-            "10.00-12.00": {
-                "nome_paziente": "Greco Marina",
-                "id_paziente": "PZ0008",
-                "diagnosi": "Stenosi carotidea asintomatica 80%",
-                "intervento": "Endoarterectomia carotidea",
-                "codice_intervento": "38.12",
-                "chirurgo": "Dr. Ferrini A.",
-                "complessita": "Alta",
-                "tipo_chirurgia": "Aperta"
-            },
-            "14.00-16.00": {
-                "nome_paziente": "Barbieri Elena",
-                "id_paziente": "PZ0010",
-                "diagnosi": "Insufficienza venosa cronica - varici recidive",
-                "intervento": "Flebectomia selettiva + ablazione",
-                "codice_intervento": "39.95",
-                "chirurgo": "Dr. Giordano S.",
-                "complessita": "Bassa",
-                "tipo_chirurgia": "Endovascolare"
             }
         },
         "2026-05-15": {
             "specializzandi": {
                 "OR I": "Verdone V.",
                 "OR II": "Massima A."
-            },
-            "8.00-10.00": {
-                "nome_paziente": "Conti Roberto",
-                "id_paziente": "PZ0005",
-                "diagnosi": "Arteriopatia obliterante arti inferiori IV stadio",
-                "intervento": "Bypass femoro-popliteo con vena",
-                "codice_intervento": "39.29",
-                "chirurgo": "Dr. Bianchi L.",
-                "complessita": "Media",
-                "tipo_chirurgia": "Aperta"
-            },
-            "10.00-12.00": {
-                "nome_paziente": "Ferraro Giovanna",
-                "id_paziente": "PZ0014",
-                "diagnosi": "Stenosi arteria renale bilaterale",
-                "intervento": "Angioplastica + stent renale bilaterale",
-                "codice_intervento": "39.50",
-                "chirurgo": "Prof. Rinaldi F.",
-                "complessita": "Alta",
-                "tipo_chirurgia": "Endovascolare"
             }
+        },
+        "2026-05-01": {
+            "specializzandi": {
+                "OR I": "Alga S.",
+                "OR II": "Massima A."
+            },
+            "operazioni": []
         }
     }
 }

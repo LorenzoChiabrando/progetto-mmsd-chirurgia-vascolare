@@ -38,6 +38,20 @@ QLabel#SottoTitoloSezione {
 }
 
 /* =========================================
+   CONTATORI HEADER
+========================================= */
+QLabel#CountAttesa {
+    font-size: 13px;
+    font-weight: bold;
+    color: #0369a1;
+}
+
+QLabel#CountTotal {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+/* =========================================
    BARRA DI RICERCA
 ========================================= */
 QFrame#SearchContainer {
@@ -78,6 +92,7 @@ QPushButton#ChipUrgAlta,
 QPushButton#ChipUrgMedia,
 QPushButton#ChipUrgBassa,
 QPushButton#ChipInAttesa,
+QPushButton#ChipPianificato,
 QPushButton#ChipCompletato {
     font-size: 13px;
     font-weight: bold;
@@ -86,21 +101,24 @@ QPushButton#ChipCompletato {
     border: 1.5px solid #e2e8f0;
     background-color: #f8fafc;
     color: #94a3b8;
+    outline: 0;
 }
 
 /* Hover non selezionato */
-QPushButton#ChipUrgAlta:hover:!checked    { color: #dc2626; border-color: #fca5a5; background-color: #fef2f2; }
-QPushButton#ChipUrgMedia:hover:!checked   { color: #d97706; border-color: #fde68a; background-color: #fffbeb; }
-QPushButton#ChipUrgBassa:hover:!checked   { color: #15803d; border-color: #86efac; background-color: #f0fdf4; }
-QPushButton#ChipInAttesa:hover:!checked   { color: #0369a1; border-color: #7dd3fc; background-color: #f0f9ff; }
-QPushButton#ChipCompletato:hover:!checked { color: #475569; border-color: #94a3b8; background-color: #f8fafc; }
+QPushButton#ChipUrgAlta:hover:!checked      { color: #dc2626; border-color: #fca5a5; background-color: #fef2f2; }
+QPushButton#ChipUrgMedia:hover:!checked     { color: #d97706; border-color: #fde68a; background-color: #fffbeb; }
+QPushButton#ChipUrgBassa:hover:!checked     { color: #15803d; border-color: #86efac; background-color: #f0fdf4; }
+QPushButton#ChipInAttesa:hover:!checked     { color: #0369a1; border-color: #7dd3fc; background-color: #f0f9ff; }
+QPushButton#ChipPianificato:hover:!checked  { color: #7c3aed; border-color: #c4b5fd; background-color: #f5f3ff; }
+QPushButton#ChipCompletato:hover:!checked   { color: #475569; border-color: #94a3b8; background-color: #f8fafc; }
 
 /* Selezionato */
-QPushButton#ChipUrgAlta:checked    { background-color: #fee2e2; color: #dc2626; border-color: #fca5a5; }
-QPushButton#ChipUrgMedia:checked   { background-color: #fef9c3; color: #d97706; border-color: #fde68a; }
-QPushButton#ChipUrgBassa:checked   { background-color: #dcfce7; color: #15803d; border-color: #86efac; }
-QPushButton#ChipInAttesa:checked   { background-color: #e0f2fe; color: #0369a1; border-color: #7dd3fc; }
-QPushButton#ChipCompletato:checked { background-color: #f1f5f9; color: #475569; border-color: #94a3b8; }
+QPushButton#ChipUrgAlta:checked     { background-color: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+QPushButton#ChipUrgMedia:checked    { background-color: #fef9c3; color: #d97706; border-color: #fde68a; }
+QPushButton#ChipUrgBassa:checked    { background-color: #dcfce7; color: #15803d; border-color: #86efac; }
+QPushButton#ChipInAttesa:checked    { background-color: #e0f2fe; color: #0369a1; border-color: #7dd3fc; }
+QPushButton#ChipPianificato:checked { background-color: #ede9fe; color: #7c3aed; border-color: #c4b5fd; }
+QPushButton#ChipCompletato:checked  { background-color: #f1f5f9; color: #475569; border-color: #94a3b8; }
 
 /* =========================================
    LISTA RISULTATI
@@ -219,6 +237,23 @@ QPushButton#BtnAggiungi:hover {
     border-color: #38bdf8;
 }
 QPushButton#BtnAggiungi:pressed {
+    background-color: #bae6fd;
+}
+
+QPushButton#BtnBulk {
+    background-color: #ffffff;
+    color: #1e293b;
+    font-weight: bold;
+    font-size: 15px;
+    border-radius: 10px;
+    border: 1.5px solid #cbd5e1;
+}
+QPushButton#BtnBulk:hover {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    border-color: #38bdf8;
+}
+QPushButton#BtnBulk:pressed {
     background-color: #bae6fd;
 }
 
@@ -364,15 +399,21 @@ QScrollBar::sub-line:vertical { border: none; background: none; height: 0; }
 /* =========================================
    DIALOG NUOVO/MODIFICA PAZIENTE
 ========================================= */
-DialogNuovoPaziente {
-    background-color: #f8fafc;
+DialogNuovoPaziente,
+DialogBulkPazienti {
+    background-color: #ffffff;
+}
+
+QFrame#AccentBarDialog {
+    background-color: #0369a1;
+    border: none;
 }
 
 QLabel#TitoloDialog {
     font-family: "Segoe UI";
     font-size: 22px;
     font-weight: bold;
-    color: #1e293b;
+    color: #0369a1;
 }
 
 QLabel#SottoTitoloDialog {
@@ -481,4 +522,157 @@ QPushButton#BtnSalvaDialog {
 }
 QPushButton#BtnSalvaDialog:hover {
     background-color: #075985;
+}
+
+/* =========================================
+   DIALOG BULK — TABELLA
+========================================= */
+QLabel#LblFileCSV {
+    color: #64748b;
+    font-size: 13px;
+    font-style: italic;
+}
+
+QLabel#LblStatoCSV {
+    font-size: 13px;
+    font-weight: bold;
+    color: #475569;
+}
+
+QTableWidget#TabellaBulk {
+    background-color: #ffffff;
+    alternate-background-color: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    gridline-color: #e2e8f0;
+    font-size: 13px;
+    color: #1e293b;
+    selection-background-color: #e0f2fe;
+    selection-color: #0369a1;
+    outline: 0;
+}
+
+QTableWidget#TabellaBulk QHeaderView::section {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    border: none;
+    border-bottom: 1.5px solid #e2e8f0;
+    border-right: 1px solid #e2e8f0;
+    padding: 6px 8px;
+}
+
+QTableWidget#TabellaBulk QHeaderView::section:last {
+    border-right: none;
+}
+
+QTableWidget#TabellaBulk::item {
+    padding: 0 6px;
+    border: none;
+}
+
+QTableWidget#TabellaBulk::item:selected {
+    background-color: #e0f2fe;
+    color: #0369a1;
+}
+
+QTableWidget#TabellaBulk QScrollBar:vertical {
+    border: none;
+    background: transparent;
+    width: 8px;
+    border-radius: 4px;
+}
+QTableWidget#TabellaBulk QScrollBar::handle:vertical {
+    background: #cbd5e1;
+    min-height: 30px;
+    border-radius: 4px;
+}
+QTableWidget#TabellaBulk QScrollBar::handle:vertical:hover {
+    background: #38bdf8;
+}
+QTableWidget#TabellaBulk QScrollBar::add-line:vertical,
+QTableWidget#TabellaBulk QScrollBar::sub-line:vertical {
+    height: 0;
+    background: none;
+}
+
+QTableWidget#TabellaBulk QScrollBar:horizontal {
+    border: none;
+    background: transparent;
+    height: 8px;
+    border-radius: 4px;
+}
+QTableWidget#TabellaBulk QScrollBar::handle:horizontal {
+    background: #cbd5e1;
+    min-width: 30px;
+    border-radius: 4px;
+}
+QTableWidget#TabellaBulk QScrollBar::handle:horizontal:hover {
+    background: #38bdf8;
+}
+QTableWidget#TabellaBulk QScrollBar::add-line:horizontal,
+QTableWidget#TabellaBulk QScrollBar::sub-line:horizontal {
+    width: 0;
+    background: none;
+}
+
+/* =========================================
+   DIALOG NUOVO PAZIENTE – SEZIONE INTERVENTI
+========================================= */
+
+QFrame#InterventiRow {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+QLabel#LblCampoSmall {
+    font-size: 10px;
+    font-weight: bold;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+}
+
+QPushButton#BtnAggiungiIntervento {
+    background-color: #f0f9ff;
+    color: #0369a1;
+    font-weight: bold;
+    font-size: 13px;
+    border-radius: 8px;
+    border: 1.5px solid #7dd3fc;
+}
+QPushButton#BtnAggiungiIntervento:hover {
+    background-color: #e0f2fe;
+    border-color: #38bdf8;
+}
+QPushButton#BtnAggiungiIntervento:pressed {
+    background-color: #bae6fd;
+}
+
+QPushButton#BtnRimuoviIntervento {
+    background-color: transparent;
+    color: #94a3b8;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+QPushButton#BtnRimuoviIntervento:hover {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+QPushButton#BtnRimuoviIntervento:disabled {
+    color: #e2e8f0;
+    border-color: #f1f5f9;
+}
+
+/* scroll area inside DialogNuovoPaziente */
+DialogNuovoPaziente QScrollArea,
+DialogNuovoPaziente QScrollArea > QWidget > QWidget {
+    background-color: #ffffff;
+    border: none;
 }

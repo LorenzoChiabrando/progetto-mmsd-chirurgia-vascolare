@@ -1,0 +1,15 @@
+{
+    "id": "PZ0038",
+    "nome": "Sofia",
+    "cognome": "Marchi",
+    "diagnosi": "Piede diabetico grado III Wagner",
+    "codice_intervento": "84.12",
+    "descrizione_intervento": "Bypass tibio-peroneale + debridement",
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Alta",
+    "urgenza": "Alta",
+    "stato": "Completato",
+    "data_inserimento": "26/04/2026",
+    "note": "",
+    "durata_intervento": 120
+}

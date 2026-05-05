@@ -10,7 +10,6 @@ class DataManagerLibretto:
             os.makedirs(self.dir_libretti, exist_ok=True)
 
     def get_tutti_specializzandi(self):
-        """Legge tutti i file JSON presenti nella cartella libretti e ne fa una lista"""
         specializzandi = []
         for filename in os.listdir(self.dir_libretti):
             if filename.endswith(".json"):
@@ -25,7 +24,6 @@ class DataManagerLibretto:
         return sorted(specializzandi, key=lambda x: x.get('cognome', ''))
         
     def get_specializzando_by_id(self, spec_id):
-        """Cerca e restituisce il dizionario del medico dato il suo ID"""
         filepath = os.path.join(self.dir_libretti, f"{spec_id}.json")
         if os.path.exists(filepath):
             with open(filepath, 'r', encoding='utf-8') as f:
@@ -33,7 +31,6 @@ class DataManagerLibretto:
         return None
 
     def crea_nuovo_specializzando(self, dati_form):
-        """Riceve un dizionario dal form e salva il nuovo JSON"""
         file_esistenti = [f for f in os.listdir(self.dir_libretti) if f.endswith(".json")]
         nuovo_id = f"SP{len(file_esistenti) + 1:03d}"
         
@@ -53,7 +50,6 @@ class DataManagerLibretto:
         return nuovo_specializzando
 
     def aggiorna_specializzando(self, spec_id, dati):
-        """Aggiorna i campi anagrafici di uno specializzando esistente."""
         filepath = os.path.join(self.dir_libretti, f"{spec_id}.json")
         if not os.path.exists(filepath):
             return None
@@ -71,14 +67,11 @@ class DataManagerLibretto:
         return spec
 
     def elimina_specializzando(self, spec_id):
-        """Elimina definitivamente il file JSON dello specializzando."""
         filepath = os.path.join(self.dir_libretti, f"{spec_id}.json")
         if os.path.exists(filepath):
             os.remove(filepath)
             return True
         return False
-
-    # ── Registro attività operative ───────────────────────────────────────────
 
     def _trova_spec_by_nome_formattato(self, nome_formattato: str) -> dict | None:
         """
@@ -128,11 +121,53 @@ class DataManagerLibretto:
                 json.dump(dati, f, indent=4)
 
     def get_attivita(self, spec_id: str) -> list:
-        """Restituisce la lista di attività dello specializzando, ordinate per data."""
         spec = self.get_specializzando_by_id(spec_id)
         if not spec:
             return []
         return spec.get("attivita", [])
+
+    def get_attivita_extra(self, spec_id: str) -> list:
+        spec = self.get_specializzando_by_id(spec_id)
+        if not spec:
+            return []
+        return spec.get("attivita_extra", [])
+
+    def salva_attivita_extra(self, spec_id: str, att_data: dict):
+        filepath = os.path.join(self.dir_libretti, f"{spec_id}.json")
+        if not os.path.exists(filepath):
+            return
+        with open(filepath, 'r', encoding='utf-8') as f:
+            dati = json.load(f)
+        if "attivita_extra" not in dati:
+            dati["attivita_extra"] = []
+        chiave = (att_data.get("data"), att_data.get("sede"), att_data.get("attivita"))
+        for i, e in enumerate(dati["attivita_extra"]):
+            if (e.get("data"), e.get("sede"), e.get("attivita")) == chiave:
+                dati["attivita_extra"][i] = att_data
+                break
+        else:
+            dati["attivita_extra"].append(att_data)
+        dati["attivita_extra"].sort(key=lambda a: (a.get("data", ""), a.get("sede", "")))
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(dati, f, indent=4)
+
+    def get_meta_giorno(self, spec_id: str, data_str: str) -> dict:
+        spec = self.get_specializzando_by_id(spec_id)
+        if not spec:
+            return {}
+        return spec.get("meta_giorni", {}).get(data_str, {})
+
+    def salva_meta_giorno(self, spec_id: str, data_str: str, meta_dict: dict):
+        filepath = os.path.join(self.dir_libretti, f"{spec_id}.json")
+        if not os.path.exists(filepath):
+            return
+        with open(filepath, "r", encoding="utf-8") as f:
+            dati = json.load(f)
+        if "meta_giorni" not in dati:
+            dati["meta_giorni"] = {}
+        dati["meta_giorni"][data_str] = meta_dict
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(dati, f, indent=4)
 
     def calcola_training_score(self, spec_id: str) -> tuple:
         """

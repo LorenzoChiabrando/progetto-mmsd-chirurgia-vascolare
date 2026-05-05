@@ -8,7 +8,8 @@
     "tipo_chirurgia": "Aperta",
     "complessita": "Alta",
     "urgenza": "Media",
-    "stato": "In Attesa",
+    "stato": "Completato",
     "data_inserimento": "03/04/2026",
-    "note": "Monitoraggio in corso"
+    "note": "Monitoraggio in corso",
+    "durata_intervento": 90
 }

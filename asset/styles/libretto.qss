@@ -566,3 +566,362 @@ QPushButton#BtnSalvaDialog {
 QPushButton#BtnSalvaDialog:hover {
     background-color: #3730a3;
 }
+
+/* =========================================
+   TAB COMPLETATE / PIANIFICATE
+========================================= */
+QPushButton#TabBtnCompletate,
+QPushButton#TabBtnPianificate {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: bold;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0 20px;
+    min-width: 130px;
+}
+QPushButton#TabBtnCompletate:hover:!checked,
+QPushButton#TabBtnPianificate:hover:!checked {
+    background-color: #ede9fe;
+    color: #4338ca;
+    border-color: #818cf8;
+}
+QPushButton#TabBtnCompletate:checked {
+    background-color: #4338ca;
+    color: #ffffff;
+    border-color: #3730a3;
+}
+QPushButton#TabBtnPianificate:checked {
+    background-color: #7c3aed;
+    color: #ffffff;
+    border-color: #6d28d9;
+}
+
+QLabel#LblNAttivita {
+    font-size: 13px;
+    font-weight: bold;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+}
+
+/* =========================================
+   LISTA ATTIVITÀ
+========================================= */
+QListWidget#ListaAttivita {
+    border: 1.5px solid #e2e8f0;
+    background-color: #f8fafc;
+    border-radius: 14px;
+    outline: 0;
+    padding: 4px;
+}
+QListWidget#ListaAttivita::item {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+QListWidget#ListaAttivita::item:hover {
+    background: transparent;
+}
+QListWidget#ListaAttivita::item:selected {
+    background: transparent;
+}
+
+QListWidget#ListaAttivita QScrollBar:vertical {
+    border: none;
+    background: transparent;
+    width: 8px;
+    margin: 4px;
+    border-radius: 4px;
+}
+QListWidget#ListaAttivita QScrollBar::handle:vertical {
+    background: #cbd5e1;
+    min-height: 30px;
+    border-radius: 4px;
+}
+QListWidget#ListaAttivita QScrollBar::handle:vertical:hover {
+    background: #818cf8;
+}
+QListWidget#ListaAttivita QScrollBar::add-line:vertical,
+QListWidget#ListaAttivita QScrollBar::sub-line:vertical {
+    height: 0;
+    background: none;
+}
+
+/* =========================================
+   HEADER COLONNE
+========================================= */
+QFrame#RowColonne {
+    background-color: #eef2f7;
+    border: 1px solid #dde3ec;
+    border-radius: 8px;
+}
+QLabel#LblColonna {
+    font-size: 10px;
+    font-weight: bold;
+    color: #8898aa;
+    letter-spacing: 1.1px;
+    background: transparent;
+    border: none;
+}
+QFrame#CellSep {
+    background-color: #dde3ec;
+    border: none;
+}
+
+/* =========================================
+   RIGA GIORNO COLLASSATA
+========================================= */
+QFrame#ItemGiorno {
+    background-color: #ffffff;
+    border: 1px solid #e8edf3;
+    border-radius: 10px;
+}
+QFrame#ItemGiorno:hover {
+    background-color: #f5f3ff;
+    border-color: #a5b4fc;
+    border-width: 1.5px;
+}
+QLabel#ItemGiornoData {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+    background: transparent;
+    border: none;
+}
+QLabel#ItemGiornoOra {
+    font-size: 13px;
+    font-weight: bold;
+    color: #4338ca;
+    background: transparent;
+    border: none;
+}
+QLabel#ItemGiornoSede {
+    font-size: 13px;
+    font-weight: 500;
+    color: #475569;
+    background: transparent;
+    border: none;
+}
+QLabel#ItemGiornoAttivita {
+    font-size: 12px;
+    color: #7c8fa6;
+    background: transparent;
+    border: none;
+}
+QLabel#ItemGiornoBadge {
+    font-size: 11px;
+    font-weight: bold;
+    color: #4338ca;
+    background-color: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 9px;
+    padding: 2px 10px;
+    min-width: 44px;
+}
+QLabel#CellArrow {
+    font-size: 18px;
+    color: #c7d2fe;
+    background: transparent;
+    border: none;
+}
+
+/* =========================================
+   META GIORNO (ORA + SEDE editabili)
+========================================= */
+QFrame#MetaGiornoFrame {
+    background-color: #f0f4ff;
+    border: 1px solid #dde5f8;
+    border-radius: 10px;
+}
+QLabel#LblMetaGiornoKey {
+    font-size: 10px;
+    font-weight: bold;
+    color: #6b7fa8;
+    letter-spacing: 0.9px;
+    background: transparent;
+    border: none;
+}
+QLabel#LblMetaDash {
+    font-size: 13px;
+    color: #94a3b8;
+    background: transparent;
+    border: none;
+}
+QLineEdit#InputMetaOra {
+    background-color: #ffffff;
+    border: 1.5px solid #c7d2fe;
+    border-radius: 7px;
+    padding: 0 8px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #4338ca;
+    min-height: 32px;
+}
+QLineEdit#InputMetaOra:focus {
+    border-color: #6366f1;
+    background-color: #fafafe;
+}
+QComboBox#ComboMetaSede {
+    combobox-popup: 0;
+    background-color: #ffffff;
+    border: 1.5px solid #c7d2fe;
+    border-radius: 7px;
+    padding: 0 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #334155;
+    min-height: 32px;
+}
+QComboBox#ComboMetaSede:focus {
+    border-color: #6366f1;
+}
+QComboBox#ComboMetaSede::drop-down {
+    border: none;
+    width: 20px;
+}
+QComboBox#ComboMetaSede QAbstractItemView {
+    border: 1px solid #c7d2fe;
+    border-radius: 7px;
+    background-color: #ffffff;
+    outline: 0;
+}
+QComboBox#ComboMetaSede QAbstractItemView::item {
+    min-height: 32px;
+    padding-left: 10px;
+    color: #1e293b;
+}
+QComboBox#ComboMetaSede QAbstractItemView::item:hover,
+QComboBox#ComboMetaSede QAbstractItemView::item:selected {
+    background-color: #eef2ff;
+    color: #3730a3;
+}
+QPushButton#BtnSalvaMeta {
+    background-color: #4338ca;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 12px;
+    border: none;
+    border-radius: 8px;
+    padding: 0 18px;
+    min-height: 32px;
+}
+QPushButton#BtnSalvaMeta:hover {
+    background-color: #3730a3;
+}
+QPushButton#BtnSalvaMeta:pressed {
+    background-color: #312e81;
+}
+
+/* =========================================
+   CARD OR (sola lettura)
+========================================= */
+QFrame#CardAttOR {
+    background-color: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+}
+
+/* =========================================
+   CARD EXTRA (modificabile)
+========================================= */
+QFrame#CardAttExtra {
+    background-color: #faf5ff;
+    border: 1.5px solid #e9d5ff;
+    border-radius: 14px;
+}
+
+/* =========================================
+   CAMPI NELLE CARD
+========================================= */
+QLabel#LblTipoAttCard {
+    font-size: 15px;
+    font-weight: bold;
+    color: #1e293b;
+    background: transparent;
+    border: none;
+}
+QLabel#LblOraAttCard {
+    font-size: 13px;
+    font-weight: bold;
+    color: #4338ca;
+    background: transparent;
+    border: none;
+}
+QLabel#LblCampoAtt {
+    font-size: 11px;
+    font-weight: bold;
+    color: #94a3b8;
+    letter-spacing: 0.8px;
+    background: transparent;
+    border: none;
+}
+QLabel#ValCampoAtt {
+    font-size: 14px;
+    color: #1e293b;
+    background: transparent;
+    border: none;
+}
+
+/* =========================================
+   INPUT FORM (card modificabile)
+========================================= */
+QLineEdit#InputOraAtt {
+    background-color: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 7px;
+    padding: 0 8px;
+    font-size: 14px;
+    color: #1e293b;
+    min-height: 34px;
+}
+QLineEdit#InputOraAtt:focus {
+    border-color: #7c3aed;
+}
+QLineEdit#InputDescAtt {
+    background-color: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 7px;
+    padding: 0 10px;
+    font-size: 14px;
+    color: #1e293b;
+    min-height: 34px;
+}
+QLineEdit#InputDescAtt:focus {
+    border-color: #7c3aed;
+}
+
+QPushButton#BtnSalvaAtt {
+    background-color: #7c3aed;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 13px;
+    border: none;
+    border-radius: 8px;
+}
+QPushButton#BtnSalvaAtt:hover {
+    background-color: #6d28d9;
+}
+QPushButton#BtnSalvaAtt:disabled {
+    background-color: #e2e8f0;
+    color: #94a3b8;
+}
+
+QLabel#LblSalvatoAtt {
+    font-size: 13px;
+    font-weight: bold;
+    color: #15803d;
+    background: transparent;
+    border: none;
+}
+
+/* =========================================
+   TITOLO PAGINA GIORNO
+========================================= */
+QLabel#TitoloAttivita {
+    font-family: "Segoe UI";
+    font-size: 24px;
+    font-weight: bold;
+    color: #1e293b;
+}

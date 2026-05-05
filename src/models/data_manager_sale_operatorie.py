@@ -22,7 +22,6 @@ class DataManagerSaleOperatorie:
         return os.path.join(self.dir_sale_operatorie, f"{anno:04d}-{mese:02d}.json")
 
     def load_mese(self, anno, mese):
-        """Carica il mese specifico, usando la cache se possibile."""
         if self._cached_anno == anno and self._cached_mese == mese:
             return self._cached_data
 
@@ -42,7 +41,6 @@ class DataManagerSaleOperatorie:
         return data
 
     def save_mese(self, anno, mese, data):
-        """Salva i dati di un mese specifico e aggiorna la cache."""
         filepath = self._get_filepath(anno, mese)
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=4)
@@ -85,7 +83,6 @@ class DataManagerSaleOperatorie:
         return f"{or1}\n{or2}".strip()
 
     def get_slot(self, data_str, nome_riga):
-        """Ritorna stringa formattata su due righe: 'Nome\nPZ0001 · 38.12' per la cella."""
         slot = self.get_slot_raw(data_str, nome_riga)
         if not slot:
             return ""
@@ -100,7 +97,6 @@ class DataManagerSaleOperatorie:
         return f"{nome_paz}\n{seconda_riga}" if seconda_riga else nome_paz
 
     def get_slot_raw(self, data_str, slot_label):
-        """Ritorna il dict grezzo dello slot (nome_paziente, id_paziente, diagnosi, ...)."""
         anno = int(data_str[:4])
         mese = int(data_str[5:7])
         data = self.load_mese(anno, mese)
@@ -119,7 +115,6 @@ class DataManagerSaleOperatorie:
         self.save_mese(anno, mese, data)
 
     def set_specializzandi(self, data_str, or1, or2):
-        """Scrive i due specializzandi assegnati alla sala operatoria per un giorno."""
         anno = int(data_str[:4])
         mese = int(data_str[5:7])
         data = self.load_mese(anno, mese)
@@ -141,7 +136,6 @@ class DataManagerSaleOperatorie:
         return settimane.get(lun_str, "BOZZA")
 
     def set_stato_settimana(self, lun_date, stato):
-        """Scrive lo stato (BOZZA / CONVALIDATO) per la settimana indicata."""
         lun_str = lun_date.strftime("%Y-%m-%d")
         anno, mese = lun_date.year, lun_date.month
         data = self.load_mese(anno, mese)
@@ -151,10 +145,6 @@ class DataManagerSaleOperatorie:
         self.save_mese(anno, mese, data)
 
     def set_slot_data(self, data_str, slot_label, slot_dict):
-        """
-        Scrive un dict strutturato per uno slot orario.
-        slot_dict ha chiavi: nome_paziente, diagnosi, intervento, chirurgo.
-        """
         anno = int(data_str[:4])
         mese = int(data_str[5:7])
         data = self.load_mese(anno, mese)
@@ -193,14 +183,80 @@ class DataManagerSaleOperatorie:
 
         return sorted(convalidate)
 
+    def get_pazienti_pianificati_ids(self, exclude_lun_date: dt.date | None = None) -> set:
+        """
+        Restituisce gli ID dei pazienti assegnati a qualsiasi slot
+        di settimane non ancora convalidate (stato BOZZA).
+        Se exclude_lun_date è fornito, salta la settimana che inizia in quella data.
+        """
+        ids = set()
+        exclude_str = exclude_lun_date.strftime("%Y-%m-%d") if exclude_lun_date else None
+        if not os.path.exists(self.dir_sale_operatorie):
+            return ids
+
+        for filename in os.listdir(self.dir_sale_operatorie):
+            if not (filename.endswith(".json") and len(filename) == 12):
+                continue
+            try:
+                anno = int(filename[0:4])
+                mese = int(filename[5:7])
+            except ValueError:
+                continue
+
+            data = self.load_mese(anno, mese)
+            settimane_stati = data.get("metadata", {}).get("settimane", {})
+
+            for data_str, turno in data.get("turni", {}).items():
+                try:
+                    d = dt.date.fromisoformat(data_str)
+                except ValueError:
+                    continue
+                lun = d - dt.timedelta(days=d.weekday())
+                lun_str = lun.strftime("%Y-%m-%d")
+                if lun.year == anno and lun.month == mese:
+                    stato_sett = settimane_stati.get(lun_str, "BOZZA")
+                else:
+                    lun_data = self.load_mese(lun.year, lun.month)
+                    stato_sett = lun_data.get("metadata", {}).get("settimane", {}).get(lun_str, "BOZZA")
+                if stato_sett == "CONVALIDATO":
+                    continue
+                if exclude_str and lun_str == exclude_str:
+                    continue
+                for op in turno.get("operazioni", []):
+                    if op.get("id_paziente"):
+                        ids.add(op["id_paziente"])
+                for key, val in turno.items():
+                    if key not in ("operazioni", "specializzandi") and isinstance(val, dict) and val.get("id_paziente"):
+                        ids.add(val["id_paziente"])
+
+        return ids
+
+    def get_operazioni(self, data_str: str) -> list:
+        anno = int(data_str[:4])
+        mese = int(data_str[5:7])
+        data = self.load_mese(anno, mese)
+        turno = data["turni"].get(data_str, {})
+        return turno.get("operazioni", [])
+
+    def set_operazioni(self, data_str: str, operazioni: list):
+        anno = int(data_str[:4])
+        mese = int(data_str[5:7])
+        data = self.load_mese(anno, mese)
+        if data_str not in data["turni"]:
+            data["turni"][data_str] = {}
+        data["turni"][data_str]["operazioni"] = operazioni
+        for old_key in ["8.00-10.00", "10.00-12.00", "14.00-16.00", "16.00-18.00"]:
+            data["turni"][data_str].pop(old_key, None)
+        self._cached_data = None
+        self.save_mese(anno, mese, data)
+
     def get_mesi_disponibili(self):
-        """Ritorna una lista di tuple (anno, mese) analizzando i file salvati."""
         disponibili = []
         if not os.path.exists(self.dir_sale_operatorie):
             return disponibili
 
         for filename in os.listdir(self.dir_sale_operatorie):
-            if filename.endswith(".json") and len(filename) == 12:  # pattern YYYY-MM.json
+            if filename.endswith(".json") and len(filename) == 12:
                 try:
                     anno = int(filename[0:4])
                     mese = int(filename[5:7])
@@ -210,12 +266,10 @@ class DataManagerSaleOperatorie:
         return sorted(disponibili)
 
     def get_stato_mese(self, anno, mese):
-        """Recupera lo stato attuale dal blocco metadata del JSON."""
         data = self.load_mese(anno, mese)
         return data.get("metadata", {}).get("stato", "BOZZA")
 
     def set_stato_mese(self, anno, mese, stato):
-        """Forza un nuovo stato (es. STAMPA) nel JSON del mese."""
         data = self.load_mese(anno, mese)
         data["metadata"]["stato"] = stato
         self.save_mese(anno, mese, data)

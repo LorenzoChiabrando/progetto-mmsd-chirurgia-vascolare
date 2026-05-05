@@ -240,6 +240,12 @@ QTableWidget::item:selected {
     color: #4c1d95;
 }
 
+/* Sfondo dell'area vuota oltre le sezioni (fix rettangolo grigio OS) */
+QHeaderView {
+    background-color: #f8fafc;
+    border: none;
+}
+
 QHeaderView::section:horizontal {
     background-color: #e2e8f0;
     color: #334155;
@@ -268,4 +274,91 @@ QTableCornerButton::section {
     border: none;
     border-right: 1px solid #cbd5e1;
     border-bottom: 1px solid #cbd5e1;
+}
+
+/* ── Celle Operazione ─────────────────────────────── */
+QFrame#CellaOperazione {
+    background-color: #ffffff;
+    border: 1px solid #e8edf3;
+    border-radius: 0px;
+}
+QFrame#CellaOperazione:hover {
+    background-color: #f0f4ff;
+    border-color: #a5b4fc;
+}
+QFrame#CellaOperazioneOggi {
+    background-color: #fffbeb;
+    border: 1px solid #fcd34d;
+    border-radius: 0px;
+}
+QFrame#CellaOperazioneOggi:hover {
+    background-color: #fef3c7;
+}
+QFrame#CellaVuota {
+    background-color: #f8fafc;
+    border: none;
+    border-radius: 0px;
+}
+QFrame#CellaVuotaOggi {
+    background-color: #fffdf0;
+    border: none;
+    border-radius: 0px;
+}
+QLabel#LblOraOp {
+    font-size: 12px;
+    font-weight: bold;
+    color: #4338ca;
+    background: transparent;
+    border: none;
+}
+QLabel#BadgeDurataOp {
+    font-size: 10px;
+    font-weight: bold;
+    color: #6366f1;
+    background-color: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 6px;
+    padding: 1px 6px;
+}
+QLabel#LblNomePazOp {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    background: transparent;
+    border: none;
+}
+QLabel#LblSubOp {
+    font-size: 11px;
+    color: #7c8fa6;
+    background: transparent;
+    border: none;
+}
+QFrame#SlotVuotoClickable {
+    background-color: #f8fafc;
+    border: 1.5px dashed #cbd5e1;
+    border-radius: 0px;
+}
+QFrame#SlotVuotoClickable:hover {
+    background-color: #eff6ff;
+    border-color: #93c5fd;
+}
+QLabel#LblSlotVuoto {
+    font-size: 22px;
+    font-weight: bold;
+    color: #cbd5e1;
+    background: transparent;
+    border: none;
+}
+QFrame#SlotVuotoClickable:hover QLabel#LblSlotVuoto {
+    color: #3b82f6;
+}
+
+QLabel#BadgeComplessitaOp {
+    font-size: 10px;
+    font-weight: bold;
+    color: #7c3aed;
+    background-color: #ede9fe;
+    border: 1px solid #c4b5fd;
+    border-radius: 6px;
+    padding: 1px 6px;
 }

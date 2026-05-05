@@ -68,6 +68,10 @@
             "Sala Op. I": "Verdone V.",
             "Sala Op. II": "Massima A.",
             "Reparto I": "Alga S."
+        },
+        "2026-05-01": {
+            "Sala Op. I": "Alga S.",
+            "Sala Op. II": "Massima A."
         }
     }
 }

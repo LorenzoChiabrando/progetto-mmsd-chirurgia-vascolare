@@ -85,9 +85,17 @@ class ControllerScadenzario:
             else:
                 self.anno_corrente, self.mese_corrente = storici_validi[-1]
 
-        elif modalita in ["CORRENTE", "PIANIFICAZIONE"]:
+        elif modalita == "CORRENTE":
             self.anno_corrente = self.real_anno
             self.mese_corrente = self.real_mese
+
+        elif modalita == "PIANIFICAZIONE":
+            if self.real_mese == 12:
+                self.anno_corrente = self.real_anno + 1
+                self.mese_corrente = 1
+            else:
+                self.anno_corrente = self.real_anno
+                self.mese_corrente = self.real_mese + 1
 
         self.modalita_corrente = modalita
         self.view.stacked_widget.setCurrentIndex(1)
@@ -107,7 +115,11 @@ class ControllerScadenzario:
             self.view.btn_mese_anno.setEnabled(False)
 
         elif self.modalita_corrente == "PIANIFICAZIONE":
-            if view_date <= real_date:
+            if self.real_mese == 12:
+                min_plan_date = datetime.date(self.real_anno + 1, 1, 1)
+            else:
+                min_plan_date = datetime.date(self.real_anno, self.real_mese + 1, 1)
+            if view_date <= min_plan_date:
                 self.view.btn_prev.setVisible(False)
 
         elif self.modalita_corrente == "STORICO":
@@ -137,8 +149,6 @@ class ControllerScadenzario:
         self.view.tabella.setItemDelegateForRow(1, delegate_tipo)
 
         specializzandi_attivi = self.model.get_specializzandi_attivi()
-        # SmartComboBoxDelegate: esclude dinamicamente chi è già assegnato
-        # nella stessa colonna (stesso giorno) in qualsiasi altra riga
         delegate_spec = SmartComboBoxDelegate(specializzandi_attivi, self.view.tabella)
 
         for riga in range(2, len(self.view.row_labels)):
@@ -163,7 +173,10 @@ class ControllerScadenzario:
             self.view.btn_convalida.setVisible(False)
 
         elif self.modalita_corrente == "CORRENTE":
-            self.view.tabella.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+            if stato_json == "CONVALIDATO":
+                self.view.tabella.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+            else:
+                self.view.tabella.setEditTriggers(QTableWidget.EditTrigger.AllEditTriggers)
             self.view.btn_convalida.setVisible(stato_json != "CONVALIDATO")
 
         self.view.aggiorna_badge_modalita(self.modalita_corrente, stato_json)
@@ -222,7 +235,6 @@ class ControllerScadenzario:
                 col += 1
                 continue
 
-            # Inizio blocco feriale: trova fino a dove arriva lun-ven
             block_start = col
             while col < num_giorni:
                 d = datetime.date(self.anno_corrente, self.mese_corrente, col + 1)
@@ -244,12 +256,13 @@ class ControllerScadenzario:
                 for c in range(block_start, block_end)
             )
 
-            self.view.tabella.setSpan(RIGA_GV, block_start, 1, block_len)
+            if block_len > 1:
+                self.view.tabella.setSpan(RIGA_GV, block_start, 1, block_len)
             item = self.view.crea_item_cella(valore, False, "Giro Visite", is_oggi_block)
             self.view.tabella.setItem(RIGA_GV, block_start, item)
 
     def salva_modifica_cella(self, riga, colonna):
-        if riga == 0 or self.modalita_corrente in ["STORICO", "CORRENTE"]:
+        if riga == 0 or self.modalita_corrente == "STORICO":
             return
 
         if self.model.get_stato_mese(self.anno_corrente, self.mese_corrente) == "CONVALIDATO":
@@ -273,13 +286,11 @@ class ControllerScadenzario:
 
         self.model.set_valore_cella(data_str, nome_riga, nuovo_valore)
 
-        # Sincronizza lo specializzando con le sale operatorie
         if nome_riga in ("Sala Op. I", "Sala Op. II") and self.model_sale_op is not None:
             or1 = self.model.get_valore_cella(data_str, "Sala Op. I")
             or2 = self.model.get_valore_cella(data_str, "Sala Op. II")
             self.model_sale_op.set_specializzandi(data_str, or1, or2)
 
-        # Riapplica lo stile corretto alla cella appena modificata
         is_festivo = data_corrente.weekday() in (5, 6)
         is_oggi = (data_corrente == datetime.date.today())
         self.view.aggiorna_stile_cella(riga, colonna, nuovo_valore, nome_riga, is_festivo, is_oggi)
@@ -309,9 +320,13 @@ class ControllerScadenzario:
         selected_date = datetime.date(selected_anno, selected_mese, 1)
         real_date = datetime.date(self.real_anno, self.real_mese, 1)
 
-        if self.modalita_corrente == "PIANIFICAZIONE" and selected_date < real_date:
-            self.mese_corrente = self.real_mese
-            self.anno_corrente = self.real_anno
+        if self.modalita_corrente == "PIANIFICAZIONE" and selected_date <= real_date:
+            if self.real_mese == 12:
+                self.anno_corrente = self.real_anno + 1
+                self.mese_corrente = 1
+            else:
+                self.anno_corrente = self.real_anno
+                self.mese_corrente = self.real_mese + 1
 
         elif self.modalita_corrente == "STORICO":
             max_history_date = self.get_max_history_date()

@@ -1,4 +1,5 @@
 import os
+from src.app_paths import get_asset_dir
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QFrame, QHBoxLayout, QSizePolicy
 )
@@ -8,21 +9,22 @@ from PySide6.QtCore import Qt, Signal
 
 _VOCI_MENU = [
     ("Scadenzario Mensile",  "Turni e pianificazione mensile"),
-    ("Sale Operatorie",      "Programma operatorio"),
     ("Libretto Carriere",    "Anagrafica specializzandi"),
+    ("Sale Operatorie",      "Programma operatorio"),
     ("Lista Pazienti",       "Gestione lista pazienti"),
 ]
 
 _COLORI_SEZIONE = [
     "#6366f1",   # Scadenzario  — indigo
-    "#10b981",   # Sale Op.     — emerald
-    "#a855f7",   # Libretto     — violet
+    "#10b981",   # Libretto     — emerald
+    "#a855f7",   # Sale Op.     — violet
     "#38bdf8",   # Pazienti     — sky
 ]
 
+_IDX_SEPARATORE_GRUPPO = 1
+
 
 class Sidebar(QWidget):
-    # Segnale pubblico — compatibile con main.py (.connect / .disconnect)
     currentRowChanged = Signal(int)
 
     def __init__(self):
@@ -32,7 +34,7 @@ class Sidebar(QWidget):
         self.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
 
-        self._nav_frames = []   # QFrame per sezione, per aggiornare lo stile
+        self._nav_frames = []
 
         root = QVBoxLayout(self)
         root.setContentsMargins(0, 0, 0, 0)
@@ -42,13 +44,11 @@ class Sidebar(QWidget):
         root.addWidget(self._build_separator("SidebarSeparator"))
         root.addSpacing(4)
         root.addWidget(self._build_nav_label("NAVIGAZIONE"))
-        root.addWidget(self._build_nav(), stretch=1)   # ← prende tutto lo spazio libero
+        root.addWidget(self._build_nav(), stretch=1)
         root.addWidget(self._build_separator("SidebarSeparator"))
         root.addWidget(self._build_footer())
 
         self.load_styles()
-
-    # ─── Sezioni del layout ────────────────────────────────────────────────────
 
     def _build_header(self):
         header = QWidget()
@@ -58,7 +58,7 @@ class Sidebar(QWidget):
         hl.setSpacing(8)
 
         self.logo_label = QLabel()
-        logo_path = os.path.join("asset", "images", "logo_sigillo.svg")
+        logo_path = str(get_asset_dir() / "images" / "logo_sigillo.svg")
         logo_pixmap = QPixmap(logo_path)
         if not logo_pixmap.isNull():
             scaled = logo_pixmap.scaled(
@@ -90,6 +90,18 @@ class Sidebar(QWidget):
         sep.setFixedHeight(1)
         return sep
 
+    def _build_nav_group_separator(self):
+        """Separatore visivo interno alla navigazione tra i due blocchi."""
+        wrapper = QWidget()
+        hl = QHBoxLayout(wrapper)
+        hl.setContentsMargins(26, 0, 16, 0)
+        hl.setSpacing(0)
+        sep = QFrame()
+        sep.setObjectName("NavGroupSeparator")
+        sep.setFixedHeight(1)
+        hl.addWidget(sep)
+        return wrapper
+
     def _build_nav_label(self, testo):
         lbl = QLabel(testo)
         lbl.setObjectName("SidebarNavLabel")
@@ -104,13 +116,17 @@ class Sidebar(QWidget):
 
         vbox = QVBoxLayout(nav)
         vbox.setContentsMargins(0, 8, 0, 8)
-        vbox.setSpacing(6)          # ← spazio tra sezioni (non interno)
+        vbox.setSpacing(6)
 
         for i, (titolo, sottotitolo) in enumerate(_VOCI_MENU):
+            if i == _IDX_SEPARATORE_GRUPPO + 1:
+                vbox.addSpacing(12)
+                vbox.addWidget(self._build_nav_group_separator())
+                vbox.addSpacing(12)
             frame = self._crea_nav_frame(i, titolo, sottotitolo)
-            vbox.addWidget(frame)   # altezza naturale, no stretch
+            vbox.addWidget(frame)
 
-        vbox.addStretch()           # spazio libero va tutto in fondo
+        vbox.addStretch()
 
         return nav
 
@@ -125,15 +141,19 @@ class Sidebar(QWidget):
         lbl_unito.setObjectName("SidebarFooterText")
         lbl_unito.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        lbl_ver = QLabel("Demo Mockup")
-        lbl_ver.setObjectName("SidebarFooterVersion")
-        lbl_ver.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lbl_devs = QLabel("L. Chiabrando · G. Rosso")
+        lbl_devs.setObjectName("SidebarCreditsText")
+        lbl_devs.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        lbl_dept = QLabel("Dip. Informatica")
+        lbl_dept.setObjectName("SidebarCreditsDept")
+        lbl_dept.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         fl.addWidget(lbl_unito)
-        fl.addWidget(lbl_ver)
-        return footer
+        fl.addWidget(lbl_devs)
+        fl.addWidget(lbl_dept)
 
-    # ─── Factory item di navigazione ──────────────────────────────────────────
+        return footer
 
     def _crea_nav_frame(self, idx, titolo, sottotitolo):
         colore = _COLORI_SEZIONE[idx % len(_COLORI_SEZIONE)]
@@ -166,13 +186,11 @@ class Sidebar(QWidget):
         txt.addWidget(lbl_sub)
         row.addLayout(txt)
 
-        # Stile iniziale: barra sinistra dimmer con il colore della sezione
         r = int(colore[1:3], 16)
         g = int(colore[3:5], 16)
         b = int(colore[5:7], 16)
         frame.setStyleSheet(self._stile_non_selezionato(colore, r, g, b))
 
-        # Click → selezione
         frame.mousePressEvent = lambda _ev, i=idx: self._seleziona(i)
 
         self._nav_frames.append(frame)
@@ -204,8 +222,6 @@ class Sidebar(QWidget):
             f"stop:0.012 rgba({r},{g},{b},55),stop:1.000 rgba({r},{g},{b},55));}}"
         )
 
-    # ─── Gestione selezione ───────────────────────────────────────────────────
-
     def _seleziona(self, idx):
         """Aggiorna visual state di tutti gli item e notifica il cambio pagina."""
         for i, frame in enumerate(self._nav_frames):
@@ -234,15 +250,11 @@ class Sidebar(QWidget):
 
         self.currentRowChanged.emit(idx)
 
-    # ─── Interfaccia pubblica ─────────────────────────────────────────────────
-
     def setCurrentRow(self, row):
         self._seleziona(row)
 
-    # ─── Stili ────────────────────────────────────────────────────────────────
-
     def load_styles(self):
-        style_path = os.path.join("asset", "styles", "sidebar.qss")
+        style_path = str(get_asset_dir() / "styles" / "sidebar.qss")
         if os.path.exists(style_path):
             with open(style_path, "r", encoding="utf-8") as f:
                 self.setStyleSheet(self.styleSheet() + "\n" + f.read())

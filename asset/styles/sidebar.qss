@@ -36,6 +36,18 @@ QFrame#SidebarSeparator {
 }
 
 
+QFrame#NavGroupSeparator {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+        stop:0.00 transparent,
+        stop:0.08 #64748b,
+        stop:0.92 #64748b,
+        stop:1.00 transparent);
+    border: none;
+    min-height: 2px;
+    max-height: 2px;
+}
+
+
 /* =========================================
    ETICHETTA SEZIONE NAVIGAZIONE
 ========================================= */
@@ -125,5 +137,20 @@ QLabel#SidebarFooterText {
 QLabel#SidebarFooterVersion {
     font-family: "Segoe UI";
     font-size: 11px;
+    color: #334155;
+}
+
+/* =========================================
+   CREDITI
+========================================= */
+QLabel#SidebarCreditsText {
+    font-family: "Segoe UI";
+    font-size: 11px;
+    color: #475569;
+}
+
+QLabel#SidebarCreditsDept {
+    font-family: "Segoe UI";
+    font-size: 10px;
     color: #334155;
 }

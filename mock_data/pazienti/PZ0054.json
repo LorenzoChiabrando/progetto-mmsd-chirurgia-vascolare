@@ -1,0 +1,15 @@
+{
+    "id": "PZ0054",
+    "nome": "Silvia",
+    "cognome": "Bruno",
+    "diagnosi": "Aneurisma dell'arteria mesenterica superiore",
+    "codice_intervento": "38.59",
+    "descrizione_intervento": "Escissione e ricostruzione con interposizione",
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Alta",
+    "urgenza": "Alta",
+    "stato": "In Attesa",
+    "data_inserimento": "26/04/2026",
+    "note": "",
+    "durata_intervento": 120
+}

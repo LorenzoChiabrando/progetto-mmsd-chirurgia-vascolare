@@ -1,0 +1,15 @@
+{
+    "id": "PZ0046",
+    "nome": "Valentina",
+    "cognome": "Rinaldi",
+    "diagnosi": "Occlusione arteria iliaca esterna sinistra",
+    "codice_intervento": "39.57",
+    "descrizione_intervento": "Stent iliaco con postdilatazione",
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "In Attesa",
+    "data_inserimento": "26/04/2026",
+    "note": "",
+    "durata_intervento": 90
+}

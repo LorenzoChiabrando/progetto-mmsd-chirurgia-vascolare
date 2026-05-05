@@ -1,0 +1,15 @@
+{
+    "id": "PZ0051",
+    "nome": "Roberto",
+    "cognome": "Silvestri",
+    "diagnosi": "Fistola arterovenosa dialisi con ipertensione",
+    "codice_intervento": "39.42",
+    "descrizione_intervento": "Bendaggio FAV + angioplastica",
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "In Attesa",
+    "data_inserimento": "26/04/2026",
+    "note": "",
+    "durata_intervento": 90
+}

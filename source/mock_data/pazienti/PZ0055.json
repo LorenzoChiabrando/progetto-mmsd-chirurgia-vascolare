@@ -1,0 +1,27 @@
+{
+    "id": "PZ0055",
+    "nome": "Pippo",
+    "cognome": "VerdeScuro",
+    "diagnosi": "diagnosi be\u00f2la",
+    "interventi": [
+        {
+            "codice": "39.14",
+            "descrizione": "prova1",
+            "durata": 90
+        },
+        {
+            "codice": "39.15",
+            "descrizione": "prova2",
+            "durata": 90
+        }
+    ],
+    "codice_intervento": "39.14",
+    "descrizione_intervento": "prova1",
+    "durata_intervento": 180,
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Alta",
+    "urgenza": "Alta",
+    "stato": "In Attesa",
+    "data_inserimento": "28/04/2026",
+    "note": "test"
+}

@@ -1,0 +1,15 @@
+{
+    "id": "PZ0025",
+    "nome": "Luigi",
+    "cognome": "Palumbo",
+    "diagnosi": "Stenosi arteria renale destra ipertensiva",
+    "codice_intervento": "39.01",
+    "descrizione_intervento": "Angioplastica transluminale arteria renale",
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "Completato",
+    "data_inserimento": "26/04/2026",
+    "note": "",
+    "durata_intervento": 90
+}

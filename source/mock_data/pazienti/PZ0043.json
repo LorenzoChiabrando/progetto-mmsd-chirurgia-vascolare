@@ -1,0 +1,15 @@
+{
+    "id": "PZ0043",
+    "nome": "Claudio",
+    "cognome": "Ferretti",
+    "diagnosi": "Aneurisma aorta addominale 7 cm",
+    "codice_intervento": "39.57",
+    "descrizione_intervento": "Endoprotesi aortica EVAR biforcata",
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Alta",
+    "urgenza": "Alta",
+    "stato": "In Attesa",
+    "data_inserimento": "26/04/2026",
+    "note": "",
+    "durata_intervento": 120
+}

@@ -1,0 +1,15 @@
+{
+    "id": "PZ0012",
+    "nome": "Sara",
+    "cognome": "Cattaneo",
+    "diagnosi": "Malformazione arterovenosa coscia sinistra",
+    "codice_intervento": "39.53",
+    "descrizione_intervento": "Embolizzazione endovascolare",
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "Completato",
+    "data_inserimento": "12/04/2026",
+    "note": "",
+    "durata_intervento": 90
+}

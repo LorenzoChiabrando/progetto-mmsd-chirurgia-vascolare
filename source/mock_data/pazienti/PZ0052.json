@@ -1,0 +1,15 @@
+{
+    "id": "PZ0052",
+    "nome": "Monica",
+    "cognome": "Ferrari",
+    "diagnosi": "Coartazione aortica residua post-intervento",
+    "codice_intervento": "38.45",
+    "descrizione_intervento": "Redilatazione endovascolare con stent",
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Alta",
+    "urgenza": "Media",
+    "stato": "In Attesa",
+    "data_inserimento": "26/04/2026",
+    "note": "",
+    "durata_intervento": 90
+}

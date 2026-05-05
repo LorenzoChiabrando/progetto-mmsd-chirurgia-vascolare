@@ -1,0 +1,15 @@
+{
+    "id": "PZ0030",
+    "nome": "Giulia",
+    "cognome": "Bianco",
+    "diagnosi": "Varici bilaterali stadio C3 CEAP",
+    "codice_intervento": "38.59",
+    "descrizione_intervento": "Safenectomia bilaterale con laser",
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Bassa",
+    "urgenza": "Bassa",
+    "stato": "Completato",
+    "data_inserimento": "26/04/2026",
+    "note": "",
+    "durata_intervento": 60
+}

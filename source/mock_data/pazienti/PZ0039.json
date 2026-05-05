@@ -1,0 +1,15 @@
+{
+    "id": "PZ0039",
+    "nome": "Renzo",
+    "cognome": "De Filippo",
+    "diagnosi": "Fistola AV nativa insufficiente per dialisi",
+    "codice_intervento": "39.42",
+    "descrizione_intervento": "Revisione FAV con patch venoso",
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Bassa",
+    "urgenza": "Media",
+    "stato": "Completato",
+    "data_inserimento": "26/04/2026",
+    "note": "",
+    "durata_intervento": 90
+}

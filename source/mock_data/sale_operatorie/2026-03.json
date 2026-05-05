@@ -1,0 +1,52 @@
+{
+    "metadata": {
+        "stato": "BOZZA",
+        "settimane": {
+            "2026-03-30": "CONVALIDATO"
+        }
+    },
+    "turni": {
+        "2026-03-30": {
+            "specializzandi": { "OR I": "JAZZ B.", "OR II": "Alga S." },
+            "8.00-10.00": {
+                "nome_paziente": "Rizzo Stefano", "id_paziente": "PZ0007",
+                "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
+                "intervento": "Crossectomia + stripping safena grande", "codice_intervento": "38.59",
+                "chirurgo": "Dr. Mauro M.", "complessita": "Bassa", "tipo_chirurgia": "Aperta"
+            },
+            "10.00-12.00": {
+                "nome_paziente": "Cattaneo Sara", "id_paziente": "PZ0012",
+                "diagnosi": "Malformazione arterovenosa coscia sinistra",
+                "intervento": "Embolizzazione endovascolare", "codice_intervento": "39.53",
+                "chirurgo": "Dr. Ferrini A.", "complessita": "Media", "tipo_chirurgia": "Endovascolare"
+            }
+        },
+        "2026-03-31": {
+            "specializzandi": { "OR I": "Gasparri A.", "OR II": "Massima A." },
+            "8.00-10.00": {
+                "nome_paziente": "Ferraro Giovanna", "id_paziente": "PZ0014",
+                "diagnosi": "Stenosi arteria renale bilaterale",
+                "intervento": "Angioplastica + stent renale bilaterale", "codice_intervento": "39.50",
+                "chirurgo": "Dr. Bianchi L.", "complessita": "Alta", "tipo_chirurgia": "Endovascolare"
+            },
+            "10.00-12.00": {
+                "nome_paziente": "Mancini Paolo", "id_paziente": "PZ0013",
+                "diagnosi": "Piede diabetico - lesione neuro-ischemica",
+                "intervento": "Amputazione transmetatarsale", "codice_intervento": "84.12",
+                "chirurgo": "Dr. Giordano S.", "complessita": "Media", "tipo_chirurgia": "Aperta"
+            },
+            "14.00-16.00": {
+                "nome_paziente": "Conti Roberto", "id_paziente": "PZ0005",
+                "diagnosi": "Arteriopatia obliterante arti inferiori IV stadio",
+                "intervento": "Bypass femoro-popliteo con vena", "codice_intervento": "39.29",
+                "chirurgo": "Prof. Rinaldi F.", "complessita": "Media", "tipo_chirurgia": "Aperta"
+            },
+            "16.00-18.00": {
+                "nome_paziente": "Barbieri Elena", "id_paziente": "PZ0010",
+                "diagnosi": "Insufficienza venosa cronica - varici recidive",
+                "intervento": "Flebectomia selettiva + ablazione", "codice_intervento": "39.95",
+                "chirurgo": "Dr. Mauro M.", "complessita": "Bassa", "tipo_chirurgia": "Endovascolare"
+            }
+        }
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "id": "PZ0050",
+    "nome": "Sara",
+    "cognome": "Coppola",
+    "diagnosi": "Stenosi carotidea bilaterale sintomatica 75%",
+    "codice_intervento": "38.12",
+    "descrizione_intervento": "Endoarterectomia carotidea sinistra con patch",
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Alta",
+    "urgenza": "Alta",
+    "stato": "In Attesa",
+    "data_inserimento": "26/04/2026",
+    "note": "",
+    "durata_intervento": 120
+}

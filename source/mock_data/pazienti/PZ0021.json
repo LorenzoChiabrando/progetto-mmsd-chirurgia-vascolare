@@ -1,0 +1,15 @@
+{
+    "id": "PZ0021",
+    "nome": "Massimo",
+    "cognome": "Serra",
+    "diagnosi": "Trombosi arteria poplitea sinistra",
+    "codice_intervento": "38.06",
+    "descrizione_intervento": "Trombectomia poplitea con patch",
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Media",
+    "urgenza": "Alta",
+    "stato": "Completato",
+    "data_inserimento": "26/04/2026",
+    "note": "",
+    "durata_intervento": 120
+}

@@ -1,0 +1,15 @@
+{
+    "id": "PZ0026",
+    "nome": "Rosa",
+    "cognome": "Testa",
+    "diagnosi": "Trombosi venosa profonda iliaco-femorale",
+    "codice_intervento": "38.59",
+    "descrizione_intervento": "Trombolisi farmacologica + filtro cavale",
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Alta",
+    "urgenza": "Alta",
+    "stato": "Completato",
+    "data_inserimento": "26/04/2026",
+    "note": "",
+    "durata_intervento": 120
+}

@@ -6,6 +6,13 @@ Applicazione desktop per la gestione dei medici specializzandi in Chirurgia Vasc
 
 ## Quick start (Linux x86-64)
 
+### Step 0 — Clone the repository
+
+```bash
+git clone https://github.com/LorenzoChiabrando/progetto-mmsd-chirurgia-vascolare.git
+cd progetto-mmsd-chirurgia-vascolare
+```
+
 ### Option 1 — Executable (recommended, no dependencies required)
 
 If needed, grant execution permission first:

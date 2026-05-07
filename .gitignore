@@ -2,3 +2,5 @@ source/venv/
 source/**/__pycache__/
 source/**/*.pyc
 source/**/*.pyo
+source/build/
+.claude/

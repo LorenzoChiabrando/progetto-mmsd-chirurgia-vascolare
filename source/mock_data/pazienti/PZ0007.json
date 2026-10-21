@@ -2,14 +2,29 @@
     "id": "PZ0007",
     "nome": "Stefano",
     "cognome": "Rizzo",
-    "diagnosi": "Varici arti inferiori bilaterali - reflusso safena grande",
-    "codice_intervento": "38.59",
-    "descrizione_intervento": "Crossectomia + stripping safena grande",
+    "codice_diagnosi": "D007",
+    "descrizione_diagnosi": "Diagnosi sintetica 07",
+    "diagnosi": "[D007] Diagnosi sintetica 07",
+    "interventi": [
+        {
+            "codice": "DEMO-007",
+            "descrizione": "Procedura sintetica 07",
+            "durata": 120
+        }
+    ],
+    "codice_intervento": "DEMO-007",
+    "descrizione_intervento": "Procedura sintetica 07",
+    "durata_intervento": 120,
     "tipo_chirurgia": "Aperta",
-    "complessita": "Bassa",
-    "urgenza": "Bassa",
-    "stato": "Completato",
-    "data_inserimento": "01/04/2026",
-    "note": "",
-    "durata_intervento": 60
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "In Attesa",
+    "data_inserimento": "14/09/2026",
+    "note": "Dati inventati per la demo.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
 }

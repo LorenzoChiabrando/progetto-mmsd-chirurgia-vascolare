@@ -2,14 +2,29 @@
     "id": "PZ0006",
     "nome": "Carla",
     "cognome": "Esposito",
-    "diagnosi": "Occlusione arteria femorale superficiale",
-    "codice_intervento": "39.50",
-    "descrizione_intervento": "Angioplastica percutanea + stent",
+    "codice_diagnosi": "D006",
+    "descrizione_diagnosi": "Diagnosi sintetica 06",
+    "diagnosi": "[D006] Diagnosi sintetica 06",
+    "interventi": [
+        {
+            "codice": "DEMO-006",
+            "descrizione": "Procedura sintetica 06",
+            "durata": 90
+        }
+    ],
+    "codice_intervento": "DEMO-006",
+    "descrizione_intervento": "Procedura sintetica 06",
+    "durata_intervento": 90,
     "tipo_chirurgia": "Endovascolare",
-    "complessita": "Media",
-    "urgenza": "Media",
-    "stato": "Completato",
-    "data_inserimento": "08/04/2026",
-    "note": "",
-    "durata_intervento": 90
+    "complessita": "Alta",
+    "urgenza": "Alta",
+    "stato": "In Attesa",
+    "data_inserimento": "15/09/2026",
+    "note": "Dati inventati per la demo.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 30
+    }
 }

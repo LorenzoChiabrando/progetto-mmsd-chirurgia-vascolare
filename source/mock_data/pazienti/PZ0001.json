@@ -1,0 +1,30 @@
+{
+    "id": "PZ0001",
+    "nome": "Pippo",
+    "cognome": "VerdeScuro",
+    "codice_diagnosi": "D001",
+    "descrizione_diagnosi": "Diagnosi sintetica 01",
+    "diagnosi": "[D001] Diagnosi sintetica 01",
+    "interventi": [
+        {
+            "codice": "DEMO-001",
+            "descrizione": "Procedura sintetica 01",
+            "durata": 60
+        }
+    ],
+    "codice_intervento": "DEMO-001",
+    "descrizione_intervento": "Procedura sintetica 01",
+    "durata_intervento": 60,
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "Completato",
+    "data_inserimento": "20/09/2026",
+    "note": "Dati inventati per la demo.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
+}

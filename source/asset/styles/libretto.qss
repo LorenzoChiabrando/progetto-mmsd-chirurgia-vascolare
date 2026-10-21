@@ -458,113 +458,13 @@ QScrollBar::add-line:vertical,
 QScrollBar::sub-line:vertical { border: none; background: none; height: 0; }
 
 /* =========================================
-   DIALOG NUOVO SPECIALIZZANDO
+   TESTO DI AIUTO NELLA PAGINA GIORNO
+   (la cornice dei dialog è in dialog.qss)
 ========================================= */
-DialogNuovoSpecializzando {
-    background-color: #f8fafc;
-}
-
-QLabel#TitoloDialog {
-    font-family: "Segoe UI";
-    font-size: 22px;
-    font-weight: bold;
-    color: #1e293b;
-}
-
 QLabel#SottoTitoloDialog {
     font-size: 13px;
     color: #64748b;
     margin-top: 4px;
-}
-
-QFrame#SeparatoreDialog {
-    background-color: #e2e8f0;
-    border: none;
-}
-
-QLabel#LblCampo {
-    font-size: 12px;
-    font-weight: bold;
-    color: #64748b;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-QLineEdit#InputDialog {
-    background-color: #ffffff;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 0 12px;
-    font-size: 15px;
-    color: #1e293b;
-}
-QLineEdit#InputDialog:focus {
-    border: 1.5px solid #4338ca;
-    background-color: #fafafe;
-}
-
-QComboBox#ComboDialog {
-    combobox-popup: 0;
-    background-color: #ffffff;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 0 12px;
-    font-size: 15px;
-    color: #1e293b;
-}
-QComboBox#ComboDialog:focus {
-    border: 1.5px solid #4338ca;
-}
-QComboBox#ComboDialog::drop-down {
-    border: none;
-    width: 26px;
-}
-QComboBox#ComboDialog::down-arrow {
-    image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSI+PC9wb2x5bGluZT48L3N2Zz4=);
-}
-
-QComboBox#ComboDialog QAbstractItemView {
-    border: 1px solid #c7d2fe;
-    border-radius: 8px;
-    background-color: #ffffff;
-    outline: 0;
-    padding: 4px;
-}
-QComboBox#ComboDialog QAbstractItemView::item {
-    min-height: 36px;
-    border-radius: 4px;
-    color: #1e293b;
-    padding-left: 8px;
-}
-QComboBox#ComboDialog QAbstractItemView::item:hover,
-QComboBox#ComboDialog QAbstractItemView::item:selected {
-    background-color: #ede9fe;
-    color: #3730a3;
-}
-
-QPushButton#BtnAnnullaDialog {
-    background-color: #f1f5f9;
-    color: #64748b;
-    font-weight: bold;
-    border-radius: 8px;
-    font-size: 15px;
-    border: 1px solid #e2e8f0;
-}
-QPushButton#BtnAnnullaDialog:hover {
-    background-color: #e2e8f0;
-    color: #334155;
-}
-
-QPushButton#BtnSalvaDialog {
-    background-color: #4338ca;
-    color: white;
-    font-weight: bold;
-    border-radius: 8px;
-    font-size: 15px;
-    border: none;
-}
-QPushButton#BtnSalvaDialog:hover {
-    background-color: #3730a3;
 }
 
 /* =========================================

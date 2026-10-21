@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 from datetime import date as _date, timedelta as _td
 
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QListWidgetItem, QMessageBox
+from PySide6.QtWidgets import QListWidgetItem
+from src.calendar_versions import CalendarVersion
+from src.views.components import messages
 from src.views.view_nuovo_specializzando import DialogNuovoSpecializzando
 
 _SLOT_TO_ORE = {
@@ -76,7 +80,6 @@ class ControllerLibretto:
         self.view.imposta_dettaglio(spec)
         self._categoria_corrente = "completate"
         self._aggiorna_cache(spec)
-        self._aggiorna_score()
         self._aggiorna_tab_ui()
         self._popola_lista_attivita("completate")
         self.view.stacked_widget.setCurrentIndex(1)
@@ -116,7 +119,6 @@ class ControllerLibretto:
 
         for att in self.model.get_attivita(spec_id):
             slot  = att.get("slot", "")
-            # Preferisce ora_inizio/ora_fine diretti (nuovo formato); fallback su mappa legacy
             ora_i = att.get("ora_inizio") or _SLOT_TO_ORE.get(slot, ("08:00", "18:00"))[0]
             ora_f = att.get("ora_fine")   or _SLOT_TO_ORE.get(slot, ("08:00", "18:00"))[1]
             ruolo = att.get("ruolo", "")
@@ -143,8 +145,8 @@ class ControllerLibretto:
 
     def _get_pianificate(self, spec: dict) -> list:
         """
-        Pianificate = TUTTE le righe scadenzario (passate e future) non ancora confermate.
-        Un'attività è confermata quando appare in attivita_extra o attivita array (OR).
+        Legge l'Effettivo dove esiste, altrimenti il Previsto, senza confermare attività.
+        Le attività non operatorie mantengono la conferma manuale nel libretto.
         """
         if not self.model_scad:
             return []
@@ -161,9 +163,49 @@ class ControllerLibretto:
         }
 
         result = []
+        scad_previsto = self.model_scad.for_version(CalendarVersion.PREVISTO)
+        scad_effettivo = self.model_scad.for_version(CalendarVersion.EFFETTIVO)
+        sale_previste = (
+            self.model_sale_op.for_version(CalendarVersion.PREVISTO)
+            if self.model_sale_op else None
+        )
+        sale_effettive = (
+            self.model_sale_op.for_version(CalendarVersion.EFFETTIVO)
+            if self.model_sale_op else None
+        )
+        mesi_sale_effettive = {
+            (anno, mese): sale_effettive.load_mese(anno, mese)
+            for anno, mese in sale_effettive.get_mesi_disponibili()
+        } if sale_effettive else {}
+        settimane_effettive = {
+            lunedi
+            for (anno, mese), dati_mese in mesi_sale_effettive.items()
+            for lunedi in dati_mese.get("metadata", {}).get("settimane", {})
+            if lunedi.startswith(f"{anno:04d}-{mese:02d}-")
+        }
+        mesi_sale_previste = {}
+        mesi = set(scad_previsto.get_mesi_disponibili()) | set(
+            scad_effettivo.get_mesi_disponibili()
+        )
+        mesi.update(mesi_sale_effettive)
 
-        for anno, mese in self.model_scad.get_mesi_disponibili():
-            dati = self.model_scad.load_mese(anno, mese)
+        for anno, mese in sorted(mesi):
+            scad = scad_effettivo if scad_effettivo.has_mese(anno, mese) else scad_previsto
+            dati = scad.load_mese(anno, mese)
+            turni = dict(dati.get("turni", {}))
+            giorni_effettivi = mesi_sale_effettive.get((anno, mese), {}).get("turni", {})
+            # Le correzioni nelle Sale effettive prevalgono sul turno originario.
+            for data_str, giorno_sale in giorni_effettivi.items():
+                giorno = _date.fromisoformat(data_str)
+                lunedi = giorno - _td(days=giorno.weekday())
+                if lunedi.isoformat() not in settimane_effettive:
+                    continue
+                assegnazioni = giorno_sale.get("specializzandi", {})
+                turni[data_str] = {
+                    **turni.get(data_str, {}),
+                    "Sala Op. I": assegnazioni.get("OR I", ""),
+                    "Sala Op. II": assegnazioni.get("OR II", ""),
+                }
 
             for lun_str, assegnato in dati.get("giro_visite", {}).items():
                 if not self._nome_match(assegnato, nome_form):
@@ -172,9 +214,11 @@ class ControllerLibretto:
                     lun_date = _date.fromisoformat(lun_str)
                 except ValueError:
                     continue
-                # Il giro visite copre tutta la settimana lun–ven
                 for offset in range(5):
-                    data_str = (lun_date + _td(days=offset)).isoformat()
+                    giorno = lun_date + _td(days=offset)
+                    if (giorno.year, giorno.month) != (anno, mese):
+                        continue
+                    data_str = giorno.isoformat()
                     if ("Reparto", "Giro Visite") in {(k[1], k[2]) for k in confirmed_keys if k[0] == data_str}:
                         continue
                     result.append({
@@ -189,11 +233,12 @@ class ControllerLibretto:
                         "note":       "",
                     })
 
-            for data_str, turno in dati.get("turni", {}).items():
+            for data_str, turno in turni.items():
                 try:
-                    _date.fromisoformat(data_str)
+                    giorno = _date.fromisoformat(data_str)
                 except ValueError:
                     continue
+                lunedi = giorno - _td(days=giorno.weekday())
                 for row_name, valore in turno.items():
                     if row_name == "Tipo Guardia":
                         continue
@@ -201,7 +246,6 @@ class ControllerLibretto:
                         continue
                     if not self._nome_match(valore, nome_form):
                         continue
-                    # OR rows confirmed via attivita array → skip
                     if row_name in ("Sala Op. I", "Sala Op. II") and data_str in date_con_or:
                         continue
                     sede  = _ROW_SEDE.get(row_name, row_name)
@@ -219,15 +263,24 @@ class ControllerLibretto:
                         "ruolo":      row_name,
                         "note":       "",
                     }
-                    if row_name in ("Sala Op. I", "Sala Op. II") and self.model_sale_op:
+                    if row_name in ("Sala Op. I", "Sala Op. II"):
+                        entry["or_pianificata"] = True
                         slots = []
-                        for op in self.model_sale_op.get_operazioni(data_str):
+                        if lunedi.isoformat() in settimane_effettive:
+                            mese_sale = mesi_sale_effettive.get((anno, mese), {})
+                        elif sale_previste:
+                            if (anno, mese) not in mesi_sale_previste:
+                                mesi_sale_previste[anno, mese] = sale_previste.load_mese(anno, mese)
+                            mese_sale = mesi_sale_previste[anno, mese]
+                        else:
+                            mese_sale = {}
+                        operations = mese_sale.get("turni", {}).get(data_str, {}).get("operazioni", [])
+                        for op in operations:
                             if op.get("nome_paziente") or op.get("intervento"):
                                 slots.append({
                                     "label": f"{op.get('ora_inizio','?')}–{op.get('ora_fine','?')}",
                                     **op
                                 })
-                        entry["or_pianificata"] = True
                         entry["slots"] = slots
                     result.append(entry)
 
@@ -284,12 +337,6 @@ class ControllerLibretto:
         self.view.lbl_n_attivita.setText(f"{n} {'giorni' if n != 1 else 'giorno'}")
         lista.blockSignals(False)
 
-    def _aggiorna_score(self):
-        n_int, score = self.model.calcola_training_score(self._spec_corrente["id"])
-        self.view.val_score.setText(
-            f"{score:.0f} pt  ·  {n_int} int." if n_int > 0 else "–"
-        )
-
     def _on_att_cliccata(self, item: QListWidgetItem):
         data = item.data(Qt.ItemDataRole.UserRole)
         if data is None:
@@ -305,18 +352,17 @@ class ControllerLibretto:
         meta = self.model.get_meta_giorno(spec_id, data_str)
 
         def _on_save(att_data):
+            if (att_data.get("sede") == "Sala Operatoria"
+                    or att_data.get("ruolo") in ("Sala Op. I", "Sala Op. II", "OR I", "OR II")):
+                return
             self.model.salva_attivita_extra(spec_id, att_data)
             self._aggiorna_cache(self._spec_corrente)
-            self._popola_lista_attivita(self._categoria_corrente)
-
-        def _on_save_meta(meta_data):
-            self.model.salva_meta_giorno(spec_id, data_str, meta_data)
             self._popola_lista_attivita(self._categoria_corrente)
 
         self.view.popola_dettaglio_giorno(
             data_str, attivita, extra_dict,
             on_save=_on_save,
-            meta=meta, on_save_meta=_on_save_meta,
+            meta=meta,
         )
         self.view.stacked_widget.setCurrentIndex(2)
 
@@ -407,14 +453,15 @@ class ControllerLibretto:
             f"{self._spec_corrente.get('cognome','').upper()} "
             f"{self._spec_corrente.get('nome','')}"
         )
-        risposta = QMessageBox.question(
+        if messages.ask_confirmation(
             self.view,
             "Conferma Eliminazione",
             f"Vuoi eliminare definitivamente il libretto di {nome_display}?\n\n"
             "Questa operazione non è reversibile.",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-        )
-        if risposta == QMessageBox.StandardButton.Yes:
+            section="libretto",
+            confirm_text="Elimina",
+            destructive=True,
+        ):
             self.model.elimina_specializzando(self._spec_corrente["id"])
             self._spec_corrente = None
             self.aggiorna_lista()

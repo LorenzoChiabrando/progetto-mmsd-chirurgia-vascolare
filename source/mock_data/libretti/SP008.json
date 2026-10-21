@@ -1,8 +1,12 @@
 {
     "id": "SP008",
-    "matricola": "SP193913",
     "nome": "Lorenzo",
     "cognome": "Parco",
-    "livello": "Junior",
-    "stato": "Altra Sede"
+    "matricola": "DEMO-008",
+    "livello": "Senior",
+    "stato": "Molinette",
+    "dati_sintetici": true,
+    "attivita": [],
+    "attivita_extra": [],
+    "meta_giorni": {}
 }

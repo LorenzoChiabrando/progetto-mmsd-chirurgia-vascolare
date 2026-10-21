@@ -1,42 +1,39 @@
 import os
-import csv
-from src.app_paths import get_asset_dir
+from copy import deepcopy
 from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel, QFrame,
-    QPushButton, QTableWidget, QTableWidgetItem, QHeaderView,
-    QFileDialog, QMessageBox, QComboBox, QScroller,
+    QHBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView,
+    QFileDialog, QComboBox, QScroller, QLineEdit,
 )
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor
+from PySide6.QtGui import QColor, QIntValidator
 
-_CAMPI_CSV = [
-    "nome", "cognome", "diagnosi",
-    "codice_intervento", "descrizione_intervento",
-    "tipo_chirurgia", "complessita", "urgenza",
-]
+from src.importers.patient_csv import (
+    PatientCsvError, build_csv_interventions, read_patient_csv,
+)
+from src.views.components import messages
+from src.views.components.modal_dialog import ModalDialog
 
 _HEADERS = [
-    "Nome", "Cognome", "Diagnosi",
-    "Cod. ICD-9", "Desc. Intervento",
-    "Tipo Chir.", "Complessità", "Urgenza", "Durata",
+    "Nome", "Cognome", "Cod. diagnosi", "Descrizione diagnosi",
+    "Cod. ICD-9", "Desc. intervento", "Tipo chir.", "Complessità",
+    "Urgenza", "Durata [minuti]",
 ]
 
-_COL_NOME       = 0
-_COL_COGNOME    = 1
-_COL_DIAGNOSI   = 2
-_COL_CODICE     = 3
-_COL_INTERVENTO = 4
-_COL_TIPO       = 5
-_COL_CPX        = 6
-_COL_URG        = 7
-_COL_DUR        = 8
-
-_DURATE_OPTIONS = ["30 min", "45 min", "60 min", "90 min", "120 min", "150 min", "180 min"]
+_COL_NOME = 0
+_COL_COGNOME = 1
+_COL_DIAG_CODICE = 2
+_COL_DIAG_DESCRIZIONE = 3
+_COL_CODICE = 4
+_COL_INTERVENTO = 5
+_COL_TIPO = 6
+_COL_CPX = 7
+_COL_URG = 8
+_COL_DUR = 9
 
 _COMBO_DEFS = {
-    _COL_TIPO: (["Aperta", "Endovascolare"], "Aperta"),
-    _COL_CPX:  (["Alta", "Media", "Bassa"],  "Media"),
-    _COL_URG:  (["Alta", "Media", "Bassa"],  "Media"),
+    _COL_TIPO: (["Da classificare", "Aperta", "Endovascolare"], "Da classificare"),
+    _COL_CPX: (["Da classificare", "Alta", "Media", "Bassa"], "Da classificare"),
+    _COL_URG: (["Da classificare", "Alta", "Media", "Bassa"], "Da classificare"),
 }
 
 _BG_OK  = QColor("#ffffff")
@@ -45,55 +42,43 @@ _FG_ERR = QColor("#b91c1c")
 _FG_OK  = QColor("#1e293b")
 
 
-class DialogBulkPazienti(QDialog):
+_SOTTOTITOLO = (
+    "Seleziona un CSV dello Scadenziario o un'esportazione TrackCare. "
+    "Separatore, codifica e intestazioni vengono riconosciuti automaticamente. "
+    "La diagnosi viene divisa in <b>codice ICD-9-CM</b> e <b>descrizione</b>. "
+    "La durata opzionale può essere <i>90</i> oppure <i>60;90</i> per più interventi. "
+    "Usa il punto e virgola (<b>;</b>) per separare più codici, descrizioni e durate nello stesso paziente. "
+    "I dati non disponibili in TrackCare restano visibili come <b>Da classificare</b>."
+)
+
+
+class DialogBulkPazienti(ModalDialog):
     def __init__(self, parent=None):
-        super().__init__(parent)
         self._interventi_per_riga: dict[int, list] = {}
-        self.setWindowTitle("Importa Pazienti da CSV")
+        self._cell_changed_connected = False
+        self._import_context = ""
+        super().__init__(
+            "Importa Pazienti da CSV",
+            _SOTTOTITOLO,
+            section="pazienti",
+            extra_styles=("pazienti.qss",),
+            parent=parent,
+        )
         self.setMinimumWidth(1060)
         self.setMinimumHeight(560)
         self.setSizeGripEnabled(True)
         self.setup_ui()
-        self.load_styles()
 
     def setup_ui(self):
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(28, 28, 28, 28)
+        layout = self.body
         layout.setSpacing(14)
-
-        lbl_titolo = QLabel("Importa Pazienti da CSV")
-        lbl_titolo.setObjectName("TitoloDialog")
-        lbl_titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(lbl_titolo)
-
-        lbl_sub = QLabel(
-            "Seleziona un file CSV con intestazione. "
-            "Colonne richieste: "
-            "<b>nome, cognome, diagnosi, codice_intervento, "
-            "descrizione_intervento, tipo_chirurgia, complessita, urgenza</b>. "
-            "Colonna opzionale: <b>durata_intervento</b> (es. <i>90</i> oppure <i>60;90</i> per più interventi). "
-            "Usa il punto e virgola (<b>;</b>) per separare più codici, descrizioni e durate nello stesso paziente. "
-            "Le celle in rosso indicano valori mancanti o non validi: modificale direttamente prima di importare."
-        )
-        lbl_sub.setObjectName("SottoTitoloDialog")
-        lbl_sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        lbl_sub.setWordWrap(True)
-        layout.addWidget(lbl_sub)
-
-        sep = QFrame()
-        sep.setObjectName("SeparatoreDialog")
-        sep.setFixedHeight(1)
-        layout.addWidget(sep)
 
         file_row = QHBoxLayout()
         self.lbl_file = QLabel("Nessun file selezionato")
         self.lbl_file.setObjectName("LblFileCSV")
         self.lbl_file.setFixedHeight(32)
 
-        self.btn_sfoglia = QPushButton("Sfoglia…")
-        self.btn_sfoglia.setObjectName("BtnAnnullaDialog")
-        self.btn_sfoglia.setFixedSize(110, 36)
-        self.btn_sfoglia.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_sfoglia = self.make_button("Sfoglia…", "secondary")
         self.btn_sfoglia.clicked.connect(self._scegli_file)
 
         file_row.addWidget(self.lbl_file, stretch=1)
@@ -102,6 +87,7 @@ class DialogBulkPazienti(QDialog):
 
         self.lbl_stato = QLabel("")
         self.lbl_stato.setObjectName("LblStatoCSV")
+        self.lbl_stato.setWordWrap(True)
         layout.addWidget(self.lbl_stato)
 
         self.tabella = QTableWidget(0, len(_HEADERS))
@@ -114,7 +100,8 @@ class DialogBulkPazienti(QDialog):
         for col, w in [
             (_COL_NOME,       120),
             (_COL_COGNOME,    120),
-            (_COL_DIAGNOSI,   200),
+            (_COL_DIAG_CODICE, 100),
+            (_COL_DIAG_DESCRIZIONE, 220),
             (_COL_CODICE,      80),
             (_COL_INTERVENTO, 200),
             (_COL_TIPO,       110),
@@ -137,28 +124,17 @@ class DialogBulkPazienti(QDialog):
             self.tabella.viewport(), QScroller.ScrollerGestureType.LeftMouseButtonGesture
         )
 
-        # cellChanged si connette dopo il caricamento per evitare loop
+        # Evita cellChanged durante il caricamento iniziale.
         layout.addWidget(self.tabella)
 
-        btn_layout = QHBoxLayout()
-        btn_layout.setSpacing(12)
-
-        self.btn_annulla = QPushButton("Annulla")
-        self.btn_annulla.setObjectName("BtnAnnullaDialog")
-        self.btn_annulla.setFixedHeight(44)
-        self.btn_annulla.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_annulla = self.make_button("Annulla", "secondary")
         self.btn_annulla.clicked.connect(self.reject)
 
-        self.btn_importa = QPushButton("Importa Pazienti")
-        self.btn_importa.setObjectName("BtnSalvaDialog")
-        self.btn_importa.setFixedHeight(44)
-        self.btn_importa.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_importa = self.make_button("Importa Pazienti", "primary")
         self.btn_importa.setEnabled(False)
         self.btn_importa.clicked.connect(self._conferma_importazione)
 
-        btn_layout.addWidget(self.btn_annulla)
-        btn_layout.addWidget(self.btn_importa)
-        layout.addLayout(btn_layout)
+        self.add_footer(self.btn_annulla, self.btn_importa)
 
     def _scegli_file(self):
         path, _ = QFileDialog.getOpenFileName(
@@ -170,96 +146,80 @@ class DialogBulkPazienti(QDialog):
         self._carica_csv(path)
 
     def _carica_csv(self, path: str):
+        self.tabella.blockSignals(True)
+        self.tabella.setRowCount(0)
+        self._interventi_per_riga.clear()
+        self._import_context = ""
+        self.tabella.blockSignals(False)
+        self._aggiorna_stato()
         try:
-            with open(path, newline="", encoding="utf-8-sig") as f:
-                righe = list(csv.DictReader(f))
-        except Exception as e:
-            QMessageBox.critical(self, "Errore lettura file",
-                                 f"Impossibile leggere il file:\n{e}")
-            return
-
-        if not righe:
-            self.lbl_stato.setText("Il file è vuoto.")
-            return
-
-        intestazioni = {k.strip().lower() for k in righe[0].keys()}
-        mancanti = [c for c in _CAMPI_CSV if c not in intestazioni]
-        if mancanti:
-            QMessageBox.warning(
-                self, "Colonne mancanti",
-                "Il file CSV non contiene le colonne richieste:\n"
-                + ", ".join(mancanti)
+            result = read_patient_csv(path)
+        except PatientCsvError as error:
+            messages.show_message(
+                self, "Errore lettura file", str(error), section="pazienti", kind="error"
             )
+            return
+
+        if not result.rows:
+            self.lbl_stato.setText("Il file è vuoto.")
+            self.btn_importa.setEnabled(False)
             return
 
         self.tabella.blockSignals(True)
         self.tabella.setRowCount(0)
+        self._interventi_per_riga.clear()
+        self._import_context = f"Formato {result.source_format}."
+        if result.warnings:
+            self._import_context += " " + " ".join(result.warnings)
 
-        for riga in righe:
-            r = {k.strip().lower(): v.strip() for k, v in riga.items()}
-            self._inserisci_riga(r)
+        for row in result.rows:
+            self._inserisci_riga(row)
 
         self.tabella.blockSignals(False)
 
-        self.tabella.cellChanged.connect(self._on_cella_cambiata)
+        if not self._cell_changed_connected:
+            self.tabella.cellChanged.connect(self._on_cella_cambiata)
+            self._cell_changed_connected = True
 
         self._aggiorna_stato()
+        if result.warnings:
+            self.lbl_stato.setStyleSheet(
+                "font-size:13px; font-weight:bold; color:#b45309;"
+            )
 
     def _inserisci_riga(self, r: dict):
         row = self.tabella.rowCount()
         self.tabella.insertRow(row)
 
-        for col in [_COL_NOME, _COL_COGNOME, _COL_DIAGNOSI]:
-            item = QTableWidgetItem(r.get(_CAMPI_CSV[col], ""))
+        text_fields = {
+            _COL_NOME: "nome",
+            _COL_COGNOME: "cognome",
+            _COL_DIAG_CODICE: "codice_diagnosi",
+            _COL_DIAG_DESCRIZIONE: "descrizione_diagnosi",
+        }
+        for col, field in text_fields.items():
+            item = QTableWidgetItem(r.get(field, ""))
             item.setTextAlignment(
                 Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft
-                if col == _COL_DIAGNOSI else Qt.AlignmentFlag.AlignCenter
+                if col == _COL_DIAG_DESCRIZIONE else Qt.AlignmentFlag.AlignCenter
             )
             self.tabella.setItem(row, col, item)
 
-        def _split(val: str) -> list[str]:
-            return [v.strip() for v in val.split(";") if v.strip()]
-
-        codici   = _split(r.get("codice_intervento", ""))
-        descrizi = _split(r.get("descrizione_intervento", ""))
-        dur_raw  = r.get("durata_intervento", "")
-
-        if ";" in dur_raw:
-            durate = []
-            for d in dur_raw.split(";"):
-                try:
-                    durate.append(int(d.strip()))
-                except ValueError:
-                    durate.append(90)
+        cod_text = r.get("codice_intervento", "")
+        desc_text = r.get("descrizione_intervento", "")
+        duration_text = r.get("durata_intervento", "90")
+        try:
+            interventions = build_csv_interventions(cod_text, desc_text, duration_text)
+        except PatientCsvError:
+            pass
         else:
-            try:
-                d = int(dur_raw.split()[0]) if dur_raw.strip() else 90
-            except (ValueError, AttributeError):
-                d = 90
-            durate = [d]
-
-        n = max(len(codici), len(descrizi), 1)
-        while len(codici)   < n: codici.append("")
-        while len(descrizi) < n: descrizi.append("")
-        if len(durate) == 1 and n > 1:
-            per_op = max(durate[0] // n, 15)
-            durate = [per_op] * n
-        while len(durate) < n: durate.append(90)
-
-        interventi = [
-            {"codice": codici[i], "descrizione": descrizi[i], "durata": durate[i]}
-            for i in range(n)
-        ]
-        self._interventi_per_riga[row] = interventi
-        total_dur = sum(iv["durata"] for iv in interventi)
-
-        cod_text  = " ; ".join(c for c in codici)  if codici  else ""
-        desc_text = " ; ".join(d for d in descrizi) if descrizi else ""
+            self._interventi_per_riga[row] = interventions
+            duration_text = str(sum(item["durata"] for item in interventions))
 
         item_cod = QTableWidgetItem(cod_text)
         item_cod.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-        if len(codici) > 1:
-            item_cod.setToolTip(cod_text.replace(" ; ", "\n"))
+        if ";" in cod_text:
+            item_cod.setToolTip(cod_text.replace(";", "\n"))
         self.tabella.setItem(row, _COL_CODICE, item_cod)
 
         item_desc = QTableWidgetItem(desc_text)
@@ -270,7 +230,12 @@ class DialogBulkPazienti(QDialog):
 
         for col, (opzioni, default) in _COMBO_DEFS.items():
             combo = self._crea_combo(opzioni)
-            val = r.get(_CAMPI_CSV[col], "").capitalize()
+            field = {
+                _COL_TIPO: "tipo_chirurgia",
+                _COL_CPX: "complessita",
+                _COL_URG: "urgenza",
+            }[col]
+            val = r.get(field, "").strip()
             idx = combo.findText(val)
             combo.setCurrentIndex(idx if idx >= 0 else combo.findText(default))
             combo.currentIndexChanged.connect(
@@ -278,15 +243,13 @@ class DialogBulkPazienti(QDialog):
             )
             self.tabella.setCellWidget(row, col, combo)
 
-        combo_dur = self._crea_combo(_DURATE_OPTIONS)
-        dur_str = f"{total_dur} min"
-        idx_dur = combo_dur.findText(dur_str)
-        if idx_dur >= 0:
-            combo_dur.setCurrentIndex(idx_dur)
-        else:
-            combo_dur.insertItem(0, dur_str)
-            combo_dur.setCurrentIndex(0)
-        self.tabella.setCellWidget(row, _COL_DUR, combo_dur)
+        duration_input = QLineEdit(duration_text)
+        duration_input.setObjectName("InputDialog")
+        duration_input.setValidator(QIntValidator(1, 10080, duration_input))
+        duration_input.textChanged.connect(
+            lambda text, rw=row: self._on_durata_totale_cambiata(rw, text)
+        )
+        self.tabella.setCellWidget(row, _COL_DUR, duration_input)
 
         self._valida_riga(row)
 
@@ -296,7 +259,38 @@ class DialogBulkPazienti(QDialog):
         combo.addItems(opzioni)
         return combo
 
+    def _on_durata_totale_cambiata(self, row: int, text: str):
+        """Mantiene coerenti durata totale e dettagli multi-intervento."""
+        try:
+            interventions = build_csv_interventions(
+                self.tabella.item(row, _COL_CODICE).text(),
+                self.tabella.item(row, _COL_INTERVENTO).text(), text,
+            )
+        except PatientCsvError:
+            self._interventi_per_riga.pop(row, None)
+        else:
+            self._interventi_per_riga[row] = interventions
+        self._valida_riga(row)
+
+    def _riga_valida(self, row: int) -> bool:
+        for column in (_COL_NOME, _COL_COGNOME):
+            item = self.tabella.item(row, column)
+            if not item or not item.text().strip():
+                return False
+        duration = self.tabella.cellWidget(row, _COL_DUR)
+        if duration is None or not duration.hasAcceptableInput():
+            return False
+        try:
+            build_csv_interventions(
+                self.tabella.item(row, _COL_CODICE).text(),
+                self.tabella.item(row, _COL_INTERVENTO).text(), duration.text(),
+            )
+        except PatientCsvError:
+            return False
+        return True
+
     def _valida_riga(self, row: int):
+        previous_signals = self.tabella.blockSignals(True)
         errori_col = set()
 
         nome_item = self.tabella.item(row, _COL_NOME)
@@ -306,8 +300,14 @@ class DialogBulkPazienti(QDialog):
         if not (cogn_item and cogn_item.text().strip()):
             errori_col.add(_COL_COGNOME)
 
-        for col in [_COL_NOME, _COL_COGNOME, _COL_DIAGNOSI,
-                    _COL_CODICE, _COL_INTERVENTO]:
+        for col in [
+            _COL_NOME,
+            _COL_COGNOME,
+            _COL_DIAG_CODICE,
+            _COL_DIAG_DESCRIZIONE,
+            _COL_CODICE,
+            _COL_INTERVENTO,
+        ]:
             item = self.tabella.item(row, col)
             if not item:
                 continue
@@ -318,6 +318,10 @@ class DialogBulkPazienti(QDialog):
                 item.setBackground(_BG_OK)
                 item.setForeground(_FG_OK)
 
+        self.tabella.blockSignals(previous_signals)
+        duration = self.tabella.cellWidget(row, _COL_DUR)
+        if duration is not None:
+            duration.setStyleSheet("" if self._riga_valida(row) else "background: #fef2f2;")
         self._aggiorna_stato()
 
     def _on_cella_cambiata(self, row: int, col: int):
@@ -326,15 +330,7 @@ class DialogBulkPazienti(QDialog):
         self._valida_riga(row)
 
     def _conta_righe_valide(self) -> int:
-        valide = 0
-        for row in range(self.tabella.rowCount()):
-            nome_item = self.tabella.item(row, _COL_NOME)
-            cogn_item = self.tabella.item(row, _COL_COGNOME)
-            nome = nome_item.text().strip() if nome_item else ""
-            cogn = cogn_item.text().strip() if cogn_item else ""
-            if nome and cogn:
-                valide += 1
-        return valide
+        return sum(self._riga_valida(row) for row in range(self.tabella.rowCount()))
 
     def _aggiorna_stato(self):
         totale = self.tabella.rowCount()
@@ -348,21 +344,39 @@ class DialogBulkPazienti(QDialog):
 
         if n_err == 0:
             self.lbl_stato.setStyleSheet("font-size:13px; font-weight:bold; color:#15803d;")
-            self.lbl_stato.setText(f"{totale} righe pronte per l'importazione")
+            message = f"{totale} righe pronte per l'importazione"
         else:
             self.lbl_stato.setStyleSheet("font-size:13px; font-weight:bold; color:#b45309;")
-            self.lbl_stato.setText(
-                f"{valide} righe valide, {n_err} con nome o cognome mancante "
-                f"(in rosso). Le righe incomplete verranno saltate."
+            message = (
+                f"{valide} righe valide, {n_err} con nome, cognome o durata non validi "
+                "(in rosso). Correggi le righe prima di importare."
             )
 
-        self.btn_importa.setEnabled(valide > 0)
+        if self._import_context:
+            message += f"\n{self._import_context}"
+        self.lbl_stato.setText(message)
+
+        self.btn_importa.setEnabled(valide > 0 and n_err == 0)
 
     def _conferma_importazione(self):
+        if self._conta_righe_valide() != self.tabella.rowCount():
+            messages.show_message(
+                self,
+                "Dati incompleti",
+                "Correggi le righe evidenziate.",
+                section="pazienti",
+                kind="warning",
+            )
+            return
         pazienti = self.get_pazienti()
         if not pazienti:
-            QMessageBox.warning(self, "Nessun paziente valido",
-                                "Nessuna riga ha nome e cognome compilati.")
+            messages.show_message(
+                self,
+                "Nessun paziente valido",
+                "Nessuna riga ha nome e cognome compilati.",
+                section="pazienti",
+                kind="warning",
+            )
             return
         self.accept()
 
@@ -373,7 +387,7 @@ class DialogBulkPazienti(QDialog):
             cogn_item = self.tabella.item(row, _COL_COGNOME)
             nome    = nome_item.text().strip() if nome_item else ""
             cognome = cogn_item.text().strip() if cogn_item else ""
-            if not nome or not cognome:
+            if not self._riga_valida(row):
                 continue
 
             def _txt(col, _row=row):
@@ -384,34 +398,23 @@ class DialogBulkPazienti(QDialog):
                 w = self.tabella.cellWidget(_row, col)
                 return w.currentText() if w else ""
 
-            durata_str = _combo(_COL_DUR)
-            try:
-                durata = int(durata_str.split()[0])
-            except (ValueError, IndexError):
-                durata = 90
+            durata = int(self.tabella.cellWidget(row, _COL_DUR).text())
 
-            # Usa interventi salvati dal CSV; se rimossi (edit manuale) ricostruisce dalle celle
-            interventi = self._interventi_per_riga.get(row)
+            # Ricostruisce dalle celle se l'anteprima è stata modificata.
+            interventi = deepcopy(self._interventi_per_riga.get(row))
             if not interventi:
-                codice = _txt(_COL_CODICE)
-                desc   = _txt(_COL_INTERVENTO)
-                codici   = [c.strip() for c in codice.split(";") if c.strip()]
-                descrizi = [d.strip() for d in desc.split(";")   if d.strip()]
-                n = max(len(codici), len(descrizi), 1)
-                while len(codici)   < n: codici.append("")
-                while len(descrizi) < n: descrizi.append("")
-                dur_each = max(durata // n, 1)
-                interventi = [
-                    {"codice": codici[i], "descrizione": descrizi[i], "durata": dur_each}
-                    for i in range(n)
-                ]
+                interventi = build_csv_interventions(
+                    _txt(_COL_CODICE), _txt(_COL_INTERVENTO), str(durata)
+                )
 
             primo = interventi[0] if interventi else {}
 
             pazienti.append({
                 "nome":                   nome,
                 "cognome":                cognome,
-                "diagnosi":               _txt(_COL_DIAGNOSI),
+                "codice_diagnosi":        _txt(_COL_DIAG_CODICE),
+                "descrizione_diagnosi":   _txt(_COL_DIAG_DESCRIZIONE),
+                "diagnosi":               _txt(_COL_DIAG_DESCRIZIONE),
                 "codice_intervento":      primo.get("codice", ""),
                 "descrizione_intervento": primo.get("descrizione", ""),
                 "interventi":             interventi,
@@ -423,9 +426,3 @@ class DialogBulkPazienti(QDialog):
                 "note":                   "",
             })
         return pazienti
-
-    def load_styles(self):
-        style_path = str(get_asset_dir() / "styles" / "pazienti.qss")
-        if os.path.exists(style_path):
-            with open(style_path, "r", encoding="utf-8") as f:
-                self.setStyleSheet(f.read())

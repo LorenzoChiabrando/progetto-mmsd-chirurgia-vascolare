@@ -1,6 +1,6 @@
 import os
+from src.data_paths import PROJECT_ROOT
 from datetime import date as _date
-from src.app_paths import get_asset_dir
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame,
@@ -13,6 +13,7 @@ from PySide6.QtGui import QColor, QPalette
 
 _COLORI_LIVELLO = {
     "Junior": ("#dbeafe", "#1d4ed8"),
+    "Intermediate": ("#dcfce7", "#15803d"),
     "Senior": ("#ede9fe", "#5b21b6"),
 }
 _COLORI_STATO = {
@@ -27,13 +28,15 @@ _MESI_ITA = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
 _DISPLAY_RUOLO = {
     "OR I":  "Sala Op. I",
     "OR II": "Sala Op. II",
+    "Reparto I": "I Reperibilità",
+    "Reparto II": "II Reperibilità",
 }
 _TAG_COLORS = {
     "Sala Op. I":   ("#dbeafe", "#1d4ed8"),
     "Sala Op. II":  ("#dbeafe", "#2563eb"),
     "Giro Visite":  ("#d1fae5", "#065f46"),
-    "Reparto I":    ("#ffedd5", "#c2410c"),
-    "Reparto II":   ("#ffedd5", "#c2410c"),
+    "I Reperibilità":  ("#ffedd5", "#c2410c"),
+    "II Reperibilità": ("#ffedd5", "#c2410c"),
     "Reparto":      ("#ffedd5", "#c2410c"),
     "Day Hospital": ("#ede9fe", "#6d28d9"),
     "Day Surgery":  ("#fce7f3", "#9d174d"),
@@ -281,8 +284,7 @@ class ViewLibretto(QWidget):
         box_mat, self.val_matricola = self._crea_info_box("Matricola", "-")
         box_liv, self.val_livello   = self._crea_info_box("Livello", "-")
         box_sta, self.val_stato     = self._crea_info_box("Stato", "-")
-        box_sco, self.val_score     = self._crea_info_box("Training Score", "–", accent=True)
-        for box in [box_mat, box_liv, box_sta, box_sco]:
+        for box in [box_mat, box_liv, box_sta]:
             info_row.addWidget(box)
         cd.addLayout(info_row)
 
@@ -365,6 +367,13 @@ class ViewLibretto(QWidget):
         sep.setFixedHeight(1)
         cd.addWidget(sep)
 
+        lbl_meta_help = QLabel(
+            "Orario e sede riepilogano le attività della giornata."
+        )
+        lbl_meta_help.setObjectName("SottoTitoloDialog")
+        lbl_meta_help.setWordWrap(True)
+        cd.addWidget(lbl_meta_help)
+
         meta_frame = QFrame()
         meta_frame.setObjectName("MetaGiornoFrame")
         meta_frame.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
@@ -378,12 +387,14 @@ class ViewLibretto(QWidget):
         self.inp_meta_ora_inizio.setObjectName("InputMetaOra")
         self.inp_meta_ora_inizio.setFixedWidth(72)
         self.inp_meta_ora_inizio.setPlaceholderText("HH:MM")
+        self.inp_meta_ora_inizio.setReadOnly(True)
         lbl_ora_sep = QLabel("–")
         lbl_ora_sep.setObjectName("LblMetaDash")
         self.inp_meta_ora_fine = QLineEdit("18:00")
         self.inp_meta_ora_fine.setObjectName("InputMetaOra")
         self.inp_meta_ora_fine.setFixedWidth(72)
         self.inp_meta_ora_fine.setPlaceholderText("HH:MM")
+        self.inp_meta_ora_fine.setReadOnly(True)
 
         lbl_sede_key = QLabel("SEDE")
         lbl_sede_key.setObjectName("LblMetaGiornoKey")
@@ -391,6 +402,7 @@ class ViewLibretto(QWidget):
         self.combo_meta_sede.setObjectName("ComboMetaSede")
         self.combo_meta_sede.setFixedWidth(150)
         self.combo_meta_sede.addItems(["Molinette", "Altra Sede"])
+        self.combo_meta_sede.setEnabled(False)
 
         mf.addWidget(lbl_ora_key)
         mf.addSpacing(6)
@@ -404,15 +416,6 @@ class ViewLibretto(QWidget):
         mf.addSpacing(6)
         mf.addWidget(self.combo_meta_sede)
         mf.addStretch()
-
-        self.btn_salva_meta = QPushButton("Salva info giorno")
-        self.btn_salva_meta.setObjectName("BtnSalvaMeta")
-        self.btn_salva_meta.setFixedHeight(34)
-        self.btn_salva_meta.setCursor(Qt.CursorShape.PointingHandCursor)
-        mf.addWidget(self.btn_salva_meta)
-
-        self._on_save_meta_fn = None
-        self.btn_salva_meta.clicked.connect(self._dispatch_save_meta)
 
         cd.addWidget(meta_frame)
 
@@ -576,17 +579,18 @@ class ViewLibretto(QWidget):
 
     def popola_dettaglio_giorno(self, data_str: str, attivita: list,
                                 extra_dict: dict, on_save,
-                                meta: dict = None, on_save_meta=None):
+                                meta: dict = None):
         self.lbl_giorno_titolo.setText(_fmt_data(data_str))
 
         m = meta or {}
-        self.inp_meta_ora_inizio.setText(m.get("ora_inizio", "08:00"))
-        self.inp_meta_ora_fine.setText(m.get("ora_fine", "18:00"))
-        sede_val = m.get("sede", "Molinette")
+        ora_inizio, ora_fine = _day_ora(attivita).split(" – ")
+        self.inp_meta_ora_inizio.setText(m.get("ora_inizio", ora_inizio))
+        self.inp_meta_ora_fine.setText(m.get("ora_fine", ora_fine))
+        sede_val = m.get("sede", _day_sede(attivita))
+        if self.combo_meta_sede.findText(sede_val) < 0:
+            self.combo_meta_sede.addItem(sede_val)
         idx = self.combo_meta_sede.findText(sede_val)
         self.combo_meta_sede.setCurrentIndex(idx if idx >= 0 else 0)
-
-        self._on_save_meta_fn = on_save_meta
 
         while self.giorno_cards_layout.count():
             child = self.giorno_cards_layout.takeAt(0)
@@ -703,7 +707,7 @@ class ViewLibretto(QWidget):
         return card
 
     def _crea_card_or_pianificata(self, att: dict, saved: dict, on_save) -> QFrame:
-        """Card for a pianificata OR day: read-only slot details + editable Note."""
+        """Read-only pending operations; confirmation belongs to the actual OR week."""
         _slot_fmt = {
             "8.00-10.00":  "08:00 – 10:00",
             "10.00-12.00": "10:00 – 12:00",
@@ -745,7 +749,7 @@ class ViewLibretto(QWidget):
         lbl_tipo = QLabel("Intervento Chirurgico")
         lbl_tipo.setStyleSheet("font-size:15px; font-weight:bold; color:#1e293b; border:none; background:transparent;")
         hdr.addWidget(lbl_tipo, stretch=1)
-        stato_txt = "Confermata" if saved else "Da confermare"
+        stato_txt = "In attesa di convalida Effettivo"
         badge_stato = QLabel(stato_txt)
         badge_stato.setStyleSheet(
             ("background:#f0fdf4; color:#15803d; font-weight:bold; font-size:11px; "
@@ -830,7 +834,7 @@ class ViewLibretto(QWidget):
 
         inp_note = QLineEdit(saved.get("note", att.get("note", "")))
         inp_note.setPlaceholderText("Note aggiuntive...")
-        inp_note.setEnabled(not bool(saved))
+        inp_note.setReadOnly(True)
         inp_note.setStyleSheet(
             "QLineEdit { background:#ffffff; border:1.5px solid #93c5fd; "
             "border-radius:8px; padding:0 10px; font-size:14px; color:#1e293b; "
@@ -840,41 +844,15 @@ class ViewLibretto(QWidget):
         )
         vl.addWidget(inp_note)
 
-        save_row = QHBoxLayout()
-        save_row.addStretch()
-        btn_salva = QPushButton("Conferma" if not saved else "✔ Confermata")
-        btn_salva.setFixedHeight(36)
-        btn_salva.setMinimumWidth(120)
-        btn_salva.setCursor(Qt.CursorShape.PointingHandCursor)
-        btn_salva.setEnabled(not bool(saved))
-        btn_salva.setStyleSheet(
-            "QPushButton { background:#2563eb; color:#fff; font-weight:bold; "
-            "font-size:13px; border:none; border-radius:8px; padding:0 16px; }"
-            "QPushButton:hover { background:#1d4ed8; }"
-            "QPushButton:disabled { background:#e2e8f0; color:#94a3b8; }"
+        confirmation_info = QLabel(
+            "Gli interventi saranno registrati dopo la convalida dell'Effettivo "
+            "nelle Sale Operatorie."
         )
-        save_row.addWidget(btn_salva)
-        vl.addLayout(save_row)
-
-        def _do_save():
-            on_save({
-                "data":     att["data"],
-                "sede":     att["sede"],
-                "attivita": att["attivita"],
-                "ruolo":    att.get("ruolo", ""),
-                "note":     inp_note.text().strip(),
-                "tipo":     "extra",
-            })
-            badge_stato.setText("Confermata")
-            badge_stato.setStyleSheet(
-                "background:#f0fdf4; color:#15803d; font-weight:bold; font-size:11px; "
-                "padding:2px 10px; border-radius:8px; border:1px solid #86efac;"
-            )
-            btn_salva.setText("✔ Confermata")
-            btn_salva.setEnabled(False)
-            inp_note.setEnabled(False)
-
-        btn_salva.clicked.connect(_do_save)
+        confirmation_info.setWordWrap(True)
+        confirmation_info.setStyleSheet(
+            "font-size:13px; color:#475569; border:none; background:transparent;"
+        )
+        vl.addWidget(confirmation_info)
         return card
 
     def _crea_card_extra_semplice(self, att: dict, saved: dict, on_save) -> QFrame:
@@ -1077,14 +1055,6 @@ class ViewLibretto(QWidget):
 
         return card
 
-    def _dispatch_save_meta(self):
-        if self._on_save_meta_fn:
-            self._on_save_meta_fn({
-                "ora_inizio": self.inp_meta_ora_inizio.text().strip(),
-                "ora_fine":   self.inp_meta_ora_fine.text().strip(),
-                "sede":       self.combo_meta_sede.currentText(),
-            })
-
     def _vsep(self):
         sep = QFrame()
         sep.setObjectName("CellSep")
@@ -1184,7 +1154,7 @@ class ViewLibretto(QWidget):
         )
 
     def load_styles(self):
-        style_path = str(get_asset_dir() / "styles" / "libretto.qss")
+        style_path = os.path.join(PROJECT_ROOT, "asset", "styles", "libretto.qss")
         if os.path.exists(style_path):
             with open(style_path, "r", encoding="utf-8") as f:
                 self.setStyleSheet(self.styleSheet() + "\n" + f.read())

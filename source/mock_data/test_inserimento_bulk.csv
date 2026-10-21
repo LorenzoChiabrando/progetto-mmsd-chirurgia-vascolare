@@ -1,0 +1,9 @@
+Nome;Cognome;Diagnosi ICD9;codice intervento;Intervento/procedura ICD9;Priorità
+Pippo;VerdeScuro;Diagnosi sintetica (D001);DEMO-A;Procedura demo A;Classe B
+Massimo;Serra;Diagnosi sintetica (D001);"DEMO-A;DEMO-B";"Procedura demo A;Procedura demo B";Classe B
+Giovanni;Ferretti;Diagnosi sintetica (D001);DEMO-A;Procedura demo A;Classe B
+Luisa;Marchetti;Diagnosi sintetica (D001);DEMO-A;Procedura demo A;Classe B
+Roberto;Conti;Diagnosi sintetica (D001);DEMO-A;Procedura demo A;Classe B
+Carla;Esposito;Diagnosi sintetica (D001);DEMO-A;Procedura demo A;Classe B
+Stefano;Rizzo;Diagnosi sintetica (D001);DEMO-A;Procedura demo A;Classe B
+Marina;Greco;Diagnosi sintetica (D001);DEMO-A;Procedura demo A;Classe B

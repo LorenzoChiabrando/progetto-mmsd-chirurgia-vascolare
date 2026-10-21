@@ -2,14 +2,29 @@
     "id": "PZ0016",
     "nome": "Valeria",
     "cognome": "Fontana",
-    "diagnosi": "Occlusione arteria femorale superficiale destra",
-    "codice_intervento": "39.29",
-    "descrizione_intervento": "Bypass femoro-tibiale posteriore",
-    "tipo_chirurgia": "Aperta",
-    "complessita": "Alta",
-    "urgenza": "Alta",
-    "stato": "Completato",
-    "data_inserimento": "26/04/2026",
-    "note": "",
-    "durata_intervento": 120
+    "codice_diagnosi": "D016",
+    "descrizione_diagnosi": "Diagnosi sintetica 16",
+    "diagnosi": "[D016] Diagnosi sintetica 16",
+    "interventi": [
+        {
+            "codice": "DEMO-016",
+            "descrizione": "Procedura sintetica 16",
+            "durata": 45
+        }
+    ],
+    "codice_intervento": "DEMO-016",
+    "descrizione_intervento": "Procedura sintetica 16",
+    "durata_intervento": 45,
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "In Attesa",
+    "data_inserimento": "05/09/2026",
+    "note": "Dati inventati per la demo.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
 }

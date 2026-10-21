@@ -1,0 +1,155 @@
+{
+    "metadata": {
+        "stato": "BOZZA",
+        "settimane": {}
+    },
+    "turni": {
+        "2026-11-02": {
+            "specializzandi": {
+                "OR I": "JAZZ B.",
+                "OR II": "Parco L."
+            },
+            "operazioni": []
+        },
+        "2026-11-03": {
+            "specializzandi": {
+                "OR I": "JAZZ B.",
+                "OR II": "Parco L."
+            },
+            "operazioni": []
+        },
+        "2026-11-04": {
+            "specializzandi": {
+                "OR I": "JAZZ B.",
+                "OR II": "Parco L."
+            },
+            "operazioni": []
+        },
+        "2026-11-05": {
+            "specializzandi": {
+                "OR I": "JAZZ B.",
+                "OR II": "Parco L."
+            },
+            "operazioni": []
+        },
+        "2026-11-06": {
+            "specializzandi": {
+                "OR I": "JAZZ B.",
+                "OR II": "Parco L."
+            },
+            "operazioni": []
+        },
+        "2026-11-09": {
+            "specializzandi": {
+                "OR I": "Parco L.",
+                "OR II": "Gasparri A."
+            },
+            "operazioni": []
+        },
+        "2026-11-10": {
+            "specializzandi": {
+                "OR I": "Parco L.",
+                "OR II": "Gasparri A."
+            },
+            "operazioni": []
+        },
+        "2026-11-11": {
+            "specializzandi": {
+                "OR I": "Parco L.",
+                "OR II": "Gasparri A."
+            },
+            "operazioni": []
+        },
+        "2026-11-12": {
+            "specializzandi": {
+                "OR I": "Parco L.",
+                "OR II": "Gasparri A."
+            },
+            "operazioni": []
+        },
+        "2026-11-13": {
+            "specializzandi": {
+                "OR I": "Parco L.",
+                "OR II": "Gasparri A."
+            },
+            "operazioni": []
+        },
+        "2026-11-16": {
+            "specializzandi": {
+                "OR I": "Gasparri A.",
+                "OR II": "Bello M."
+            },
+            "operazioni": []
+        },
+        "2026-11-17": {
+            "specializzandi": {
+                "OR I": "Gasparri A.",
+                "OR II": "Bello M."
+            },
+            "operazioni": []
+        },
+        "2026-11-18": {
+            "specializzandi": {
+                "OR I": "Gasparri A.",
+                "OR II": "Bello M."
+            },
+            "operazioni": []
+        },
+        "2026-11-19": {
+            "specializzandi": {
+                "OR I": "Gasparri A.",
+                "OR II": "Bello M."
+            },
+            "operazioni": []
+        },
+        "2026-11-20": {
+            "specializzandi": {
+                "OR I": "Gasparri A.",
+                "OR II": "Bello M."
+            },
+            "operazioni": []
+        },
+        "2026-11-23": {
+            "specializzandi": {
+                "OR I": "Bello M.",
+                "OR II": "Verdone V."
+            },
+            "operazioni": []
+        },
+        "2026-11-24": {
+            "specializzandi": {
+                "OR I": "Bello M.",
+                "OR II": "Verdone V."
+            },
+            "operazioni": []
+        },
+        "2026-11-25": {
+            "specializzandi": {
+                "OR I": "Bello M.",
+                "OR II": "Verdone V."
+            },
+            "operazioni": []
+        },
+        "2026-11-26": {
+            "specializzandi": {
+                "OR I": "Bello M.",
+                "OR II": "Verdone V."
+            },
+            "operazioni": []
+        },
+        "2026-11-27": {
+            "specializzandi": {
+                "OR I": "Bello M.",
+                "OR II": "Verdone V."
+            },
+            "operazioni": []
+        },
+        "2026-11-30": {
+            "specializzandi": {
+                "OR I": "Verdone V.",
+                "OR II": "Silvestre P."
+            },
+            "operazioni": []
+        }
+    }
+}

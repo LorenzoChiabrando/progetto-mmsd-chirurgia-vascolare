@@ -1,9 +1,9 @@
 nome,cognome,diagnosi,codice_intervento,descrizione_intervento,tipo_chirurgia,complessita,urgenza,durata_intervento
-Matteo,Amato,Aneurisma aorta addominale sottorenale,38.44,EVAR - endoprotesi aortica biforcata,Endovascolare,Alta,Media,150
-Federica,Benedetti,Stenosi carotidea destra sintomatica con FAV dialisi non funzionante,38.12;39.42,Endoarterectomia carotidea destra;Revisione FAV brachiocefalica,Aperta,Alta,Alta,90;60
-Lorenzo,Castellano,Arteriopatia ostruttiva arto inferiore destro stadio III,39.29,Bypass femoro-popliteo sottoarticolare con vena safena,Aperta,Alta,Alta,120
-Alessandra,D'Agostino,Insufficienza venosa cronica bilaterale stadio C3,38.59,Safenectomia bilaterale con flebectomia selettiva,Aperta,Bassa,Bassa,90
-Raffaele,Genovese,Occlusione arteria mesenterica superiore con ischemia intestinale,38.06;45.63,Embolectomia arteria mesenterica;Resezione intestinale segmentaria,Aperta,Alta,Alta,90;120
-Daniela,Innocenti,Trombosi venosa profonda femoropoplitea sinistra,38.59,Trombectomia venosa con patch,Aperta,Media,Media,75
-Marcello,Lanzilotta,Dissezione aortica tipo B cronica sintomatica,38.45,TEVAR - endoprotesi toracica,Endovascolare,Alta,Alta,180
-Ilaria,Nardone,Stenosi arteria renale sinistra con ipertensione renovascolare,39.01;38.86,Angioplastica transluminale percutanea;Posizionamento stent renale,Endovascolare,Media,Media,45;30
+Pippo,VerdeScuro,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90
+Massimo,Serra,Diagnosi sintetica (D001),DEMO-A;DEMO-B,Procedura demo A;Procedura demo B,Aperta,Alta,Media,90;60
+Giovanni,Ferretti,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90
+Luisa,Marchetti,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90
+Roberto,Conti,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90
+Carla,Esposito,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90
+Stefano,Rizzo,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90
+Marina,Greco,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90

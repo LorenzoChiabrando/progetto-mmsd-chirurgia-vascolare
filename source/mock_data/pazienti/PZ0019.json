@@ -2,14 +2,29 @@
     "id": "PZ0019",
     "nome": "Stefano",
     "cognome": "Gallo",
-    "diagnosi": "Aneurisma iliaco comune sinistro",
-    "codice_intervento": "38.44",
-    "descrizione_intervento": "EVAR con estensione iliaca",
-    "tipo_chirurgia": "Endovascolare",
+    "codice_diagnosi": "D019",
+    "descrizione_diagnosi": "Diagnosi sintetica 19",
+    "diagnosi": "[D019] Diagnosi sintetica 19",
+    "interventi": [
+        {
+            "codice": "DEMO-019",
+            "descrizione": "Procedura sintetica 19",
+            "durata": 120
+        }
+    ],
+    "codice_intervento": "DEMO-019",
+    "descrizione_intervento": "Procedura sintetica 19",
+    "durata_intervento": 120,
+    "tipo_chirurgia": "Aperta",
     "complessita": "Media",
     "urgenza": "Media",
-    "stato": "Completato",
-    "data_inserimento": "26/04/2026",
-    "note": "",
-    "durata_intervento": 90
+    "stato": "In Attesa",
+    "data_inserimento": "02/09/2026",
+    "note": "Dati inventati per la demo.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
 }

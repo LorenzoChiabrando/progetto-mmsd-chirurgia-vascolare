@@ -2,14 +2,29 @@
     "id": "PZ0020",
     "nome": "Laura",
     "cognome": "Vitale",
-    "diagnosi": "Insufficienza venosa cronica stadio C4",
-    "codice_intervento": "38.59",
-    "descrizione_intervento": "Safenectomia laser endovenosa",
+    "codice_diagnosi": "D020",
+    "descrizione_diagnosi": "Diagnosi sintetica 20",
+    "diagnosi": "[D020] Diagnosi sintetica 20",
+    "interventi": [
+        {
+            "codice": "DEMO-020",
+            "descrizione": "Procedura sintetica 20",
+            "durata": 45
+        }
+    ],
+    "codice_intervento": "DEMO-020",
+    "descrizione_intervento": "Procedura sintetica 20",
+    "durata_intervento": 45,
     "tipo_chirurgia": "Endovascolare",
     "complessita": "Bassa",
     "urgenza": "Bassa",
-    "stato": "Completato",
-    "data_inserimento": "26/04/2026",
-    "note": "",
-    "durata_intervento": 60
+    "stato": "In Attesa",
+    "data_inserimento": "01/09/2026",
+    "note": "Dati inventati per la demo.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 180
+    }
 }

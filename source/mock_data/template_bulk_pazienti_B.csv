@@ -1,9 +1,9 @@
 nome,cognome,diagnosi,codice_intervento,descrizione_intervento,tipo_chirurgia,complessita,urgenza,durata_intervento
-Salvatore,Perna,Aneurisma aorta toracica discendente,38.45,TEVAR - endoprotesi toracica,Endovascolare,Alta,Alta,180
-Ornella,Quaglia,Arteriopatia obliterante stadio IV con lesioni trofiche,39.25;84.12,Bypass aorto-bifemorale;Amputazione minore dita piede,Aperta,Alta,Alta,150;45
-Fausto,Ruffini,Stenosi arteria succlavia sinistra con sindrome da furto,38.12,Angioplastica succlavia con stent,Endovascolare,Media,Media,60
-Brunella,Scarpelli,Aneurisma popliteo bilaterale,38.59,Escissione aneurisma popliteo bilaterale con bypass,Aperta,Media,Media,150
-Agostino,Tramontana,Ischemia acuta arto inferiore sinistro con trombosi multipla,38.06;38.59,Embolectomia con catetere di Fogarty;Trombectomia rami tibiali distali,Aperta,Alta,Alta,90;60
-Rossella,Ungaro,Linfedema secondario arto superiore destro post-mastectomia,40.9,Linfadenectomia decompressiva,Aperta,Bassa,Bassa,90
-Mirko,Visconti,Aneurisma anastomotico post-bypass aorto-femorale con infezione protesica,38.44;86.22,Revisione anastomosi con patch;Debridement e toilette chirurgica,Aperta,Alta,Alta,120;60
-Elisa,Zamboni,Sindrome da intrappolamento arteria poplitea destra,39.29,Release muscolare con bypass femoro-popliteo corto,Aperta,Media,Media,90
+Pippo,VerdeScuro,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90
+Massimo,Serra,Diagnosi sintetica (D001),DEMO-A;DEMO-B,Procedura demo A;Procedura demo B,Aperta,Alta,Media,90;60
+Giovanni,Ferretti,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90
+Luisa,Marchetti,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90
+Roberto,Conti,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90
+Carla,Esposito,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90
+Stefano,Rizzo,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90
+Marina,Greco,Diagnosi sintetica (D001),DEMO-A,Procedura demo A,Aperta,Alta,Media,90

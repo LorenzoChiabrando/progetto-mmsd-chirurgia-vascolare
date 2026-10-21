@@ -2,14 +2,29 @@
     "id": "PZ0005",
     "nome": "Roberto",
     "cognome": "Conti",
-    "diagnosi": "Arteriopatia obliterante arti inferiori IV stadio",
-    "codice_intervento": "39.29",
-    "descrizione_intervento": "Bypass femoro-popliteo con vena",
+    "codice_diagnosi": "D005",
+    "descrizione_diagnosi": "Diagnosi sintetica 05",
+    "diagnosi": "[D005] Diagnosi sintetica 05",
+    "interventi": [
+        {
+            "codice": "DEMO-005",
+            "descrizione": "Procedura sintetica 05",
+            "durata": 60
+        }
+    ],
+    "codice_intervento": "DEMO-005",
+    "descrizione_intervento": "Procedura sintetica 05",
+    "durata_intervento": 60,
     "tipo_chirurgia": "Aperta",
-    "complessita": "Media",
-    "urgenza": "Alta",
+    "complessita": "Bassa",
+    "urgenza": "Bassa",
     "stato": "Completato",
-    "data_inserimento": "07/04/2026",
-    "note": "Lesione trofica tallone sinistro",
-    "durata_intervento": 120
+    "data_inserimento": "16/09/2026",
+    "note": "Dati inventati per la demo.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 180
+    }
 }

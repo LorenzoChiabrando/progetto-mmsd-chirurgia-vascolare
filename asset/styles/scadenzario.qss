@@ -129,6 +129,50 @@ QPushButton#btnMeseAnno:hover {
     background-color: #e0e7ff;
 }
 
+QPushButton#BtnCalendarTool,
+QPushButton#BtnCalendarExport {
+    min-height: 30px;
+    padding: 0 12px;
+    border-radius: 7px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #475569;
+    font-weight: bold;
+}
+QPushButton#BtnCalendarTool:checked {
+    background: #4338ca;
+    color: #ffffff;
+    border-color: #4338ca;
+}
+QPushButton#BtnCalendarExport:hover,
+QPushButton#BtnCalendarTool:hover {
+    border-color: #6366f1;
+    color: #3730a3;
+}
+QPushButton#BtnCalendarTool:checked:hover { color: #ffffff; }
+QPushButton#BtnCalendarExport:disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+}
+QLabel#LblCalendarTools,
+QLabel#LblCellDetail {
+    color: #64748b;
+    font-size: 12px;
+}
+QComboBox#ComboVersioneScadenzario {
+    background-color: #ffffff;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-size: 13px;
+}
+QComboBox#ComboVersioneScadenzario:disabled {
+    color: #64748b;
+    background-color: #e2e8f0;
+}
+
 /* =========================================
    BOTTONE CONVALIDA
 ========================================= */
@@ -173,7 +217,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical
 /* =========================================
    TABELLA CALENDARIO
 ========================================= */
-QTableWidget {
+QTableView {
     background-color: #ffffff;
     gridline-color: #e2e8f0;
     border: 1px solid #cbd5e1;
@@ -182,8 +226,9 @@ QTableWidget {
     color: #1e293b;
     outline: 0;
 }
-QTableWidget::item { padding: 3px; }
-QTableWidget::item:selected {
+QTableView::item { padding: 3px; }
+QTableView[compact="true"]::item { padding: 0px; }
+QTableView::item:selected {
     background-color: #e0e7ff;
     color: #3730a3;
 }
@@ -237,7 +282,8 @@ QComboBox {
 QComboBox:hover, QComboBox:focus { border: 2px solid #818cf8; }
 QComboBox::drop-down { border: none; width: 20px; }
 QComboBox::down-arrow {
-    image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSI+PC9wb2x5bGluZT48L3N2Zz4=);
+    /* Qt non legge gli URI data: nei fogli di stile, quindi la freccia non compariva. */
+    image: url(icons:chevron-down.svg);
 }
 
 QComboBox QAbstractItemView {

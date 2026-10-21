@@ -1,0 +1,382 @@
+{
+    "metadata": {
+        "stato": "BOZZA",
+        "settimane": {
+            "2026-10-05": "CONVALIDATO",
+            "2026-10-12": "BOZZA",
+            "2026-10-19": "BOZZA"
+        }
+    },
+    "turni": {
+        "2026-10-01": {
+            "specializzandi": {
+                "OR I": "Bello M.",
+                "OR II": "Verdone V."
+            },
+            "operazioni": []
+        },
+        "2026-10-02": {
+            "specializzandi": {
+                "OR I": "Bello M.",
+                "OR II": "Verdone V."
+            },
+            "operazioni": []
+        },
+        "2026-10-05": {
+            "specializzandi": {
+                "OR I": "Verdone V.",
+                "OR II": "Silvestre P."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0001",
+                    "nome_paziente": "VerdeScuro Pippo",
+                    "diagnosi": "[D001] Diagnosi sintetica 01",
+                    "codice_diagnosi": "D001",
+                    "descrizione_diagnosi": "Diagnosi sintetica 01",
+                    "intervento": "Procedura sintetica 01",
+                    "codice_intervento": "DEMO-001",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-001",
+                            "descrizione": "Procedura sintetica 01",
+                            "durata": 60
+                        }
+                    ],
+                    "durata": 60,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:00",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Media",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Verdone V.",
+                    "id_specializzando": "SP003",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-10-06": {
+            "specializzandi": {
+                "OR I": "Verdone V.",
+                "OR II": "Silvestre P."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0002",
+                    "nome_paziente": "Serra Massimo",
+                    "diagnosi": "[D002] Diagnosi sintetica 02",
+                    "codice_diagnosi": "D002",
+                    "descrizione_diagnosi": "Diagnosi sintetica 02",
+                    "intervento": "Procedura sintetica 02",
+                    "codice_intervento": "DEMO-002",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-002",
+                            "descrizione": "Procedura sintetica 02",
+                            "durata": 90
+                        }
+                    ],
+                    "durata": 90,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:30",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Bassa",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Verdone V.",
+                    "id_specializzando": "SP003",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-10-07": {
+            "specializzandi": {
+                "OR I": "Verdone V.",
+                "OR II": "Silvestre P."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0003",
+                    "nome_paziente": "Ferretti Giovanni",
+                    "diagnosi": "[D003] Diagnosi sintetica 03",
+                    "codice_diagnosi": "D003",
+                    "descrizione_diagnosi": "Diagnosi sintetica 03",
+                    "intervento": "Procedura sintetica 03",
+                    "codice_intervento": "DEMO-003",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-003",
+                            "descrizione": "Procedura sintetica 03",
+                            "durata": 120
+                        }
+                    ],
+                    "durata": 120,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:00",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Verdone V.",
+                    "id_specializzando": "SP003",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-10-08": {
+            "specializzandi": {
+                "OR I": "Verdone V.",
+                "OR II": "Silvestre P."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0004",
+                    "nome_paziente": "Marchetti Luisa",
+                    "diagnosi": "[D004] Diagnosi sintetica 04",
+                    "codice_diagnosi": "D004",
+                    "descrizione_diagnosi": "Diagnosi sintetica 04",
+                    "intervento": "Procedura sintetica 04",
+                    "codice_intervento": "DEMO-004",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-004",
+                            "descrizione": "Procedura sintetica 04",
+                            "durata": 45
+                        }
+                    ],
+                    "durata": 45,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "08:45",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Media",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Verdone V.",
+                    "id_specializzando": "SP003",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-10-09": {
+            "specializzandi": {
+                "OR I": "Verdone V.",
+                "OR II": "Silvestre P."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0005",
+                    "nome_paziente": "Conti Roberto",
+                    "diagnosi": "[D005] Diagnosi sintetica 05",
+                    "codice_diagnosi": "D005",
+                    "descrizione_diagnosi": "Diagnosi sintetica 05",
+                    "intervento": "Procedura sintetica 05",
+                    "codice_intervento": "DEMO-005",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-005",
+                            "descrizione": "Procedura sintetica 05",
+                            "durata": 60
+                        }
+                    ],
+                    "durata": 60,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:00",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Bassa",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Verdone V.",
+                    "id_specializzando": "SP003",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-10-12": {
+            "specializzandi": {
+                "OR I": "Silvestre P.",
+                "OR II": "Massima A."
+            },
+            "operazioni": []
+        },
+        "2026-10-13": {
+            "specializzandi": {
+                "OR I": "Silvestre P.",
+                "OR II": "Massima A."
+            },
+            "operazioni": []
+        },
+        "2026-10-14": {
+            "specializzandi": {
+                "OR I": "Silvestre P.",
+                "OR II": "Massima A."
+            },
+            "operazioni": []
+        },
+        "2026-10-15": {
+            "specializzandi": {
+                "OR I": "Silvestre P.",
+                "OR II": "Massima A."
+            },
+            "operazioni": []
+        },
+        "2026-10-16": {
+            "specializzandi": {
+                "OR I": "Silvestre P.",
+                "OR II": "Massima A."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0006",
+                    "nome_paziente": "Esposito Carla",
+                    "diagnosi": "[D006] Diagnosi sintetica 06",
+                    "codice_diagnosi": "D006",
+                    "descrizione_diagnosi": "Diagnosi sintetica 06",
+                    "intervento": "Procedura sintetica 06",
+                    "codice_intervento": "DEMO-006",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-006",
+                            "descrizione": "Procedura sintetica 06",
+                            "durata": 90
+                        }
+                    ],
+                    "durata": 90,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:30",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Silvestre P.",
+                    "id_specializzando": "SP004",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-10-19": {
+            "specializzandi": {
+                "OR I": "Massima A.",
+                "OR II": "Alga S."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0007",
+                    "nome_paziente": "Rizzo Stefano",
+                    "diagnosi": "[D007] Diagnosi sintetica 07",
+                    "codice_diagnosi": "D007",
+                    "descrizione_diagnosi": "Diagnosi sintetica 07",
+                    "intervento": "Procedura sintetica 07",
+                    "codice_intervento": "DEMO-007",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-007",
+                            "descrizione": "Procedura sintetica 07",
+                            "durata": 120
+                        }
+                    ],
+                    "durata": 120,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:00",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Media",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Massima A.",
+                    "id_specializzando": "SP005",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-10-20": {
+            "specializzandi": {
+                "OR I": "Massima A.",
+                "OR II": "Alga S."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0008",
+                    "nome_paziente": "Greco Marina",
+                    "diagnosi": "[D008] Diagnosi sintetica 08",
+                    "codice_diagnosi": "D008",
+                    "descrizione_diagnosi": "Diagnosi sintetica 08",
+                    "intervento": "Procedura sintetica 08",
+                    "codice_intervento": "DEMO-008",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-008",
+                            "descrizione": "Procedura sintetica 08",
+                            "durata": 45
+                        }
+                    ],
+                    "durata": 45,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "08:45",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Bassa",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Massima A.",
+                    "id_specializzando": "SP005",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-10-21": {
+            "specializzandi": {
+                "OR I": "Massima A.",
+                "OR II": "Alga S."
+            },
+            "operazioni": []
+        },
+        "2026-10-22": {
+            "specializzandi": {
+                "OR I": "Massima A.",
+                "OR II": "Alga S."
+            },
+            "operazioni": []
+        },
+        "2026-10-23": {
+            "specializzandi": {
+                "OR I": "Massima A.",
+                "OR II": "Alga S."
+            },
+            "operazioni": []
+        },
+        "2026-10-26": {
+            "specializzandi": {
+                "OR I": "Alga S.",
+                "OR II": "JAZZ B."
+            },
+            "operazioni": []
+        },
+        "2026-10-27": {
+            "specializzandi": {
+                "OR I": "Alga S.",
+                "OR II": "JAZZ B."
+            },
+            "operazioni": []
+        },
+        "2026-10-28": {
+            "specializzandi": {
+                "OR I": "Alga S.",
+                "OR II": "JAZZ B."
+            },
+            "operazioni": []
+        },
+        "2026-10-29": {
+            "specializzandi": {
+                "OR I": "Alga S.",
+                "OR II": "JAZZ B."
+            },
+            "operazioni": []
+        },
+        "2026-10-30": {
+            "specializzandi": {
+                "OR I": "Alga S.",
+                "OR II": "JAZZ B."
+            },
+            "operazioni": []
+        }
+    }
+}

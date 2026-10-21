@@ -2,14 +2,29 @@
     "id": "PZ0017",
     "nome": "Giorgio",
     "cognome": "Caruso",
-    "diagnosi": "Stenosi carotidea bilaterale sintomatica",
-    "codice_intervento": "38.12",
-    "descrizione_intervento": "Endoarterectomia carotidea bilaterale",
+    "codice_diagnosi": "D017",
+    "descrizione_diagnosi": "Diagnosi sintetica 17",
+    "diagnosi": "[D017] Diagnosi sintetica 17",
+    "interventi": [
+        {
+            "codice": "DEMO-017",
+            "descrizione": "Procedura sintetica 17",
+            "durata": 60
+        }
+    ],
+    "codice_intervento": "DEMO-017",
+    "descrizione_intervento": "Procedura sintetica 17",
+    "durata_intervento": 60,
     "tipo_chirurgia": "Aperta",
-    "complessita": "Alta",
-    "urgenza": "Media",
-    "stato": "Completato",
-    "data_inserimento": "26/04/2026",
-    "note": "",
-    "durata_intervento": 90
+    "complessita": "Bassa",
+    "urgenza": "Bassa",
+    "stato": "In Attesa",
+    "data_inserimento": "04/09/2026",
+    "note": "Dati inventati per la demo.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 180
+    }
 }

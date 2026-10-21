@@ -2,14 +2,29 @@
     "id": "PZ0011",
     "nome": "Giuseppe",
     "cognome": "Fontana",
-    "diagnosi": "Ischemia critica arto inferiore sinistro",
-    "codice_intervento": "39.28",
-    "descrizione_intervento": "Bypass femoro-tibiale con vena safena",
+    "codice_diagnosi": "D011",
+    "descrizione_diagnosi": "Diagnosi sintetica 11",
+    "diagnosi": "[D011] Diagnosi sintetica 11",
+    "interventi": [
+        {
+            "codice": "DEMO-011",
+            "descrizione": "Procedura sintetica 11",
+            "durata": 120
+        }
+    ],
+    "codice_intervento": "DEMO-011",
+    "descrizione_intervento": "Procedura sintetica 11",
+    "durata_intervento": 120,
     "tipo_chirurgia": "Aperta",
-    "complessita": "Alta",
-    "urgenza": "Alta",
-    "stato": "Completato",
-    "data_inserimento": "11/04/2026",
-    "note": "Dolore a riposo, piede freddo",
-    "durata_intervento": 120
+    "complessita": "Bassa",
+    "urgenza": "Bassa",
+    "stato": "In Attesa",
+    "data_inserimento": "10/09/2026",
+    "note": "Dati inventati per la demo.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 180
+    }
 }

@@ -1,13 +1,20 @@
-# Claude
-.claude/
-
 # Documenti interni
+/docs/
 minute/
 context-documents/
 
 # Python
-venv/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+venv/
+.pytest_cache/
+.ruff_cache/
+tmp/
+*.lp
+*.mps
+.mmsd-planning.lock
+logs/
+.demo_backups/
+.demo-stage-*/

@@ -2,14 +2,29 @@
     "id": "PZ0003",
     "nome": "Giovanni",
     "cognome": "Ferretti",
-    "diagnosi": "Stenosi carotidea sintomatica bilaterale",
-    "codice_intervento": "38.12",
-    "descrizione_intervento": "Endoarterectomia carotidea",
+    "codice_diagnosi": "D003",
+    "descrizione_diagnosi": "Diagnosi sintetica 03",
+    "diagnosi": "[D003] Diagnosi sintetica 03",
+    "interventi": [
+        {
+            "codice": "DEMO-003",
+            "descrizione": "Procedura sintetica 03",
+            "durata": 120
+        }
+    ],
+    "codice_intervento": "DEMO-003",
+    "descrizione_intervento": "Procedura sintetica 03",
+    "durata_intervento": 120,
     "tipo_chirurgia": "Aperta",
     "complessita": "Alta",
     "urgenza": "Alta",
     "stato": "Completato",
-    "data_inserimento": "02/04/2026",
-    "note": "TIA recente",
-    "durata_intervento": 120
+    "data_inserimento": "18/09/2026",
+    "note": "Dati inventati per la demo.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 30
+    }
 }

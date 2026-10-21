@@ -5,6 +5,27 @@ ViewSaleOperatorie {
     background-color: #f1f5f9;
 }
 
+QComboBox#ComboVersioneSale {
+    background-color: #ffffff;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-size: 13px;
+}
+QComboBox#ComboVersioneSale:disabled {
+    color: #64748b;
+    background-color: #e2e8f0;
+}
+/* Senza queste due regole Qt disegna la tendina di sistema, con un bordo scuro. */
+QComboBox#ComboVersioneSale::drop-down {
+    border: none;
+    width: 26px;
+}
+QComboBox#ComboVersioneSale::down-arrow {
+    image: url(icons:chevron-down.svg);
+}
+
 /* =========================================
    PAGINA SELEZIONE
 ========================================= */
@@ -128,6 +149,33 @@ QPushButton#btnMeseAnno:disabled {
     background-color: transparent;
 }
 
+QPushButton#BtnCalendarTool,
+QPushButton#BtnCalendarExport {
+    min-height: 30px;
+    padding: 0 12px;
+    border-radius: 7px;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #475569;
+    font-weight: bold;
+}
+QPushButton#BtnCalendarTool:checked {
+    background: #6f42c1;
+    color: #ffffff;
+    border-color: #6f42c1;
+}
+QPushButton#BtnCalendarExport:hover,
+QPushButton#BtnCalendarTool:hover {
+    border-color: #8b5cf6;
+    color: #5b21b6;
+}
+QPushButton#BtnCalendarTool:checked:hover { color: #ffffff; }
+QLabel#LblCalendarTools,
+QLabel#LblCellDetail {
+    color: #64748b;
+    font-size: 12px;
+}
+
 /* =========================================
    BOTTONE PIANIFICA
 ========================================= */
@@ -235,6 +283,7 @@ QTableWidget {
     outline: 0;
 }
 QTableWidget::item { padding: 6px 8px; }
+QTableWidget[compact="true"]::item { padding: 0px; }
 QTableWidget::item:selected {
     background-color: #ede9fe;
     color: #4c1d95;
@@ -311,12 +360,28 @@ QLabel#LblOraOp {
     background: transparent;
     border: none;
 }
+QLabel#LblCompactOp {
+    color: #4c1d95;
+    font-size: 7px;
+    font-weight: bold;
+    background: transparent;
+    border: none;
+}
 QLabel#BadgeDurataOp {
     font-size: 10px;
     font-weight: bold;
     color: #6366f1;
     background-color: #eef2ff;
     border: 1px solid #c7d2fe;
+    border-radius: 6px;
+    padding: 1px 6px;
+}
+QLabel#BadgeSalaOp {
+    font-size: 10px;
+    font-weight: bold;
+    color: #0369a1;
+    background-color: #e0f2fe;
+    border: 1px solid #7dd3fc;
     border-radius: 6px;
     padding: 1px 6px;
 }

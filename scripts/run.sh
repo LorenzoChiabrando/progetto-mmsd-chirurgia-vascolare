@@ -26,4 +26,4 @@ echo "Installazione dipendenze..."
 "$PIP" install -r requirements.txt --quiet
 
 echo "Avvio applicazione..."
-"$PYTHON" main.py
+"$PYTHON" main.py "$@"

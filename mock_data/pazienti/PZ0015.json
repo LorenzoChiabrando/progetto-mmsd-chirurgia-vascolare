@@ -2,14 +2,29 @@
     "id": "PZ0015",
     "nome": "Pietro",
     "cognome": "Mancini",
-    "diagnosi": "Aneurisma aorta toracica discendente",
-    "codice_intervento": "38.45",
-    "descrizione_intervento": "TEVAR endoprotesi toracica",
-    "tipo_chirurgia": "Endovascolare",
+    "codice_diagnosi": "D015",
+    "descrizione_diagnosi": "Diagnosi sintetica 15",
+    "diagnosi": "[D015] Diagnosi sintetica 15",
+    "interventi": [
+        {
+            "codice": "DEMO-015",
+            "descrizione": "Procedura sintetica 15",
+            "durata": 120
+        }
+    ],
+    "codice_intervento": "DEMO-015",
+    "descrizione_intervento": "Procedura sintetica 15",
+    "durata_intervento": 120,
+    "tipo_chirurgia": "Aperta",
     "complessita": "Alta",
     "urgenza": "Alta",
-    "stato": "Completato",
-    "data_inserimento": "26/04/2026",
-    "note": "",
-    "durata_intervento": 120
+    "stato": "In Attesa",
+    "data_inserimento": "06/09/2026",
+    "note": "Dati inventati per la demo.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 30
+    }
 }

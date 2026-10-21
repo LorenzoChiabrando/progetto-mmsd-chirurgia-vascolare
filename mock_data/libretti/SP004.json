@@ -1,0 +1,12 @@
+{
+    "id": "SP004",
+    "nome": "Pino",
+    "cognome": "Silvestre",
+    "matricola": "DEMO-004",
+    "livello": "Junior",
+    "stato": "Molinette",
+    "dati_sintetici": true,
+    "attivita": [],
+    "attivita_extra": [],
+    "meta_giorni": {}
+}

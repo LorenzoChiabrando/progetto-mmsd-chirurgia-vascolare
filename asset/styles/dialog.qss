@@ -1,0 +1,234 @@
+/* =========================================
+   CORNICE COMUNE DEI DIALOG MODALI
+   Applicata da ModalDialog dopo gli eventuali
+   fogli della sezione. Colori di accento:
+     pazienti         #0369a1
+     libretto         #4338ca
+     scadenzario      #4338ca
+     sale_operatorie  #6f42c1
+     generale         #334155 (messaggi fuori sezione)
+     tono "avviso"    #d97706 (vince sulla sezione)
+     tono "errore"    #b91c1c (vince sulla sezione)
+   Le icone usano il search path Qt "icons:"
+   (asset/images/icons), registrato da ModalDialog.
+========================================= */
+QDialog[sezione] {
+    background-color: #ffffff;
+}
+QDialog[sezione] QWidget#DialogContent,
+QDialog[sezione] QScrollArea#DialogScroll {
+    background-color: #ffffff;
+    border: none;
+}
+
+/* ── Intestazione ── */
+QDialog[sezione] QFrame#AccentBarDialog {
+    border: none;
+}
+QDialog[sezione] QLabel#TitoloDialog {
+    font-family: "Segoe UI";
+    font-size: 22px;
+    font-weight: bold;
+}
+QDialog[sezione] QLabel#SottoTitoloDialog {
+    font-size: 13px;
+    color: #64748b;
+}
+QDialog[sezione] QFrame#SeparatoreDialog {
+    background-color: #e2e8f0;
+    border: none;
+}
+QDialog[sezione] QLabel#LblCampo {
+    font-size: 12px;
+    font-weight: bold;
+    color: #64748b;
+    letter-spacing: 0.5px;
+}
+QDialog[sezione] QLabel#LblMessaggioDialog {
+    font-size: 14px;
+    color: #334155;
+}
+
+/* ── Campi ── */
+QDialog[sezione] QLineEdit#InputDialog,
+QDialog[sezione] QAbstractSpinBox#InputDialog,
+QDialog[sezione] QComboBox#ComboDialog,
+QDialog[sezione] QTextEdit#NoteDialog {
+    background-color: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 15px;
+    color: #1e293b;
+}
+QDialog[sezione] QTextEdit#NoteDialog {
+    padding: 8px 12px;
+    font-size: 14px;
+}
+QDialog[sezione] QAbstractSpinBox#InputDialog::up-button,
+QDialog[sezione] QAbstractSpinBox#InputDialog::down-button {
+    subcontrol-origin: border;
+    width: 28px;
+    border: none;
+    background: transparent;
+}
+QDialog[sezione] QAbstractSpinBox#InputDialog::up-button { subcontrol-position: top right; }
+QDialog[sezione] QAbstractSpinBox#InputDialog::down-button { subcontrol-position: bottom right; }
+QDialog[sezione] QAbstractSpinBox#InputDialog::up-button:hover,
+QDialog[sezione] QAbstractSpinBox#InputDialog::down-button:hover {
+    background-color: #f1f5f9;
+}
+QDialog[sezione] QAbstractSpinBox#InputDialog::up-arrow {
+    image: url(icons:chevron-up.svg);
+}
+QDialog[sezione] QAbstractSpinBox#InputDialog::down-arrow {
+    image: url(icons:chevron-down.svg);
+}
+QDialog[sezione] QComboBox#ComboDialog {
+    combobox-popup: 0;
+}
+QDialog[sezione] QComboBox#ComboDialog::drop-down {
+    border: none;
+    width: 26px;
+}
+QDialog[sezione] QComboBox#ComboDialog::down-arrow {
+    image: url(icons:chevron-down.svg);
+}
+QDialog[sezione] QComboBox#ComboDialog QAbstractItemView {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #ffffff;
+    outline: 0;
+    padding: 4px;
+}
+QDialog[sezione] QComboBox#ComboDialog QAbstractItemView::item {
+    min-height: 36px;
+    border-radius: 4px;
+    color: #1e293b;
+    padding-left: 8px;
+}
+QDialog[sezione] QComboBox#ComboDialog QAbstractItemView::item:hover,
+QDialog[sezione] QComboBox#ComboDialog QAbstractItemView::item:selected {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+/* ── Pulsanti ── */
+QDialog[sezione] QPushButton#BtnSalvaDialog,
+QDialog[sezione] QPushButton#BtnAnnullaDialog,
+QDialog[sezione] QPushButton#BtnPericoloDialog {
+    font-weight: bold;
+    font-size: 15px;
+    border-radius: 8px;
+    padding: 0 20px;
+}
+QDialog[sezione] QPushButton#BtnSalvaDialog {
+    color: #ffffff;
+    border: none;
+}
+QDialog[sezione] QPushButton#BtnSalvaDialog:disabled {
+    background-color: #cbd5e1;
+    color: #f8fafc;
+}
+QDialog[sezione] QPushButton#BtnAnnullaDialog {
+    background-color: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+QDialog[sezione] QPushButton#BtnAnnullaDialog:hover {
+    background-color: #e2e8f0;
+    color: #334155;
+}
+QDialog[sezione] QPushButton#BtnPericoloDialog {
+    background-color: #ffffff;
+    color: #b91c1c;
+    border: 1.5px solid #fecaca;
+}
+QDialog[sezione] QPushButton#BtnPericoloDialog:hover {
+    background-color: #fef2f2;
+    border-color: #b91c1c;
+}
+QDialog[sezione] QPushButton#BtnOpzioneDialog {
+    text-align: left;
+    padding: 0 18px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #1e293b;
+    background-color: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+/* =========================================
+   COLORI DI SEZIONE
+========================================= */
+/* ── Pazienti ── */
+QDialog[sezione="pazienti"] QFrame#AccentBarDialog,
+QDialog[sezione="pazienti"] QPushButton#BtnSalvaDialog { background-color: #0369a1; }
+QDialog[sezione="pazienti"] QPushButton#BtnSalvaDialog:hover { background-color: #075985; }
+QDialog[sezione="pazienti"] QLabel#TitoloDialog { color: #0369a1; }
+QDialog[sezione="pazienti"] QLineEdit#InputDialog:focus,
+QDialog[sezione="pazienti"] QAbstractSpinBox#InputDialog:focus,
+QDialog[sezione="pazienti"] QComboBox#ComboDialog:focus,
+QDialog[sezione="pazienti"] QTextEdit#NoteDialog:focus { border-color: #0369a1; }
+QDialog[sezione="pazienti"] QPushButton#BtnOpzioneDialog:hover {
+    background-color: #e0f2fe; border-color: #0369a1; color: #0369a1;
+}
+
+/* ── Libretto ── */
+QDialog[sezione="libretto"] QFrame#AccentBarDialog,
+QDialog[sezione="libretto"] QPushButton#BtnSalvaDialog { background-color: #4338ca; }
+QDialog[sezione="libretto"] QPushButton#BtnSalvaDialog:hover { background-color: #3730a3; }
+QDialog[sezione="libretto"] QLabel#TitoloDialog { color: #4338ca; }
+QDialog[sezione="libretto"] QLineEdit#InputDialog:focus,
+QDialog[sezione="libretto"] QAbstractSpinBox#InputDialog:focus,
+QDialog[sezione="libretto"] QComboBox#ComboDialog:focus,
+QDialog[sezione="libretto"] QTextEdit#NoteDialog:focus { border-color: #4338ca; }
+QDialog[sezione="libretto"] QPushButton#BtnOpzioneDialog:hover {
+    background-color: #e0e7ff; border-color: #4338ca; color: #4338ca;
+}
+
+/* ── Scadenzario ── */
+QDialog[sezione="scadenzario"] QFrame#AccentBarDialog,
+QDialog[sezione="scadenzario"] QPushButton#BtnSalvaDialog { background-color: #4338ca; }
+QDialog[sezione="scadenzario"] QPushButton#BtnSalvaDialog:hover { background-color: #3730a3; }
+QDialog[sezione="scadenzario"] QLabel#TitoloDialog { color: #4338ca; }
+QDialog[sezione="scadenzario"] QLineEdit#InputDialog:focus,
+QDialog[sezione="scadenzario"] QAbstractSpinBox#InputDialog:focus,
+QDialog[sezione="scadenzario"] QComboBox#ComboDialog:focus,
+QDialog[sezione="scadenzario"] QTextEdit#NoteDialog:focus { border-color: #4338ca; }
+QDialog[sezione="scadenzario"] QPushButton#BtnOpzioneDialog:hover {
+    background-color: #e0e7ff; border-color: #4338ca; color: #4338ca;
+}
+
+/* ── Sale operatorie ── */
+QDialog[sezione="sale_operatorie"] QFrame#AccentBarDialog,
+QDialog[sezione="sale_operatorie"] QPushButton#BtnSalvaDialog { background-color: #6f42c1; }
+QDialog[sezione="sale_operatorie"] QPushButton#BtnSalvaDialog:hover { background-color: #5b32a3; }
+QDialog[sezione="sale_operatorie"] QLabel#TitoloDialog { color: #6f42c1; }
+QDialog[sezione="sale_operatorie"] QLineEdit#InputDialog:focus,
+QDialog[sezione="sale_operatorie"] QAbstractSpinBox#InputDialog:focus,
+QDialog[sezione="sale_operatorie"] QComboBox#ComboDialog:focus,
+QDialog[sezione="sale_operatorie"] QTextEdit#NoteDialog:focus { border-color: #6f42c1; }
+QDialog[sezione="sale_operatorie"] QPushButton#BtnOpzioneDialog:hover {
+    background-color: #ede9fe; border-color: #6f42c1; color: #6f42c1;
+}
+
+/* ── Generale (errori di avvio e imprevisti) ── */
+QDialog[sezione="generale"] QFrame#AccentBarDialog,
+QDialog[sezione="generale"] QPushButton#BtnSalvaDialog { background-color: #334155; }
+QDialog[sezione="generale"] QPushButton#BtnSalvaDialog:hover { background-color: #1e293b; }
+QDialog[sezione="generale"] QLabel#TitoloDialog { color: #334155; }
+QDialog[sezione="generale"] QLineEdit#InputDialog:focus,
+QDialog[sezione="generale"] QAbstractSpinBox#InputDialog:focus,
+QDialog[sezione="generale"] QComboBox#ComboDialog:focus,
+QDialog[sezione="generale"] QTextEdit#NoteDialog:focus { border-color: #334155; }
+QDialog[sezione="generale"] QPushButton#BtnOpzioneDialog:hover {
+    background-color: #f1f5f9; border-color: #334155; color: #334155;
+}
+
+/* ── Toni avviso/errore: dopo le sezioni, quindi prevalgono ── */
+QDialog[tono="avviso"] QFrame#AccentBarDialog { background-color: #d97706; }
+QDialog[tono="avviso"] QLabel#TitoloDialog { color: #b45309; }
+QDialog[tono="errore"] QFrame#AccentBarDialog { background-color: #b91c1c; }
+QDialog[tono="errore"] QLabel#TitoloDialog { color: #b91c1c; }

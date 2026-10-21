@@ -2,14 +2,29 @@
     "id": "PZ0010",
     "nome": "Elena",
     "cognome": "Barbieri",
-    "diagnosi": "Insufficienza venosa cronica - varici recidive",
-    "codice_intervento": "39.95",
-    "descrizione_intervento": "Flebectomia selettiva + ablazione",
+    "codice_diagnosi": "D010",
+    "descrizione_diagnosi": "Diagnosi sintetica 10",
+    "diagnosi": "[D010] Diagnosi sintetica 10",
+    "interventi": [
+        {
+            "codice": "DEMO-010",
+            "descrizione": "Procedura sintetica 10",
+            "durata": 90
+        }
+    ],
+    "codice_intervento": "DEMO-010",
+    "descrizione_intervento": "Procedura sintetica 10",
+    "durata_intervento": 90,
     "tipo_chirurgia": "Endovascolare",
-    "complessita": "Bassa",
-    "urgenza": "Bassa",
-    "stato": "Completato",
-    "data_inserimento": "09/04/2026",
-    "note": "",
-    "durata_intervento": 60
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "In Attesa",
+    "data_inserimento": "11/09/2026",
+    "note": "Dati inventati per la demo.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
 }

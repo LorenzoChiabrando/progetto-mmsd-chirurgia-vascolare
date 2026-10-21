@@ -2,14 +2,29 @@
     "id": "PZ0004",
     "nome": "Luisa",
     "cognome": "Marchetti",
-    "diagnosi": "Aneurisma aorta addominale 6 cm",
-    "codice_intervento": "39.57",
-    "descrizione_intervento": "Endoprotesi aortica (EVAR)",
+    "codice_diagnosi": "D004",
+    "descrizione_diagnosi": "Diagnosi sintetica 04",
+    "diagnosi": "[D004] Diagnosi sintetica 04",
+    "interventi": [
+        {
+            "codice": "DEMO-004",
+            "descrizione": "Procedura sintetica 04",
+            "durata": 45
+        }
+    ],
+    "codice_intervento": "DEMO-004",
+    "descrizione_intervento": "Procedura sintetica 04",
+    "durata_intervento": 45,
     "tipo_chirurgia": "Endovascolare",
-    "complessita": "Alta",
-    "urgenza": "Alta",
+    "complessita": "Media",
+    "urgenza": "Media",
     "stato": "Completato",
-    "data_inserimento": "05/04/2026",
-    "note": "Diametro in rapida crescita",
-    "durata_intervento": 120
+    "data_inserimento": "17/09/2026",
+    "note": "Dati inventati per la demo.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
 }

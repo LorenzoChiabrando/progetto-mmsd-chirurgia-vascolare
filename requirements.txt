@@ -1,1 +1,3 @@
 PySide6==6.10.2
+pyomo==6.10.1
+highspy==1.15.1

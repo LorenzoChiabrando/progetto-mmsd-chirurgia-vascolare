@@ -9,7 +9,14 @@ from pathlib import Path
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QStackedWidget
 from PySide6.QtCore import QLoggingCategory
 
-from src.data_paths import PROJECT_ROOT, resolve_data_directory
+from src.data_paths import (
+    PROJECT_ROOT,
+    is_frozen,
+    prepare_user_data,
+    resolve_data_directory,
+    user_app_directory,
+    user_data_directory,
+)
 from src.models.json_files import CorruptedDataError
 from src.views.components import messages
 from src.views.components.error_handler import install_exception_hook
@@ -33,6 +40,13 @@ LOG_FILE = PROJECT_ROOT / "logs" / "mmsd-cv.log"
 _LOG_MAX_BYTES = 1_000_000
 _LOG_BACKUPS = 3
 _LOG_FORMAT = "%(asctime)s %(levelname)s %(name)s: %(message)s"
+
+
+def default_log_file() -> Path:
+    """``logs/`` nel progetto; nell'eseguibile, nella cartella utente accanto ai dati."""
+    if is_frozen():
+        return user_app_directory() / "logs" / LOG_FILE.name
+    return LOG_FILE
 
 
 def configure_logging(log_file: Path = LOG_FILE) -> Path | None:
@@ -201,13 +215,17 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="MMSD CV")
     parser.add_argument("--data-dir", type=Path, help="Cartella dati condivisa da GUI e planner")
     args, qt_args = parser.parse_known_args()
-    log_file = configure_logging()
+    log_file = configure_logging(default_log_file())
     app = QApplication([sys.argv[0], *qt_args])
     QLoggingCategory.setFilterRules("qt.qpa.wayland.textinput=false")
     app.setStyle("Fusion")
     install_exception_hook(log_file)
 
-    window = open_main_window(lambda: MainWindow(data_directory=args.data_dir))
+    data_directory = resolve_data_directory(args.data_dir)
+    if is_frozen() and data_directory == user_data_directory():
+        # Primo avvio dell'eseguibile: i dati demo inclusi diventano i dati dell'utente.
+        prepare_user_data(data_directory, PROJECT_ROOT / "mock_data")
+    window = open_main_window(lambda: MainWindow(data_directory=data_directory))
     if window is None:
         return 1
     window.show()

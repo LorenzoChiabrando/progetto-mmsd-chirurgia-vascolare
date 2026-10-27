@@ -1,0 +1,30 @@
+{
+    "id": "PZ0075",
+    "nome": "Paziente",
+    "cognome": "Demo 0075",
+    "codice_diagnosi": "D0075",
+    "descrizione_diagnosi": "Diagnosi sintetica 0075",
+    "diagnosi": "[D0075] Diagnosi sintetica 0075",
+    "interventi": [
+        {
+            "codice": "DEMO-0075-1",
+            "descrizione": "Procedura sintetica 0075, parte 1",
+            "durata": 90
+        }
+    ],
+    "codice_intervento": "DEMO-0075-1",
+    "descrizione_intervento": "Procedura sintetica 0075, parte 1",
+    "durata_intervento": 90,
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Media",
+    "urgenza": "Bassa",
+    "stato": "Pianificato",
+    "data_inserimento": "23/10/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 180
+    }
+}

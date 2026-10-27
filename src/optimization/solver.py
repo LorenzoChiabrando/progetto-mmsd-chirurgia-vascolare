@@ -105,17 +105,17 @@ class HighsSolver:
             objective = None
         elif should_load:
             raw_results.solution_loader.load_vars()
+            if self.config.validate_solution:
+                _validate_loaded_model(built.model)
             status = (
                 SolveStatus.OPTIMAL
                 if termination is TerminationCondition.optimal
                 else SolveStatus.FEASIBLE
             )
             schedule = _extract_schedule(built)
-            # With zero fairness weight, Z_f may be below the actual minimum workload.
-            objective = _extract_objective(
-                built.model,
-                fairness_floor=_actual_fairness_floor(built, schedule),
-            )
+            # A time-limited incumbent may leave feasible slack in epsilon or Z_f.
+            # Tighten those auxiliaries conceptually, retaining the original assignments.
+            objective = _extract_objective(built, schedule)
             if self.config.validate_solution:
                 _validate_solution(built, schedule, objective)
         else:
@@ -124,6 +124,8 @@ class HighsSolver:
             objective = None
 
         best_bound = _finite_or_none(raw_results.best_objective_bound)
+        if objective is not None and best_bound is not None:
+            best_bound = _coherent_upper_bound(best_bound, objective.weighted_total)
         relative_gap = (
             _relative_gap(objective.weighted_total, best_bound)
             if objective is not None and best_bound is not None
@@ -260,16 +262,63 @@ def _extract_schedule(built: BuiltSchedulingModel) -> tuple[ScheduledSurgery, ..
 
 
 def _extract_objective(
-    model: pyo.ConcreteModel,
-    *,
-    fairness_floor: int,
+    built: BuiltSchedulingModel,
+    schedule: tuple[ScheduledSurgery, ...],
 ) -> ObjectiveBreakdown:
-    return ObjectiveBreakdown(
-        treatment_efficiency=float(pyo.value(model.treatment_efficiency)),
-        fairness_floor=fairness_floor,
-        unassigned_count=int(round(pyo.value(model.unassigned_count))),
-        weighted_total=float(pyo.value(model.objective)),
+    """Compute the objective of the extracted schedule with tight auxiliary values.
+
+    Increasing Z_f to the actual minimum workload and removing unnecessary epsilon
+    preserves feasibility. The original loaded model is left unchanged.
+    """
+    model = built.model
+    patients = {patient.patient_id: patient for patient in built.source.patients}
+    efficiency = math.fsum(
+        patients[record.patient_id].urgency
+        for record in schedule
+        if patients[record.patient_id].category is PatientCategory.WAITING_LIST
     )
+    fairness = _actual_fairness_floor(built, schedule)
+    unassigned = sum(record.resident_id is None for record in schedule)
+    weighted_total = (
+        float(pyo.value(model.efficiency_scale)) * efficiency
+        + float(pyo.value(model.fairness_weight)) * fairness
+        - float(pyo.value(model.unassigned_weight)) * unassigned
+    )
+    return ObjectiveBreakdown(
+        treatment_efficiency=efficiency,
+        fairness_floor=fairness,
+        unassigned_count=unassigned,
+        weighted_total=weighted_total,
+    )
+
+
+def _validate_loaded_model(model: pyo.ConcreteModel, tolerance: float = 1e-6) -> None:
+    """Check raw incumbent feasibility before converting or tightening auxiliaries."""
+    errors: list[str] = []
+    for variable in model.component_data_objects(pyo.Var, active=True):
+        value = _finite_or_none(pyo.value(variable, exception=False))
+        if value is None:
+            errors.append(f"Valore mancante o non finito per {variable.name}.")
+            continue
+        if variable.is_integer() and abs(value - round(value)) > tolerance:
+            errors.append(f"Valore non intero per {variable.name}.")
+        if variable.lb is not None and value < float(pyo.value(variable.lb)) - tolerance:
+            errors.append(f"Limite inferiore violato per {variable.name}.")
+        if variable.ub is not None and value > float(pyo.value(variable.ub)) + tolerance:
+            errors.append(f"Limite superiore violato per {variable.name}.")
+    for constraint in model.component_data_objects(pyo.Constraint, active=True):
+        value = _finite_or_none(pyo.value(constraint.body, exception=False))
+        if value is None:
+            errors.append(f"Valore mancante o non finito per {constraint.name}.")
+            continue
+        if constraint.lower is not None and value < float(pyo.value(constraint.lower)) - tolerance:
+            errors.append(f"Limite inferiore violato per {constraint.name}.")
+        if constraint.upper is not None and value > float(pyo.value(constraint.upper)) + tolerance:
+            errors.append(f"Limite superiore violato per {constraint.name}.")
+    if errors:
+        raise SolutionValidationError(
+            "Soluzione grezza del solver non valida:\n- " + "\n- ".join(errors)
+        )
 
 
 def _validate_solution(
@@ -351,10 +400,18 @@ def _validate_solution(
             f"fairness_floor dichiarato {objective.fairness_floor}, ricalcolato {actual_floor}."
         )
 
+    expected = _extract_objective(built, schedule)
+    if not math.isclose(
+        objective.treatment_efficiency,
+        expected.treatment_efficiency,
+        abs_tol=tolerance,
+    ):
+        errors.append("L'efficienza dichiarata non corrisponde alle assegnazioni.")
+    if not math.isclose(objective.weighted_total, expected.weighted_total, abs_tol=tolerance):
+        errors.append("L'obiettivo totale non corrisponde alle sue componenti.")
+
     if errors:
-        raise SolutionValidationError(
-            "Soluzione del solver non valida:\n- " + "\n- ".join(errors)
-        )
+        raise SolutionValidationError("Soluzione del solver non valida:\n- " + "\n- ".join(errors))
 
 
 def _actual_fairness_floor(
@@ -379,3 +436,16 @@ def _finite_or_none(value: object) -> float | None:
 
 def _relative_gap(objective: float, bound: float) -> float:
     return abs(objective - bound) / max(1.0, abs(objective))
+
+
+def _coherent_upper_bound(bound: float, objective: float) -> float | None:
+    """Keep an upper bound for the tightened incumbent, tolerating only round-off.
+
+    A materially contradictory backend bound is unavailable diagnostic data; it
+    must not discard an otherwise validated feasible schedule or imply a zero gap.
+    """
+    if bound >= objective:
+        return bound
+    if math.isclose(bound, objective, rel_tol=1e-8, abs_tol=1e-6):
+        return objective
+    return None

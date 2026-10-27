@@ -233,11 +233,30 @@ collegamento esplicito tramite `id_paziente` in una bozza delle sale operatorie.
 
 ## Dati demo aggiornati
 
-[`reset_demo_data.py`](scripts/reset_demo_data.py) genera 20 pazienti sintetici, 8 specializzandi,
-tre mesi di calendari (precedente, corrente e successivo) e tre CSV di prova. Include attività
-completate nella settimana precedente, operazioni pianificate vicine alla data di riferimento
-e pazienti in attesa. Gli scadenzari corrente e futuro sono in bozza, così possono essere
-modificati e poi convalidati prima di usare il planner.
+La demo settembre–dicembre 2026 è in
+[`mock_data/scenario_2026_09_12`](mock_data/scenario_2026_09_12). Contiene 120 pazienti
+sintetici, 8 specializzandi, quattro mesi di calendari e tre CSV di prova. I mock precedenti
+restano disponibili nelle cartelle originali. Per aprire la nuova demo:
+
+```bash
+python main.py --data-dir mock_data/scenario_2026_09_12
+```
+
+Lo scenario è riferito al 27 ottobre 2026. La tabella indica il mese dell'intervento,
+non quello d'inserimento del paziente.
+
+| Periodo | Completati | Pianificati | In attesa senza data |
+| --- | ---: | ---: | ---: |
+| Settembre | 20 | 0 | 0 |
+| Ottobre | 18 | 6 | 0 |
+| Novembre | 0 | 28 | 0 |
+| Dicembre | 0 | 28 | 0 |
+| Lista d'attesa | 0 | 0 | 20 |
+
+I pazienti sono denominati `Paziente Demo 0001`, ecc. Diagnosi e procedure sono inventate.
+Le 100 operazioni sono distribuite su entrambe le sale, 50 per sala, con durate da 45 a 180
+minuti e alcuni casi con più procedure. Le date d'inserimento non superano la data dello
+scenario o quella dell'intervento. Tutti i pazienti appartengono alla categoria `I'`.
 
 I turni ruotano ogni settimana: sette ruoli (Reparto I e II, Sala Op. I e II, Giro Visite,
 Day Hospital, Day Surgery) per otto specializzandi, quindi ogni settimana tutti scalano di un
@@ -246,27 +265,55 @@ prosegue tra mesi e anni. Sale operatorie, interventi e libretti seguono gli ste
 OR I e OR II sono Sala Op. I e II del giorno e gli interventi completati compaiono nel
 libretto di chi era in sala.
 
-Le anagrafiche sintetiche riprendono i nomi della demo precedente, fra cui Pippo VerdeScuro,
-Mandringo Bello, Spirulina Alga e BAZZ JAZZ. Pino Silvestre completa il posto mancante
-nell'anagrafica degli specializzandi. Questi nomi sono inclusi nel generatore, così un nuovo
-reset non li sostituisce con etichette numerate. ID, riferimenti e date sono indipendenti dai nomi.
+Il Previsto dello scadenzario di settembre e ottobre è convalidato; l'Effettivo di ottobre
+resta modificabile. Le settimane delle sale concluse entro il 23 ottobre hanno entrambe le
+versioni convalidate e le attività registrate nei libretti. La settimana 26–30 ottobre ha
+il Previsto convalidato e l'Effettivo in bozza. Novembre e dicembre sono in bozza: prima di
+usare il planner bisogna convalidarne lo scadenzario, dalla GUI. Per una settimana che
+attraversa due mesi servono entrambi gli scadenzari convalidati.
+
+I turni coprono tutti gli 88 giorni da lunedì a venerdì. Come nell'applicazione, le festività
+infrasettimanali non chiudono automaticamente le sale. Gli interventi sono inseriti solo
+nelle settimane interamente comprese nel periodo: dal 7 settembre al 25 dicembre. I giorni
+1–4 settembre e 28–31 dicembre hanno turni, ma nessuna operazione precaricata. Il planner
+delle settimane 31 agosto–4 settembre e 28 dicembre–1 gennaio richiede anche i dati del mese
+esterno all'intervallo; questi file non vengono creati implicitamente.
 
 A programma chiuso, dalla radice del progetto:
 
 ```bash
-venv/bin/python3 scripts/reset_demo_data.py --reference-date 2026-09-08
-venv/bin/python3 scripts/reset_demo_data.py --reference-date 2026-09-08 --write
+python scripts/reset_demo_data.py --reference-date 2026-10-27 \
+  --start-month 2026-09 --end-month 2026-12 --patient-count 120 \
+  --data-dir mock_data/scenario_2026_09_12
+
+# Aggiungere --write solo per rigenerare la cartella indicata, con backup.
 ```
 
 L'applicazione usa la data reale per il mese corrente e per la pianificazione, quindi i dati
 vanno rigenerati a ridosso della demo, con quel giorno come data di riferimento (ad esempio
 il giorno prima dell'esame).
 
-Senza `--reference-date`, lo script usa la data odierna. La prima riga mostra soltanto
-un'anteprima; `--write` sostituisce `mock_data` e sposta i dati precedenti in
-`.demo_backups/<data>-<identificativo>/`, esclusa da Git. Per ripristinarli, chiudere
-l'applicazione, conservare a parte la cartella `mock_data` corrente e rimettere il backup
-al suo posto. Il reset è un comando manuale e non viene eseguito all'avvio dell'applicazione.
+Senza `--reference-date`, lo script usa la data odierna. Senza i limiti mensili, genera dal
+mese precedente al secondo mese successivo. A parità di argomenti, JSON e CSV sono identici.
+La modalità predefinita mostra l'anteprima senza scrivere. `--write` sostituisce esclusivamente
+la destinazione indicata da `--data-dir`, salvando i dati precedenti nella cartella
+`.demo_backups/<data>-<identificativo>/` accanto alla destinazione. Il backup è escluso da Git.
+Omettendo `--data-dir`, la destinazione resta il `mock_data` originale: usare il percorso
+esplicito dell'esempio per conservare i mock precedenti. Il reset non viene eseguito all'avvio.
+
+Il generatore puro è [`demo_scenario.py`](scripts/demo_scenario.py); il comando e i backup
+sono gestiti da [`reset_demo_data.py`](scripts/reset_demo_data.py). Per eseguire le verifiche:
+
+```bash
+python -m pip install -r requirements-dev.txt
+python -m compileall src tests scripts
+python -m pytest
+python -m ruff check .
+```
+
+Ruff è configurato per i nuovi script, i test e i moduli del planner modificati, senza
+richiedere la riformattazione dei componenti GUI precedenti. La verifica della demo e i
+limiti dei test sono descritti in [PLANNER_VERIFICATION.md](PLANNER_VERIFICATION.md).
 
 ## Salvataggi, file danneggiati e log
 

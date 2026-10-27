@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from pathlib import Path
 
@@ -47,7 +47,10 @@ def plan_platform_week(
     active_policy = policy or PlatformPlanningPolicy()
     directory = resolve_data_directory(data_directory, project_root=project_root)
     context = load_platform_context(
-        project_root, monday, active_policy, data_directory=directory,
+        project_root,
+        monday,
+        active_policy,
+        data_directory=directory,
     )
     _raise_if_cancelled(cancel_requested)
     built = build_platform_model(
@@ -68,6 +71,7 @@ def plan_platform_week(
             backup_directory=backup_directory,
             data_directory=directory,
         )
+        plan = replace(plan, source_fingerprint=receipt.committed_fingerprint)
     return PlatformPlanningRun(
         context=context,
         result=result,

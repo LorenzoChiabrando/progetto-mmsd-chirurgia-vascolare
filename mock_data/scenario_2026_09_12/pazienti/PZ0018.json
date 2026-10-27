@@ -1,0 +1,30 @@
+{
+    "id": "PZ0018",
+    "nome": "Paziente",
+    "cognome": "Demo 0018",
+    "codice_diagnosi": "D0018",
+    "descrizione_diagnosi": "Diagnosi sintetica 0018",
+    "diagnosi": "[D0018] Diagnosi sintetica 0018",
+    "interventi": [
+        {
+            "codice": "DEMO-0018-1",
+            "descrizione": "Procedura sintetica 0018, parte 1",
+            "durata": 180
+        }
+    ],
+    "codice_intervento": "DEMO-0018-1",
+    "descrizione_intervento": "Procedura sintetica 0018, parte 1",
+    "durata_intervento": 180,
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Alta",
+    "urgenza": "Bassa",
+    "stato": "Completato",
+    "data_inserimento": "01/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 180
+    }
+}

@@ -1,0 +1,30 @@
+{
+    "id": "PZ0100",
+    "nome": "Paziente",
+    "cognome": "Demo 0100",
+    "codice_diagnosi": "D0100",
+    "descrizione_diagnosi": "Diagnosi sintetica 0100",
+    "diagnosi": "[D0100] Diagnosi sintetica 0100",
+    "interventi": [
+        {
+            "codice": "DEMO-0100-1",
+            "descrizione": "Procedura sintetica 0100, parte 1",
+            "durata": 120
+        }
+    ],
+    "codice_intervento": "DEMO-0100-1",
+    "descrizione_intervento": "Procedura sintetica 0100, parte 1",
+    "durata_intervento": 120,
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Bassa",
+    "urgenza": "Media",
+    "stato": "Pianificato",
+    "data_inserimento": "27/10/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
+}

@@ -1,0 +1,931 @@
+{
+    "metadata": {
+        "stato": "BOZZA",
+        "settimane": {
+            "2026-11-02": "BOZZA",
+            "2026-11-09": "BOZZA",
+            "2026-11-16": "BOZZA",
+            "2026-11-23": "BOZZA",
+            "2026-11-30": "BOZZA"
+        },
+        "dati_sintetici": true
+    },
+    "turni": {
+        "2026-11-02": {
+            "specializzandi": {
+                "OR I": "JAZZ B.",
+                "OR II": "Parco L."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0045",
+                    "nome_paziente": "Demo 0045 Paziente",
+                    "diagnosi": "[D0045] Diagnosi sintetica 0045",
+                    "codice_diagnosi": "D0045",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0045",
+                    "intervento": "Procedura sintetica 0045, parte 1",
+                    "codice_intervento": "DEMO-0045-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0045-1",
+                            "descrizione": "Procedura sintetica 0045, parte 1",
+                            "durata": 90
+                        }
+                    ],
+                    "durata": 90,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:30",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "JAZZ B.",
+                    "id_specializzando": "SP007",
+                    "ruolo_specializzando": "OR I"
+                },
+                {
+                    "id_paziente": "PZ0046",
+                    "nome_paziente": "Demo 0046 Paziente",
+                    "diagnosi": "[D0046] Diagnosi sintetica 0046",
+                    "codice_diagnosi": "D0046",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0046",
+                    "intervento": "Procedura sintetica 0046, parte 1",
+                    "codice_intervento": "DEMO-0046-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0046-1",
+                            "descrizione": "Procedura sintetica 0046, parte 1",
+                            "durata": 120
+                        }
+                    ],
+                    "durata": 120,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Parco L.",
+                    "id_specializzando": "SP008",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        },
+        "2026-11-03": {
+            "specializzandi": {
+                "OR I": "JAZZ B.",
+                "OR II": "Parco L."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0047",
+                    "nome_paziente": "Demo 0047 Paziente",
+                    "diagnosi": "[D0047] Diagnosi sintetica 0047",
+                    "codice_diagnosi": "D0047",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0047",
+                    "intervento": "Procedura sintetica 0047, parte 1",
+                    "codice_intervento": "DEMO-0047-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0047-1",
+                            "descrizione": "Procedura sintetica 0047, parte 1",
+                            "durata": 150
+                        }
+                    ],
+                    "durata": 150,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:30",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Media",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "JAZZ B.",
+                    "id_specializzando": "SP007",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-11-04": {
+            "specializzandi": {
+                "OR I": "JAZZ B.",
+                "OR II": "Parco L."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0048",
+                    "nome_paziente": "Demo 0048 Paziente",
+                    "diagnosi": "[D0048] Diagnosi sintetica 0048",
+                    "codice_diagnosi": "D0048",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0048",
+                    "intervento": "Procedura sintetica 0048, parte 1; Procedura sintetica 0048, parte 2",
+                    "codice_intervento": "DEMO-0048-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0048-1",
+                            "descrizione": "Procedura sintetica 0048, parte 1",
+                            "durata": 90
+                        },
+                        {
+                            "codice": "DEMO-0048-2",
+                            "descrizione": "Procedura sintetica 0048, parte 2",
+                            "durata": 90
+                        }
+                    ],
+                    "durata": 180,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "11:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Parco L.",
+                    "id_specializzando": "SP008",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        },
+        "2026-11-05": {
+            "specializzandi": {
+                "OR I": "JAZZ B.",
+                "OR II": "Parco L."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0049",
+                    "nome_paziente": "Demo 0049 Paziente",
+                    "diagnosi": "[D0049] Diagnosi sintetica 0049",
+                    "codice_diagnosi": "D0049",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0049",
+                    "intervento": "Procedura sintetica 0049, parte 1",
+                    "codice_intervento": "DEMO-0049-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0049-1",
+                            "descrizione": "Procedura sintetica 0049, parte 1",
+                            "durata": 45
+                        }
+                    ],
+                    "durata": 45,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "08:45",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Bassa",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "JAZZ B.",
+                    "id_specializzando": "SP007",
+                    "ruolo_specializzando": "OR I"
+                },
+                {
+                    "id_paziente": "PZ0050",
+                    "nome_paziente": "Demo 0050 Paziente",
+                    "diagnosi": "[D0050] Diagnosi sintetica 0050",
+                    "codice_diagnosi": "D0050",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0050",
+                    "intervento": "Procedura sintetica 0050, parte 1",
+                    "codice_intervento": "DEMO-0050-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0050-1",
+                            "descrizione": "Procedura sintetica 0050, parte 1",
+                            "durata": 60
+                        }
+                    ],
+                    "durata": 60,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Parco L.",
+                    "id_specializzando": "SP008",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        },
+        "2026-11-06": {
+            "specializzandi": {
+                "OR I": "JAZZ B.",
+                "OR II": "Parco L."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0051",
+                    "nome_paziente": "Demo 0051 Paziente",
+                    "diagnosi": "[D0051] Diagnosi sintetica 0051",
+                    "codice_diagnosi": "D0051",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0051",
+                    "intervento": "Procedura sintetica 0051, parte 1",
+                    "codice_intervento": "DEMO-0051-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0051-1",
+                            "descrizione": "Procedura sintetica 0051, parte 1",
+                            "durata": 90
+                        }
+                    ],
+                    "durata": 90,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:30",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "JAZZ B.",
+                    "id_specializzando": "SP007",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-11-09": {
+            "specializzandi": {
+                "OR I": "Parco L.",
+                "OR II": "Gasparri A."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0052",
+                    "nome_paziente": "Demo 0052 Paziente",
+                    "diagnosi": "[D0052] Diagnosi sintetica 0052",
+                    "codice_diagnosi": "D0052",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0052",
+                    "intervento": "Procedura sintetica 0052, parte 1",
+                    "codice_intervento": "DEMO-0052-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0052-1",
+                            "descrizione": "Procedura sintetica 0052, parte 1",
+                            "durata": 120
+                        }
+                    ],
+                    "durata": 120,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Bassa",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Gasparri A.",
+                    "id_specializzando": "SP001",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        },
+        "2026-11-10": {
+            "specializzandi": {
+                "OR I": "Parco L.",
+                "OR II": "Gasparri A."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0053",
+                    "nome_paziente": "Demo 0053 Paziente",
+                    "diagnosi": "[D0053] Diagnosi sintetica 0053",
+                    "codice_diagnosi": "D0053",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0053",
+                    "intervento": "Procedura sintetica 0053, parte 1",
+                    "codice_intervento": "DEMO-0053-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0053-1",
+                            "descrizione": "Procedura sintetica 0053, parte 1",
+                            "durata": 150
+                        }
+                    ],
+                    "durata": 150,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:30",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Parco L.",
+                    "id_specializzando": "SP008",
+                    "ruolo_specializzando": "OR I"
+                },
+                {
+                    "id_paziente": "PZ0054",
+                    "nome_paziente": "Demo 0054 Paziente",
+                    "diagnosi": "[D0054] Diagnosi sintetica 0054",
+                    "codice_diagnosi": "D0054",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0054",
+                    "intervento": "Procedura sintetica 0054, parte 1",
+                    "codice_intervento": "DEMO-0054-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0054-1",
+                            "descrizione": "Procedura sintetica 0054, parte 1",
+                            "durata": 180
+                        }
+                    ],
+                    "durata": 180,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "11:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Gasparri A.",
+                    "id_specializzando": "SP001",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        },
+        "2026-11-11": {
+            "specializzandi": {
+                "OR I": "Parco L.",
+                "OR II": "Gasparri A."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0055",
+                    "nome_paziente": "Demo 0055 Paziente",
+                    "diagnosi": "[D0055] Diagnosi sintetica 0055",
+                    "codice_diagnosi": "D0055",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0055",
+                    "intervento": "Procedura sintetica 0055, parte 1",
+                    "codice_intervento": "DEMO-0055-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0055-1",
+                            "descrizione": "Procedura sintetica 0055, parte 1",
+                            "durata": 45
+                        }
+                    ],
+                    "durata": 45,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "08:45",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Parco L.",
+                    "id_specializzando": "SP008",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-11-12": {
+            "specializzandi": {
+                "OR I": "Parco L.",
+                "OR II": "Gasparri A."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0056",
+                    "nome_paziente": "Demo 0056 Paziente",
+                    "diagnosi": "[D0056] Diagnosi sintetica 0056",
+                    "codice_diagnosi": "D0056",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0056",
+                    "intervento": "Procedura sintetica 0056, parte 1; Procedura sintetica 0056, parte 2",
+                    "codice_intervento": "DEMO-0056-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0056-1",
+                            "descrizione": "Procedura sintetica 0056, parte 1",
+                            "durata": 30
+                        },
+                        {
+                            "codice": "DEMO-0056-2",
+                            "descrizione": "Procedura sintetica 0056, parte 2",
+                            "durata": 30
+                        }
+                    ],
+                    "durata": 60,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Media",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Gasparri A.",
+                    "id_specializzando": "SP001",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        },
+        "2026-11-13": {
+            "specializzandi": {
+                "OR I": "Parco L.",
+                "OR II": "Gasparri A."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0057",
+                    "nome_paziente": "Demo 0057 Paziente",
+                    "diagnosi": "[D0057] Diagnosi sintetica 0057",
+                    "codice_diagnosi": "D0057",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0057",
+                    "intervento": "Procedura sintetica 0057, parte 1",
+                    "codice_intervento": "DEMO-0057-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0057-1",
+                            "descrizione": "Procedura sintetica 0057, parte 1",
+                            "durata": 90
+                        }
+                    ],
+                    "durata": 90,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:30",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Parco L.",
+                    "id_specializzando": "SP008",
+                    "ruolo_specializzando": "OR I"
+                },
+                {
+                    "id_paziente": "PZ0058",
+                    "nome_paziente": "Demo 0058 Paziente",
+                    "diagnosi": "[D0058] Diagnosi sintetica 0058",
+                    "codice_diagnosi": "D0058",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0058",
+                    "intervento": "Procedura sintetica 0058, parte 1",
+                    "codice_intervento": "DEMO-0058-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0058-1",
+                            "descrizione": "Procedura sintetica 0058, parte 1",
+                            "durata": 120
+                        }
+                    ],
+                    "durata": 120,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Bassa",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Gasparri A.",
+                    "id_specializzando": "SP001",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        },
+        "2026-11-16": {
+            "specializzandi": {
+                "OR I": "Gasparri A.",
+                "OR II": "Bello M."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0059",
+                    "nome_paziente": "Demo 0059 Paziente",
+                    "diagnosi": "[D0059] Diagnosi sintetica 0059",
+                    "codice_diagnosi": "D0059",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0059",
+                    "intervento": "Procedura sintetica 0059, parte 1",
+                    "codice_intervento": "DEMO-0059-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0059-1",
+                            "descrizione": "Procedura sintetica 0059, parte 1",
+                            "durata": 150
+                        }
+                    ],
+                    "durata": 150,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:30",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Media",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Gasparri A.",
+                    "id_specializzando": "SP001",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-11-17": {
+            "specializzandi": {
+                "OR I": "Gasparri A.",
+                "OR II": "Bello M."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0060",
+                    "nome_paziente": "Demo 0060 Paziente",
+                    "diagnosi": "[D0060] Diagnosi sintetica 0060",
+                    "codice_diagnosi": "D0060",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0060",
+                    "intervento": "Procedura sintetica 0060, parte 1",
+                    "codice_intervento": "DEMO-0060-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0060-1",
+                            "descrizione": "Procedura sintetica 0060, parte 1",
+                            "durata": 180
+                        }
+                    ],
+                    "durata": 180,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "11:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Bello M.",
+                    "id_specializzando": "SP002",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        },
+        "2026-11-18": {
+            "specializzandi": {
+                "OR I": "Gasparri A.",
+                "OR II": "Bello M."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0061",
+                    "nome_paziente": "Demo 0061 Paziente",
+                    "diagnosi": "[D0061] Diagnosi sintetica 0061",
+                    "codice_diagnosi": "D0061",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0061",
+                    "intervento": "Procedura sintetica 0061, parte 1",
+                    "codice_intervento": "DEMO-0061-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0061-1",
+                            "descrizione": "Procedura sintetica 0061, parte 1",
+                            "durata": 45
+                        }
+                    ],
+                    "durata": 45,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "08:45",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Bassa",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Gasparri A.",
+                    "id_specializzando": "SP001",
+                    "ruolo_specializzando": "OR I"
+                },
+                {
+                    "id_paziente": "PZ0062",
+                    "nome_paziente": "Demo 0062 Paziente",
+                    "diagnosi": "[D0062] Diagnosi sintetica 0062",
+                    "codice_diagnosi": "D0062",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0062",
+                    "intervento": "Procedura sintetica 0062, parte 1",
+                    "codice_intervento": "DEMO-0062-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0062-1",
+                            "descrizione": "Procedura sintetica 0062, parte 1",
+                            "durata": 60
+                        }
+                    ],
+                    "durata": 60,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Bello M.",
+                    "id_specializzando": "SP002",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        },
+        "2026-11-19": {
+            "specializzandi": {
+                "OR I": "Gasparri A.",
+                "OR II": "Bello M."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0063",
+                    "nome_paziente": "Demo 0063 Paziente",
+                    "diagnosi": "[D0063] Diagnosi sintetica 0063",
+                    "codice_diagnosi": "D0063",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0063",
+                    "intervento": "Procedura sintetica 0063, parte 1",
+                    "codice_intervento": "DEMO-0063-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0063-1",
+                            "descrizione": "Procedura sintetica 0063, parte 1",
+                            "durata": 90
+                        }
+                    ],
+                    "durata": 90,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:30",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Gasparri A.",
+                    "id_specializzando": "SP001",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-11-20": {
+            "specializzandi": {
+                "OR I": "Gasparri A.",
+                "OR II": "Bello M."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0064",
+                    "nome_paziente": "Demo 0064 Paziente",
+                    "diagnosi": "[D0064] Diagnosi sintetica 0064",
+                    "codice_diagnosi": "D0064",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0064",
+                    "intervento": "Procedura sintetica 0064, parte 1; Procedura sintetica 0064, parte 2",
+                    "codice_intervento": "DEMO-0064-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0064-1",
+                            "descrizione": "Procedura sintetica 0064, parte 1",
+                            "durata": 60
+                        },
+                        {
+                            "codice": "DEMO-0064-2",
+                            "descrizione": "Procedura sintetica 0064, parte 2",
+                            "durata": 60
+                        }
+                    ],
+                    "durata": 120,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Bello M.",
+                    "id_specializzando": "SP002",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        },
+        "2026-11-23": {
+            "specializzandi": {
+                "OR I": "Bello M.",
+                "OR II": "Verdone V."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0065",
+                    "nome_paziente": "Demo 0065 Paziente",
+                    "diagnosi": "[D0065] Diagnosi sintetica 0065",
+                    "codice_diagnosi": "D0065",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0065",
+                    "intervento": "Procedura sintetica 0065, parte 1",
+                    "codice_intervento": "DEMO-0065-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0065-1",
+                            "descrizione": "Procedura sintetica 0065, parte 1",
+                            "durata": 150
+                        }
+                    ],
+                    "durata": 150,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:30",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Bello M.",
+                    "id_specializzando": "SP002",
+                    "ruolo_specializzando": "OR I"
+                },
+                {
+                    "id_paziente": "PZ0066",
+                    "nome_paziente": "Demo 0066 Paziente",
+                    "diagnosi": "[D0066] Diagnosi sintetica 0066",
+                    "codice_diagnosi": "D0066",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0066",
+                    "intervento": "Procedura sintetica 0066, parte 1",
+                    "codice_intervento": "DEMO-0066-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0066-1",
+                            "descrizione": "Procedura sintetica 0066, parte 1",
+                            "durata": 180
+                        }
+                    ],
+                    "durata": 180,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "11:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Verdone V.",
+                    "id_specializzando": "SP003",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        },
+        "2026-11-24": {
+            "specializzandi": {
+                "OR I": "Bello M.",
+                "OR II": "Verdone V."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0067",
+                    "nome_paziente": "Demo 0067 Paziente",
+                    "diagnosi": "[D0067] Diagnosi sintetica 0067",
+                    "codice_diagnosi": "D0067",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0067",
+                    "intervento": "Procedura sintetica 0067, parte 1",
+                    "codice_intervento": "DEMO-0067-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0067-1",
+                            "descrizione": "Procedura sintetica 0067, parte 1",
+                            "durata": 45
+                        }
+                    ],
+                    "durata": 45,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "08:45",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Bello M.",
+                    "id_specializzando": "SP002",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-11-25": {
+            "specializzandi": {
+                "OR I": "Bello M.",
+                "OR II": "Verdone V."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0068",
+                    "nome_paziente": "Demo 0068 Paziente",
+                    "diagnosi": "[D0068] Diagnosi sintetica 0068",
+                    "codice_diagnosi": "D0068",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0068",
+                    "intervento": "Procedura sintetica 0068, parte 1",
+                    "codice_intervento": "DEMO-0068-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0068-1",
+                            "descrizione": "Procedura sintetica 0068, parte 1",
+                            "durata": 60
+                        }
+                    ],
+                    "durata": 60,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Verdone V.",
+                    "id_specializzando": "SP003",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        },
+        "2026-11-26": {
+            "specializzandi": {
+                "OR I": "Bello M.",
+                "OR II": "Verdone V."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0069",
+                    "nome_paziente": "Demo 0069 Paziente",
+                    "diagnosi": "[D0069] Diagnosi sintetica 0069",
+                    "codice_diagnosi": "D0069",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0069",
+                    "intervento": "Procedura sintetica 0069, parte 1",
+                    "codice_intervento": "DEMO-0069-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0069-1",
+                            "descrizione": "Procedura sintetica 0069, parte 1",
+                            "durata": 90
+                        }
+                    ],
+                    "durata": 90,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "09:30",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Bello M.",
+                    "id_specializzando": "SP002",
+                    "ruolo_specializzando": "OR I"
+                },
+                {
+                    "id_paziente": "PZ0070",
+                    "nome_paziente": "Demo 0070 Paziente",
+                    "diagnosi": "[D0070] Diagnosi sintetica 0070",
+                    "codice_diagnosi": "D0070",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0070",
+                    "intervento": "Procedura sintetica 0070, parte 1",
+                    "codice_intervento": "DEMO-0070-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0070-1",
+                            "descrizione": "Procedura sintetica 0070, parte 1",
+                            "durata": 120
+                        }
+                    ],
+                    "durata": 120,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Verdone V.",
+                    "id_specializzando": "SP003",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        },
+        "2026-11-27": {
+            "specializzandi": {
+                "OR I": "Bello M.",
+                "OR II": "Verdone V."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0071",
+                    "nome_paziente": "Demo 0071 Paziente",
+                    "diagnosi": "[D0071] Diagnosi sintetica 0071",
+                    "codice_diagnosi": "D0071",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0071",
+                    "intervento": "Procedura sintetica 0071, parte 1",
+                    "codice_intervento": "DEMO-0071-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0071-1",
+                            "descrizione": "Procedura sintetica 0071, parte 1",
+                            "durata": 150
+                        }
+                    ],
+                    "durata": 150,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "10:30",
+                    "sala_operatoria": "OR-1",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Aperta",
+                    "specializzando": "Bello M.",
+                    "id_specializzando": "SP002",
+                    "ruolo_specializzando": "OR I"
+                }
+            ]
+        },
+        "2026-11-30": {
+            "specializzandi": {
+                "OR I": "Verdone V.",
+                "OR II": "Silvestre P."
+            },
+            "operazioni": [
+                {
+                    "id_paziente": "PZ0072",
+                    "nome_paziente": "Demo 0072 Paziente",
+                    "diagnosi": "[D0072] Diagnosi sintetica 0072",
+                    "codice_diagnosi": "D0072",
+                    "descrizione_diagnosi": "Diagnosi sintetica 0072",
+                    "intervento": "Procedura sintetica 0072, parte 1; Procedura sintetica 0072, parte 2",
+                    "codice_intervento": "DEMO-0072-1",
+                    "interventi": [
+                        {
+                            "codice": "DEMO-0072-1",
+                            "descrizione": "Procedura sintetica 0072, parte 1",
+                            "durata": 90
+                        },
+                        {
+                            "codice": "DEMO-0072-2",
+                            "descrizione": "Procedura sintetica 0072, parte 2",
+                            "durata": 90
+                        }
+                    ],
+                    "durata": 180,
+                    "ora_inizio": "08:00",
+                    "ora_fine": "11:00",
+                    "sala_operatoria": "OR-2",
+                    "chirurgo": "Chirurgo demo",
+                    "complessita": "Alta",
+                    "tipo_chirurgia": "Endovascolare",
+                    "specializzando": "Silvestre P.",
+                    "id_specializzando": "SP004",
+                    "ruolo_specializzando": "OR II"
+                }
+            ]
+        }
+    }
+}

@@ -103,6 +103,7 @@ class PlatformPlanningContext:
     patient_records: Mapping[str, Mapping[str, Any]]
     roster_by_day: Mapping[date, tuple[RosterAssignment, ...]]
     excluded_other_draft_count: int = 0
+    source_fingerprint: str | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         patient_records = {
@@ -129,6 +130,7 @@ class PlatformWeekPlan:
 
     monday: date
     days: tuple[PlatformDayPlan, ...]
+    source_fingerprint: str | None = field(default=None, repr=False, compare=False)
 
 
 def build_platform_context(
@@ -244,6 +246,7 @@ def build_platform_context(
             raise PlatformDataError(
                 f"Il paziente {patient_id} ha una durata dell'intervento non valida."
             )
+        _validate_intervention_durations(record, patient_id, duration)
         complexity = record.get("complessita")
         if not isinstance(complexity, str) or not complexity.strip():
             raise PlatformDataError(
@@ -423,7 +426,37 @@ def map_result_to_platform_plan(
     return PlatformWeekPlan(
         monday=context.monday,
         days=tuple(day_plans),
+        source_fingerprint=context.source_fingerprint,
     )
+
+
+def _validate_intervention_durations(
+    record: Mapping[str, Any], patient_id: str, total_duration: int,
+) -> None:
+    """Require positive integer detail minutes matching the legacy total when present."""
+    interventions = record.get("interventi")
+    if interventions is None:
+        return
+    if not isinstance(interventions, list):
+        raise PlatformDataError(
+            f"Il paziente {patient_id} deve avere un elenco valido di interventi."
+        )
+    if not interventions:
+        return
+    detail_total = 0
+    for index, intervention in enumerate(interventions, start=1):
+        duration = intervention.get("durata") if isinstance(intervention, Mapping) else None
+        if not isinstance(duration, int) or isinstance(duration, bool) or duration <= 0:
+            raise PlatformDataError(
+                f"Il paziente {patient_id} ha una durata non valida nell'intervento {index}: "
+                "specificare minuti interi positivi."
+            )
+        detail_total += duration
+    if detail_total != total_duration:
+        raise PlatformDataError(
+            f"Il paziente {patient_id} ha durate incoerenti: durata_intervento deve coincidere "
+            "con la somma delle durate in interventi."
+        )
 
 
 def _build_operation_record(

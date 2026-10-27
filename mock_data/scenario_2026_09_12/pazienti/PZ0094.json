@@ -1,0 +1,30 @@
+{
+    "id": "PZ0094",
+    "nome": "Paziente",
+    "cognome": "Demo 0094",
+    "codice_diagnosi": "D0094",
+    "descrizione_diagnosi": "Diagnosi sintetica 0094",
+    "diagnosi": "[D0094] Diagnosi sintetica 0094",
+    "interventi": [
+        {
+            "codice": "DEMO-0094-1",
+            "descrizione": "Procedura sintetica 0094, parte 1",
+            "durata": 120
+        }
+    ],
+    "codice_intervento": "DEMO-0094-1",
+    "descrizione_intervento": "Procedura sintetica 0094, parte 1",
+    "durata_intervento": 120,
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Bassa",
+    "urgenza": "Media",
+    "stato": "Pianificato",
+    "data_inserimento": "27/10/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
+}

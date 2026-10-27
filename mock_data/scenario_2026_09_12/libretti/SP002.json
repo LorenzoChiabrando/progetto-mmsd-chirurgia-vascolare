@@ -1,0 +1,179 @@
+{
+    "id": "SP002",
+    "nome": "Mandringo",
+    "cognome": "Bello",
+    "matricola": "DEMO-002",
+    "livello": "Senior",
+    "stato": "Molinette",
+    "dati_sintetici": true,
+    "attivita": [
+        {
+            "data": "2026-09-22",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0014 Paziente",
+            "id_paziente": "PZ0014",
+            "diagnosi": "[D0014] Diagnosi sintetica 0014",
+            "intervento": "Procedura sintetica 0014, parte 1",
+            "codice_intervento": "DEMO-0014-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0014-1",
+                    "descrizione": "Procedura sintetica 0014, parte 1",
+                    "durata": 60
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
+            "ora_inizio": "08:00",
+            "ora_fine": "09:00",
+            "durata": 60,
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-09-24",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0016 Paziente",
+            "id_paziente": "PZ0016",
+            "diagnosi": "[D0016] Diagnosi sintetica 0016",
+            "intervento": "Procedura sintetica 0016, parte 1; Procedura sintetica 0016, parte 2",
+            "codice_intervento": "DEMO-0016-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0016-1",
+                    "descrizione": "Procedura sintetica 0016, parte 1",
+                    "durata": 60
+                },
+                {
+                    "codice": "DEMO-0016-2",
+                    "descrizione": "Procedura sintetica 0016, parte 2",
+                    "durata": 60
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
+            "ora_inizio": "08:00",
+            "ora_fine": "10:00",
+            "durata": 120,
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-09-29",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0019 Paziente",
+            "id_paziente": "PZ0019",
+            "diagnosi": "[D0019] Diagnosi sintetica 0019",
+            "intervento": "Procedura sintetica 0019, parte 1",
+            "codice_intervento": "DEMO-0019-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0019-1",
+                    "descrizione": "Procedura sintetica 0019, parte 1",
+                    "durata": 45
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Aperta",
+            "ora_inizio": "08:00",
+            "ora_fine": "08:45",
+            "durata": 45,
+            "ruolo": "OR I"
+        },
+        {
+            "data": "2026-10-01",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0021 Paziente",
+            "id_paziente": "PZ0021",
+            "diagnosi": "[D0021] Diagnosi sintetica 0021",
+            "intervento": "Procedura sintetica 0021, parte 1",
+            "codice_intervento": "DEMO-0021-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0021-1",
+                    "descrizione": "Procedura sintetica 0021, parte 1",
+                    "durata": 90
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Aperta",
+            "ora_inizio": "08:00",
+            "ora_fine": "09:30",
+            "durata": 90,
+            "ruolo": "OR I"
+        },
+        {
+            "data": "2026-10-02",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0023 Paziente",
+            "id_paziente": "PZ0023",
+            "diagnosi": "[D0023] Diagnosi sintetica 0023",
+            "intervento": "Procedura sintetica 0023, parte 1",
+            "codice_intervento": "DEMO-0023-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0023-1",
+                    "descrizione": "Procedura sintetica 0023, parte 1",
+                    "durata": 150
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Aperta",
+            "ora_inizio": "08:00",
+            "ora_fine": "10:30",
+            "durata": 150,
+            "ruolo": "OR I"
+        }
+    ],
+    "attivita_extra": [
+        {
+            "data": "2026-09-14",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-09-15",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-09-16",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-09-17",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-09-18",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        }
+    ],
+    "meta_giorni": {}
+}

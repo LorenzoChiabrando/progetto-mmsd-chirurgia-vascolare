@@ -1,0 +1,30 @@
+{
+    "id": "PZ0028",
+    "nome": "Paziente",
+    "cognome": "Demo 0028",
+    "codice_diagnosi": "D0028",
+    "descrizione_diagnosi": "Diagnosi sintetica 0028",
+    "diagnosi": "[D0028] Diagnosi sintetica 0028",
+    "interventi": [
+        {
+            "codice": "DEMO-0028-1",
+            "descrizione": "Procedura sintetica 0028, parte 1",
+            "durata": 120
+        }
+    ],
+    "codice_intervento": "DEMO-0028-1",
+    "descrizione_intervento": "Procedura sintetica 0028, parte 1",
+    "durata_intervento": 120,
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Bassa",
+    "urgenza": "Alta",
+    "stato": "Completato",
+    "data_inserimento": "02/10/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 30
+    }
+}

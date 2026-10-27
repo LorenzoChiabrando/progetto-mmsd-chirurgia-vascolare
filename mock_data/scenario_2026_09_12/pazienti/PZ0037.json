@@ -1,0 +1,30 @@
+{
+    "id": "PZ0037",
+    "nome": "Paziente",
+    "cognome": "Demo 0037",
+    "codice_diagnosi": "D0037",
+    "descrizione_diagnosi": "Diagnosi sintetica 0037",
+    "diagnosi": "[D0037] Diagnosi sintetica 0037",
+    "interventi": [
+        {
+            "codice": "DEMO-0037-1",
+            "descrizione": "Procedura sintetica 0037, parte 1",
+            "durata": 45
+        }
+    ],
+    "codice_intervento": "DEMO-0037-1",
+    "descrizione_intervento": "Procedura sintetica 0037, parte 1",
+    "durata_intervento": 45,
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Alta",
+    "urgenza": "Alta",
+    "stato": "Completato",
+    "data_inserimento": "06/10/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 30
+    }
+}

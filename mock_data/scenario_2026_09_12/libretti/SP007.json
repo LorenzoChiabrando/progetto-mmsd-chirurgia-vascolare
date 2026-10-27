@@ -1,0 +1,128 @@
+{
+    "id": "SP007",
+    "nome": "BAZZ",
+    "cognome": "JAZZ",
+    "matricola": "DEMO-007",
+    "livello": "Junior",
+    "stato": "Molinette",
+    "dati_sintetici": true,
+    "attivita": [
+        {
+            "data": "2026-09-07",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0001 Paziente",
+            "id_paziente": "PZ0001",
+            "diagnosi": "[D0001] Diagnosi sintetica 0001",
+            "intervento": "Procedura sintetica 0001, parte 1",
+            "codice_intervento": "DEMO-0001-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0001-1",
+                    "descrizione": "Procedura sintetica 0001, parte 1",
+                    "durata": 45
+                }
+            ],
+            "complessita": "Bassa",
+            "tipo_chirurgia": "Aperta",
+            "ora_inizio": "08:00",
+            "ora_fine": "08:45",
+            "durata": 45,
+            "ruolo": "OR I"
+        },
+        {
+            "data": "2026-09-08",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0003 Paziente",
+            "id_paziente": "PZ0003",
+            "diagnosi": "[D0003] Diagnosi sintetica 0003",
+            "intervento": "Procedura sintetica 0003, parte 1",
+            "codice_intervento": "DEMO-0003-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0003-1",
+                    "descrizione": "Procedura sintetica 0003, parte 1",
+                    "durata": 90
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Aperta",
+            "ora_inizio": "08:00",
+            "ora_fine": "09:30",
+            "durata": 90,
+            "ruolo": "OR I"
+        },
+        {
+            "data": "2026-09-10",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0005 Paziente",
+            "id_paziente": "PZ0005",
+            "diagnosi": "[D0005] Diagnosi sintetica 0005",
+            "intervento": "Procedura sintetica 0005, parte 1",
+            "codice_intervento": "DEMO-0005-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0005-1",
+                    "descrizione": "Procedura sintetica 0005, parte 1",
+                    "durata": 150
+                }
+            ],
+            "complessita": "Media",
+            "tipo_chirurgia": "Aperta",
+            "ora_inizio": "08:00",
+            "ora_fine": "10:30",
+            "durata": 150,
+            "ruolo": "OR I"
+        }
+    ],
+    "attivita_extra": [
+        {
+            "data": "2026-10-19",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-10-20",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-10-21",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-10-22",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-10-23",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        }
+    ],
+    "meta_giorni": {}
+}

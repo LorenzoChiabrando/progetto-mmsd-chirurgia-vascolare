@@ -1,0 +1,20 @@
+[tool.pytest.ini_options]
+addopts = "-ra"
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+include = [
+    "scripts/demo_*.py", "scripts/reset_demo_data.py", "tests/**/*.py",
+    "src/optimization/platform_io.py", "src/optimization/platform_mapping.py",
+    "src/optimization/solver.py", "src/optimization/platform_service.py",
+]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "SIM", "UP"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310"]

@@ -1,0 +1,35 @@
+{
+    "id": "PZ0120",
+    "nome": "Paziente",
+    "cognome": "Demo 0120",
+    "codice_diagnosi": "D0120",
+    "descrizione_diagnosi": "Diagnosi sintetica 0120",
+    "diagnosi": "[D0120] Diagnosi sintetica 0120",
+    "interventi": [
+        {
+            "codice": "DEMO-0120-1",
+            "descrizione": "Procedura sintetica 0120, parte 1",
+            "durata": 90
+        },
+        {
+            "codice": "DEMO-0120-2",
+            "descrizione": "Procedura sintetica 0120, parte 2",
+            "durata": 90
+        }
+    ],
+    "codice_intervento": "DEMO-0120-1",
+    "descrizione_intervento": "Procedura sintetica 0120, parte 1",
+    "durata_intervento": 180,
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Alta",
+    "urgenza": "Bassa",
+    "stato": "In Attesa",
+    "data_inserimento": "20/10/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 180
+    }
+}

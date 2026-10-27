@@ -1,0 +1,30 @@
+{
+    "id": "PZ0036",
+    "nome": "Paziente",
+    "cognome": "Demo 0036",
+    "codice_diagnosi": "D0036",
+    "descrizione_diagnosi": "Diagnosi sintetica 0036",
+    "diagnosi": "[D0036] Diagnosi sintetica 0036",
+    "interventi": [
+        {
+            "codice": "DEMO-0036-1",
+            "descrizione": "Procedura sintetica 0036, parte 1",
+            "durata": 180
+        }
+    ],
+    "codice_intervento": "DEMO-0036-1",
+    "descrizione_intervento": "Procedura sintetica 0036, parte 1",
+    "durata_intervento": 180,
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Alta",
+    "urgenza": "Bassa",
+    "stato": "Completato",
+    "data_inserimento": "08/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 180
+    }
+}

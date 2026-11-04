@@ -19,6 +19,7 @@ from PySide6.QtWidgets import QApplication, QDialog, QTableWidget
 import main
 from src.calendar_versions import CalendarVersion
 from src.controllers import controller_sale_operatorie, controller_scadenzario
+from src.optimization.parametri import ParametriPianificazione
 from src.optimization.platform_service import PlatformPlanningRun, plan_platform_week
 from src.optimization.solver import HighsConfig, HighsSolver
 from src.views.components import messages
@@ -175,27 +176,27 @@ def test_roster_navigation_renders_four_months_and_both_versions(gui_demo: GuiDe
     view.btn_prev.click()
     _assert_roster_month(gui, 9)
     for version in (CalendarVersion.EFFETTIVO, CalendarVersion.PREVISTO):
-        view.combo_versione.setCurrentIndex(view.combo_versione.findData(version.value))
+        view.scelta_versione.setCurrentIndex(view.scelta_versione.findData(version.value))
         assert controller.versione_corrente == version
         _assert_roster_month(gui, 9)
     view.btn_indietro.click()
     view.btn_corrente.click()
     _assert_roster_month(gui, 10)
-    view.combo_versione.setCurrentIndex(view.combo_versione.findData("effettivo"))
+    view.scelta_versione.setCurrentIndex(view.scelta_versione.findData("effettivo"))
     _assert_roster_month(gui, 10)
     assert controller._puo_modificare()
-    view.combo_versione.setCurrentIndex(view.combo_versione.findData("previsto"))
+    view.scelta_versione.setCurrentIndex(view.scelta_versione.findData("previsto"))
     assert not controller._puo_modificare()
     view.btn_indietro.click()
     view.btn_pianificazione.click()
+    # Planning works on the Previsto only: the Versione choice is not shown.
+    assert controller.versione_corrente == CalendarVersion.PREVISTO
+    assert not view.scelta_versione.isVisibleTo(view)
     for month in (11, 12):
         _assert_roster_month(gui, month)
         view.btn_per_specializzando.click()
         view.btn_per_attivita.click()
-        view.combo_versione.setCurrentIndex(view.combo_versione.findData("effettivo"))
-        _assert_roster_month(gui, month, empty=True)
-        assert "non ancora creato" in view.lbl_versione_info.text()
-        view.combo_versione.setCurrentIndex(view.combo_versione.findData("previsto"))
+        assert controller.versione_corrente == CalendarVersion.PREVISTO
         if month == 11:
             view.btn_next.click()
     assert json_bytes(gui.root) == before
@@ -213,7 +214,7 @@ def test_operating_room_month_views_render_correct_numbers(
     controller = window.controller_sale_operatorie
     view = window.view_sale_operatorie
     controller.apri_vista("CONSULTAZIONE")
-    view.combo_versione.setCurrentIndex(view.combo_versione.findData(version))
+    view.scelta_versione.setCurrentIndex(view.scelta_versione.findData(version))
     assert controller.versione == version
     for month, expected in ((9, 20), (10, 24), (11, 28), (12, 28)):
         controller.settimana_display = date(2026, month, 7)
@@ -280,10 +281,20 @@ def test_real_planning_worker_saves_november_and_restores_gui_controls(
     def bounded_real_service(*args: Any, **kwargs: Any) -> PlatformPlanningRun:
         service_threads.append(get_ident())
         return plan_platform_week(
-            *args, **kwargs, solver_config=HighsConfig(time_limit_seconds=10.0)
+            *args, **{**kwargs, "solver_config": HighsConfig(time_limit_seconds=10.0)}
         )
 
     monkeypatch.setattr(controller, "_planning_service", bounded_real_service)
+    # The solver-parameter dialog is modal: answer it with a 10-second limit.
+    chosen: list[dict[str, Any]] = []
+
+    def choose_parameters(_parent: object, **kwargs: Any) -> ParametriPianificazione:
+        chosen.append(kwargs)
+        return ParametriPianificazione(limite_tempo_secondi=10, gap_relativo=1e-4)
+
+    monkeypatch.setattr(
+        controller_sale_operatorie, "chiedi_parametri_pianificazione", choose_parameters
+    )
     completed: list[PlatformPlanningRun] = []
     errors: list[str] = []
     busy_states: list[bool] = []
@@ -311,10 +322,11 @@ def test_real_planning_worker_saves_november_and_restores_gui_controls(
     view.btn_pianifica.click()
     worker = controller._planning_worker
     assert worker is not None
+    assert len(chosen) == 1
     worker.succeeded.connect(completed.append)
     worker.failed.connect(errors.append)
     assert not window.sidebar.isEnabled()
-    assert not view.combo_versione.isEnabled()
+    assert not view.scelta_versione.isEnabled()
     heartbeat.start()
     deadline.start(20_000)
     try:
@@ -335,7 +347,7 @@ def test_real_planning_worker_saves_november_and_restores_gui_controls(
     assert busy_states == [True, False]
     assert controller._planning_worker is None
     assert window.sidebar.isEnabled()
-    assert view.combo_versione.isEnabled()
+    assert view.scelta_versione.isEnabled()
     assert _visible_operation_count(view.tabella) == len(result.result.schedule)
     assert any(title.startswith("Pianificazione completata") for title, _ in gui.alerts)
     after = json_bytes(gui.root)

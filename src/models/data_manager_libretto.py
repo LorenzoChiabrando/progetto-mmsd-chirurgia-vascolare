@@ -108,6 +108,11 @@ class DataManagerLibretto:
                 matches.append(spec)
         return matches[0] if len(matches) == 1 else None
 
+    def trova_id_specializzando(self, nome_formattato: str) -> str:
+        """ID del libretto con l'etichetta ``Cognome N.``; vuoto se manca o è ambigua."""
+        spec = self._trova_spec_by_nome_formattato(nome_formattato)
+        return spec.get("id", "") if spec else ""
+
     @staticmethod
     def _activity_key(activity: dict) -> tuple[str, str]:
         """Use the legacy start time only when the activity has no slot field."""

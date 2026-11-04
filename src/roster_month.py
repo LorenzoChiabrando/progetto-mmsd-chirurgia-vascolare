@@ -7,7 +7,7 @@ l'export PDF.
 from __future__ import annotations
 
 import calendar
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, field
 from datetime import date, timedelta
 from types import MappingProxyType
@@ -115,25 +115,40 @@ def resident_rows(
     in sede). Più ruoli nello stesso giorno sono uniti con ``+`` e contano tutti.
     """
 
+    return resident_rows_for_dates(roster.dates, roster.value, residents)
+
+
+def resident_rows_for_dates(
+    dates: Iterable[date],
+    value: Callable[[date, str], str],
+    residents: Iterable[Mapping[str, object]],
+) -> tuple[ResidentRow, ...]:
+    """Come :func:`resident_rows`, ma su date qualsiasi e con ``value(giorno, ruolo)``.
+
+    Serve all'export di una settimana, anche a cavallo di due mesi: codici e totale
+    riguardano solo ``dates``.
+    """
+
+    days = tuple(dates)
     people = tuple(residents)
+    roles = tuple(role for role in ROLE_KEYS if role in RESIDENT_ROLE_CODES)
     labels: dict[str, str] = {}
     for resident in people:
         if resident.get("stato") == ACTIVE_RESIDENT_STATUS:
             label = resident_label(resident)
             labels.setdefault(label.casefold(), label)
-    for (_day, role), value in roster.values.items():
-        if role in RESIDENT_ROLE_CODES:
-            labels.setdefault(value.casefold(), value)
+    for day in days:
+        for role in roles:
+            if assigned := value(day, role):
+                labels.setdefault(assigned.casefold(), assigned)
 
     rows: list[ResidentRow] = []
     for key, label in sorted(labels.items(), key=lambda item: item[1].casefold()):
         codes: list[str] = []
         total = 0
-        for day in roster.dates:
+        for day in days:
             day_codes = [
-                RESIDENT_ROLE_CODES[role]
-                for role in ROLE_KEYS
-                if role in RESIDENT_ROLE_CODES and roster.value(day, role).casefold() == key
+                RESIDENT_ROLE_CODES[role] for role in roles if value(day, role).casefold() == key
             ]
             total += len(day_codes)
             codes.append("+".join(day_codes))

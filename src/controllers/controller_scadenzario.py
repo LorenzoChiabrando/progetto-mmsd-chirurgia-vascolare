@@ -2,15 +2,16 @@ from __future__ import annotations
 
 import calendar
 import datetime
+from collections.abc import Sequence
 from contextlib import contextmanager
-from pathlib import Path
 
-from PySide6.QtWidgets import QDialog, QFileDialog
+from PySide6.QtWidgets import QDialog
 from PySide6.QtCore import Qt
 
 from src.calendar_presentation import (
     GUARD_TEXT_COLORS,
     ROLE_CELL_COLORS,
+    ROLE_HEADER_COLORS,
     month_dates,
     month_weeks,
     resolve_resident_name,
@@ -28,9 +29,18 @@ from src.roster_assignment import (
     busy_residents_for_week,
     resident_options,
 )
-from src.roster_month import GUARD_ROLE, ROLE_KEYS, RosterMonth, load_roster_month, resident_rows
+from src.roster_month import (
+    GUARD_ROLE,
+    RESIDENT_ROLE_CODES,
+    ROLE_KEYS,
+    RosterMonth,
+    load_roster_month,
+    resident_rows,
+    resident_rows_for_dates,
+)
 from src.views.components import messages
 from src.views.dialog_assegnazione_turno import DialogAssegnazioneSpecializzando, DialogTipoGuardia
+from src.views.dialog_esporta_pdf import Vista, chiedi_esportazione, intervalli_mese
 from src.views.dialog_mese_anno import DialogMeseAnno
 
 
@@ -43,23 +53,35 @@ _RUOLI_SALE_OPERATORIE = {"Sala Op. I": ("OR-1", "OR I"), "Sala Op. II": ("OR-2"
 
 _PDF_GUARD_NOTE = "118 = Emergenza territoriale · PI = Pronto Intervento · L = Liscia (routinaria)"
 
+_VISTE_PDF = (
+    Vista("ATTIVITA", "Per attività", "Una riga per turno, con i nomi"),
+    Vista(
+        "SPECIALIZZANDI", "Per specializzando", "Una riga per persona, con sigle e totale",
+        "-per-specializzando",
+    ),
+)
+"""Righe del PDF, come i pulsanti «Righe» della barra dei filtri."""
+
 
 def build_scadenzario_pdf_document(
-    roster: RosterMonth,
+    rosters: Sequence[RosterMonth],
     dates: tuple[datetime.date, ...],
     residents: list[dict],
     *,
     version: CalendarVersion = CalendarVersion.PREVISTO,
 ) -> CalendarPdfDocument:
-    """Prepara il PDF dello scadenzario a partire dal mese caricato.
+    """Prepara il PDF dello scadenzario a partire dai mesi caricati.
 
+    ``rosters`` contiene i mesi delle date da esportare: una settimana a cavallo di
+    due mesi prende ogni giorno dal proprio mese; un mese mancante resta a «-».
     Nel mese gli specializzandi compaiono come ``Cognome N.`` (il PDF li abbrevia al
     cognome se serve), nella settimana con il nome completo. Il titolo indica la
-    versione (Previsto o Effettivo) da cui proviene ``roster``.
+    versione (Previsto o Effettivo) da cui provengono i mesi.
     """
 
     if not dates:
         raise ValueError("Serve almeno una data da esportare.")
+    by_month = _rosters_by_month(rosters)
     monthly = len(dates) > 7
     weekday_labels = ("Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom")
     columns = tuple(f"{day.day} {weekday_labels[day.weekday()]}" for day in dates)
@@ -67,7 +89,7 @@ def build_scadenzario_pdf_document(
     for role in ROLE_KEYS:
         values: list[str] = []
         for day in dates:
-            value = roster.value(day, role) if RosterMonth.is_workday(day) else "-"
+            value = by_month(day, role) if RosterMonth.is_workday(day) else "-"
             if role != GUARD_ROLE and value and value != "-" and not monthly:
                 value = resolve_resident_name(value, residents)
             values.append(value or "-")
@@ -90,6 +112,78 @@ def build_scadenzario_pdf_document(
         footnote=_PDF_GUARD_NOTE,
         rest_columns=frozenset(index for index, day in enumerate(dates) if day.weekday() >= 5),
         stacked_names=monthly,
+    )
+
+
+def _rosters_by_month(rosters: Sequence[RosterMonth]):
+    """``valore(giorno, ruolo)`` preso dal mese di quel giorno; vuoto se il mese manca."""
+
+    months = {(roster.year, roster.month): roster for roster in rosters}
+
+    def value(day: datetime.date, role: str) -> str:
+        roster = months.get((day.year, day.month))
+        return roster.value(day, role) if roster is not None else ""
+
+    return value
+
+
+_RESIDENT_CODE_BACKGROUNDS = {
+    code: ROLE_HEADER_COLORS[role] for role, code in RESIDENT_ROLE_CODES.items()
+}
+_PDF_RESIDENT_NOTE = (
+    " · ".join(
+        f"{code} = {row_display_label(role)}" for role, code in RESIDENT_ROLE_CODES.items()
+    )
+    + " · Tot. = turni nel periodo esportato"
+)
+
+
+def build_scadenzario_residents_pdf_document(
+    rosters: Sequence[RosterMonth],
+    dates: tuple[datetime.date, ...],
+    residents: list[dict],
+    *,
+    version: CalendarVersion = CalendarVersion.PREVISTO,
+) -> CalendarPdfDocument:
+    """PDF della vista per specializzando: una riga per persona, la sigla del turno per
+    giorno (colorata come il ruolo, come a schermo) e il totale dei turni nel periodo.
+
+    Righe e totale riguardano solo ``dates``, presi ognuno dal proprio mese come in
+    :func:`build_scadenzario_pdf_document`. Nel mese le persone compaiono come
+    ``Cognome N.``, nella settimana con il nome completo.
+    """
+
+    if not dates:
+        raise ValueError("Serve almeno una data da esportare.")
+    monthly = len(dates) > 7
+    weekday_labels = ("Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom")
+    columns = tuple(f"{day.day} {weekday_labels[day.weekday()]}" for day in dates) + ("Tot.",)
+    rows = []
+    for resident in resident_rows_for_dates(dates, _rosters_by_month(rosters), residents):
+        codes = tuple(code or "-" for code in resident.codes)
+        rows.append(
+            CalendarPdfRow(
+                label=resident.label if monthly else resident.full_name,
+                values=(*codes, str(resident.total)),
+                background="#f8fafc",
+                # Più ruoli nello stesso giorno («S1+GV») prendono il colore del primo.
+                value_backgrounds={
+                    code: _RESIDENT_CODE_BACKGROUNDS[code.split("+")[0]]
+                    for code in codes if code != "-"
+                },
+            )
+        )
+
+    period = f"{dates[0]:%d/%m/%Y} - {dates[-1]:%d/%m/%Y}"
+    title = "Scadenzario mensile" if monthly else "Scadenzario settimanale"
+    return CalendarPdfDocument(
+        title=f"{title} per specializzando · {CalendarVersion(version).value.capitalize()}",
+        period=period,
+        column_headers=columns,
+        rows=tuple(rows),
+        footnote=_PDF_RESIDENT_NOTE,
+        rest_columns=frozenset(index for index, day in enumerate(dates) if day.weekday() >= 5),
+        label_header="Specializzando",
     )
 
 
@@ -164,10 +258,12 @@ class ControllerScadenzario:
         self.view.btn_corrente.clicked.connect(lambda: self.apri_calendario("CORRENTE"))
         self.view.btn_pianificazione.clicked.connect(lambda: self.apri_calendario("PIANIFICAZIONE"))
         self.view.btn_indietro.clicked.connect(self.torna_alla_dashboard)
+        # Le schede della banda cambiano modalità senza passare dalle card.
+        self.view.banda.modalita_scelta.connect(self.apri_calendario)
 
         self.view.btn_convalida.clicked.connect(self.convalida_mese)
         self.view.btn_crea_effettivo.clicked.connect(self.crea_effettivo_mese)
-        self.view.combo_versione.currentIndexChanged.connect(self.cambia_versione)
+        self.view.scelta_versione.currentIndexChanged.connect(self.cambia_versione)
 
         self.view.btn_prev.clicked.connect(self.mese_precedente)
         self.view.btn_next.clicked.connect(self.mese_successivo)
@@ -206,10 +302,21 @@ class ControllerScadenzario:
         l'errore viene rilanciato e lo mostra il gestore globale.
         """
 
-        version = CalendarVersion(self.view.combo_versione.currentData())
+        version = CalendarVersion(self.view.scelta_versione.currentData())
         if version == self.versione_corrente:
             return
-        partenza = (self.versione_corrente, self.model, self.model_sale_op)
+        partenza = self.versione_corrente
+        self._usa_versione(version)
+        try:
+            self.aggiorna_tabella()
+        except CorruptedDataError:
+            self._usa_versione(partenza)
+            raise
+        self.view.lbl_dettaglio_cella.setText("")
+
+    def _usa_versione(self, version: CalendarVersion) -> None:
+        """Passa a ``version`` (modelli e pulsanti Versione) senza ridisegnare."""
+
         self.versione_corrente = version
         self.model = (
             self._model_previsto if version == CalendarVersion.PREVISTO
@@ -217,17 +324,11 @@ class ControllerScadenzario:
         )
         if self._model_sale_base is not None:
             self.model_sale_op = self._model_sale_base.for_version(version)
-        try:
-            self.aggiorna_tabella()
-        except CorruptedDataError:
-            self.versione_corrente, self.model, self.model_sale_op = partenza
-            self.view.combo_versione.blockSignals(True)
-            self.view.combo_versione.setCurrentIndex(
-                self.view.combo_versione.findData(self.versione_corrente.value)
-            )
-            self.view.combo_versione.blockSignals(False)
-            raise
-        self.view.lbl_dettaglio_cella.setText("")
+        self.view.scelta_versione.blockSignals(True)
+        self.view.scelta_versione.setCurrentIndex(
+            self.view.scelta_versione.findData(version.value)
+        )
+        self.view.scelta_versione.blockSignals(False)
 
     def _effettivo_assente(self) -> bool:
         return (
@@ -414,16 +515,20 @@ class ControllerScadenzario:
 
     @contextmanager
     def _resta_sul_mese_se_danneggiato(self):
-        """Se il file del mese di arrivo è danneggiato, torna a mese e modalità di partenza.
+        """Se il file del mese di arrivo è danneggiato, torna a mese, modalità e versione
+        di partenza.
 
         L'errore viene rilanciato e lo mostra il gestore globale. Lo schermo resta
         coerente perché ``aggiorna_tabella`` legge i dati prima di toccare la vista.
         """
         partenza = (self.anno_corrente, self.mese_corrente, self.modalita_corrente)
+        versione = self.versione_corrente
         try:
             yield
         except CorruptedDataError:
             self.anno_corrente, self.mese_corrente, self.modalita_corrente = partenza
+            if self.versione_corrente != versione:
+                self._usa_versione(versione)
             raise
 
     def apri_calendario(self, modalita):
@@ -457,6 +562,9 @@ class ControllerScadenzario:
             else:
                 self.anno_corrente = self.real_anno
                 self.mese_corrente = self.real_mese + 1
+            # I mesi futuri esistono solo come Previsto: la vista nasconde la scelta.
+            if self.versione_corrente != CalendarVersion.PREVISTO:
+                self._usa_versione(CalendarVersion.PREVISTO)
 
         self.modalita_corrente = modalita
         # Prima il mese, poi il cambio pagina: con un file danneggiato si resta sulla dashboard.
@@ -576,43 +684,40 @@ class ControllerScadenzario:
 
         if self._effettivo_assente():
             return
+        # Settimane intere da lunedì, anche a cavallo di due mesi (vedi month_weeks).
         weeks = month_weeks(self.anno_corrente, self.mese_corrente)
-        choices = ["Mese intero"] + [
-            f"Settimana {index}: {week[0].strftime('%d/%m')} - {week[-1].strftime('%d/%m')}"
-            for index, week in enumerate(weeks, 1)
-        ]
-        choice = messages.choose_option(
+        days = month_dates(self.anno_corrente, self.mese_corrente)
+        nome_mese = self.mesi_ita[self.mese_corrente - 1]
+        intervalli = intervalli_mese(
+            self.anno_corrente, self.mese_corrente, weeks,
+            nomi_mesi=self.mesi_ita, prefisso=f"scadenzario-{self.versione_corrente.value}",
+            mese_presente=self.model.has_mese,
+        )
+        scelta = chiedi_esportazione(
             self.view,
-            f"Esporta scadenzario {self._nome_versione}",
-            "Intervallo da esportare:",
-            choices,
-            section=_SEZIONE,
+            sezione=_SEZIONE,
+            titolo="Esporta PDF",
+            riepilogo=(
+                f"Scadenzario Mensile · {nome_mese} {self.anno_corrente} · "
+                f"{self._nome_versione}"
+            ),
+            intervalli=intervalli,
+            viste=_VISTE_PDF,
+            # Propone le righe che si stanno guardando.
+            vista_predefinita=1 if self.view.btn_per_specializzando.isChecked() else 0,
         )
-        if choice is None:
+        if scelta is None:
             return
-        if choice == choices[0]:
-            dates = month_dates(self.anno_corrente, self.mese_corrente)
-            scope = "mese"
-        else:
-            week_index = choices.index(choice) - 1
-            dates = weeks[week_index]
-            scope = f"settimana-{week_index + 1}"
-
-        suggested = (
-            f"scadenzario-{self.versione_corrente.value}-"
-            f"{self.anno_corrente:04d}-{self.mese_corrente:02d}-{scope}.pdf"
+        dates = days if scelta.indice == 0 else weeks[scelta.indice - 1]
+        path = scelta.percorso
+        build = (
+            build_scadenzario_residents_pdf_document
+            if scelta.vista == "SPECIALIZZANDI" else build_scadenzario_pdf_document
         )
-        path, _ = QFileDialog.getSaveFileName(
-            self.view,
-            f"Salva calendario {self._nome_versione} PDF",
-            str(Path.home() / suggested),
-            "Documento PDF (*.pdf)",
-        )
-        if not path:
-            return
         try:
-            document = build_scadenzario_pdf_document(
-                self.roster, dates, self.model.specializzandi, version=self.versione_corrente
+            document = build(
+                self._mesi_per_pdf(dates), dates, self.model.specializzandi,
+                version=self.versione_corrente,
             )
             output_path = write_calendar_pdf(path, document)
         except (OSError, ValueError, RuntimeError) as error:
@@ -631,16 +736,32 @@ class ControllerScadenzario:
             section=_SEZIONE,
         )
 
+    def _mesi_per_pdf(self, dates) -> list[RosterMonth]:
+        """Il mese mostrato e, per le settimane a cavallo, il mese vicino se esiste.
+
+        Solo lettura: un mese vicino non ancora creato in questa versione non viene
+        creato, e i suoi giorni restano vuoti nel PDF.
+        """
+
+        rosters = [self.roster]
+        for year, month in sorted({(day.year, day.month) for day in dates}):
+            if (year, month) == (self.anno_corrente, self.mese_corrente):
+                continue
+            if self.model.has_mese(year, month):
+                rosters.append(load_roster_month(self.model, year, month))
+        return rosters
+
     def _messaggio_versione(self, absent: bool, can_create: bool, stato_json: str) -> str:
         if absent:
             return (
-                "Effettivo non ancora creato. Puoi copiarlo dal Previsto convalidato."
+                "Puoi crearlo copiando il Previsto convalidato con il pulsante in fondo."
                 if can_create else
-                "Effettivo non ancora creato. "
-                "Convalida il Previsto per creare la copia modificabile."
+                "Convalida prima il Previsto: l'Effettivo ne sarà una copia modificabile."
             )
         if stato_json == "CONVALIDATO":
-            return f"{self._nome_versione} convalidato: sola lettura."
+            if self.versione_corrente == CalendarVersion.PREVISTO:
+                return "Le correzioni ai turni svolti si fanno sulla versione Effettivo."
+            return ""
         if self.versione_corrente == CalendarVersion.EFFETTIVO:
             return "Le correzioni all'Effettivo non modificano il Previsto."
         return "La convalida del Previsto crea una copia Effettivo modificabile."

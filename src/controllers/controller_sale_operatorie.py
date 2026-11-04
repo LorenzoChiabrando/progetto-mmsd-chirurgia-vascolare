@@ -9,18 +9,22 @@ from PySide6.QtCore import QObject, Signal, QSize, Qt, Slot
 from PySide6.QtWidgets import (
     QTableWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QFrame, QListWidget, QListWidgetItem, QComboBox,
-    QFileDialog,
 )
 
 from src.calendar_presentation import (
+    ROOM_COLORS,
     month_dates,
-    month_weeks,
     person_initials,
     resident_legend,
     resolve_resident_name,
 )
-from src.calendar_versions import CalendarVersion
+from src.calendar_versions import CalendarVersion, CalendarVersionError
 from src.exports.calendar_pdf import CalendarPdfDocument, CalendarPdfRow, write_calendar_pdf
+from src.models.json_files import CorruptedDataError
+from src.models.model_plans import operazioni_del_piano
+from src.optimization.exceptions import OptimizationError
+from src.optimization.parametri import ParametriPianificazione, carica_configurazione
+from src.optimization.valutazione import obiettivo_della_settimana
 from src.optimization.platform_service import plan_platform_week
 from src.patient_fields import parse_patient_insertion_date
 from src.data_paths import resolve_data_directory
@@ -28,6 +32,9 @@ from src.error_messages import describe_error
 from src.planning_schema import OPTIMIZATION_KEY
 from src.views.components import messages
 from src.views.components.modal_dialog import ModalDialog
+from src.views.dialog_esporta_pdf import Intervallo, Vista, chiedi_esportazione
+from src.views.dialog_attesa_pianificazione import DialogAttesaPianificazione
+from src.views.dialog_pianificazione import chiedi_parametri_pianificazione
 from src.workers.platform_planning_worker import (
     PlanningService,
     PlatformPlanningWorker,
@@ -43,8 +50,12 @@ MESI_ITA_COMPLETI = [
 GIORNI_ITA = ["LUN", "MAR", "MER", "GIO", "VEN"]
 CHANGEOVER_MINUTES = 11
 ROOM_IDS = ("OR-1", "OR-2")
+ROOM_ROLES = {"OR-1": "OR I", "OR-2": "OR II"}
+"""Ruolo dello specializzando di ciascuna sala, chiave di ``specializzandi`` nel giorno."""
 _SEZIONE = "sale_operatorie"
 MAX_OPERATIONS_PER_ROOM = 12
+MIN_RIGHE_SALA = 2
+"""Righe intervento minime di ogni sala nella vista settimanale, anche a settimana vuota."""
 
 CHIRURGHI_MOCK = [
     "Prof. Rinaldi F.", "Dr. Mauro M.", "Dr. Ferrini A.",
@@ -58,11 +69,15 @@ def build_sale_operatorie_pdf_document(
     model,
     dates: tuple[datetime.date, ...],
     residents: list[dict],
+    *,
+    rooms: tuple[str, ...] = ROOM_IDS,
 ) -> CalendarPdfDocument:
-    """Prepara i dati delle sale operatorie per il PDF."""
+    """Prepara i dati delle sale operatorie per il PDF: un blocco per ciascuna di ``rooms``."""
 
     if not dates:
         raise ValueError("Serve almeno una data da esportare.")
+    if not rooms or any(room_id not in ROOM_IDS for room_id in rooms):
+        raise ValueError("Sale da esportare non valide.")
     compact = len(dates) > 7
     weekdays = ("Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom")
     columns = tuple(
@@ -72,67 +87,70 @@ def build_sale_operatorie_pdf_document(
         for day in dates
     )
 
-    specialist_values: list[str] = []
-    operations_by_day: list[list[dict]] = []
-    for day in dates:
-        if day.weekday() >= 5:
-            specialist_values.append("-")
-            operations_by_day.append([])
-            continue
-        names = [
-            value.strip()
-            for value in model.get_specializzandi(day.isoformat()).splitlines()
-            if value.strip()
-        ]
-        specialist_values.append(
-            " / ".join(
-                person_initials(value)
-                if compact
-                else resolve_resident_name(value, residents)
-                for value in names
-            )
-            or "-"
-        )
-        operations_by_day.append(model.get_operazioni(day.isoformat()))
+    def sala(operation: dict) -> str:
+        room_id = operation.get("sala_operatoria")
+        return room_id if room_id in ROOM_IDS else ROOM_IDS[0]
 
-    rows = [
-        CalendarPdfRow(
-            label="Specializzandi",
-            values=tuple(specialist_values),
-            background="#ede9fe",
-        )
-    ]
-    max_operations = max((len(operations) for operations in operations_by_day), default=0)
-    for operation_index in range(max_operations):
-        values: list[str] = []
-        for operations in operations_by_day:
-            if operation_index >= len(operations):
-                values.append("-")
+    # Un blocco per sala, come a schermo: la riga dello specializzando di turno in quella
+    # sala e una riga per intervento, con i colori della sala.
+    rows: list[CalendarPdfRow] = []
+    for room_id in rooms:
+        colori = ROOM_COLORS[room_id]
+        specialist_values: list[str] = []
+        operations_by_day: list[list[dict]] = []
+        for day in dates:
+            if day.weekday() >= 5:
+                specialist_values.append("-")
+                operations_by_day.append([])
                 continue
-            operation = operations[operation_index]
-            patient_name = operation.get("nome_paziente", "")
-            room = operation.get("sala_operatoria", "")
-            if compact:
-                room_short = str(room).removeprefix("OR-")
-                values.append(
-                    " ".join(filter(None, (person_initials(patient_name), room_short)))
-                )
-            else:
-                time_range = (
-                    f"{operation.get('ora_inizio', '')}-{operation.get('ora_fine', '')}"
-                ).strip("-")
-                values.append(" · ".join(filter(None, (time_range, patient_name, room))))
+            turno = model.load_mese(day.year, day.month).get("turni", {}).get(
+                day.isoformat(), {}
+            )
+            nome = ((turno.get("specializzandi") or {}).get(ROOM_ROLES[room_id]) or "").strip()
+            specialist_values.append(
+                (person_initials(nome) if compact else resolve_resident_name(nome, residents))
+                if nome else "-"
+            )
+            operations_by_day.append(
+                [op for op in model.get_operazioni(day.isoformat()) if sala(op) == room_id]
+            )
         rows.append(
             CalendarPdfRow(
-                label=f"Operazione {operation_index + 1}",
-                values=tuple(values),
-                background="#ffffff" if operation_index % 2 == 0 else "#f8fafc",
+                label=f"{room_id} · Spec.",
+                values=tuple(specialist_values),
+                background=colori["intestazione"],
             )
         )
+        max_operations = max((len(operations) for operations in operations_by_day), default=0)
+        for operation_index in range(max_operations):
+            values: list[str] = []
+            for operations in operations_by_day:
+                if operation_index >= len(operations):
+                    values.append("-")
+                    continue
+                operation = operations[operation_index]
+                patient_name = operation.get("nome_paziente", "")
+                if compact:
+                    values.append(person_initials(patient_name) or "-")
+                else:
+                    time_range = (
+                        f"{operation.get('ora_inizio', '')}-{operation.get('ora_fine', '')}"
+                    ).strip("-")
+                    values.append(" · ".join(filter(None, (time_range, patient_name))))
+            rows.append(
+                CalendarPdfRow(
+                    label=f"{room_id} · {operation_index + 1}",
+                    values=tuple(values),
+                    background=colori["etichetta"],
+                )
+            )
 
     period = f"{dates[0].strftime('%d/%m/%Y')} - {dates[-1].strftime('%d/%m/%Y')}"
     return CalendarPdfDocument(
-        title="Programmazione sale operatorie",
+        title=(
+            "Programmazione sale operatorie" if len(rooms) > 1
+            else f"Programmazione sala {rooms[0]}"
+        ),
         period=period,
         column_headers=columns,
         rows=tuple(rows),
@@ -199,10 +217,15 @@ class ControllerSaleOperatorie(QObject):
             else Path(__file__).resolve().parents[2]
         )
         self._planning_service = planning_service
+        # Limiti degli slider (asset/config/ottimizzazione.json) e, per settimana, gli
+        # ultimi parametri scelti in questa sessione (anche se il calcolo è stato annullato).
+        self._configurazione_parametri = carica_configurazione()
+        self._parametri_settimana: dict[datetime.date, ParametriPianificazione] = {}
         self._data_directory = resolve_data_directory(
             data_directory, project_root=self._project_root,
         )
         self._planning_worker: PlatformPlanningWorker | None = None
+        self._dialog_attesa: DialogAttesaPianificazione | None = None
         self._planning_cancel_event: Event | None = None
         self._planning_result = None
         self._planning_error: str | None = None
@@ -223,12 +246,21 @@ class ControllerSaleOperatorie(QObject):
         self._settimane_convalidate: list[datetime.date] = []
         self._idx_storico: int = 0
         self._stato_corrente: str = "BOZZA"
+        # None mostra tutte le sale, ognuna nel proprio blocco di righe.
+        self.filtro_sala: str | None = None
+        # Per colonna, riga della tabella -> (sala, indice nella lista del giorno).
+        self._mappa_righe: dict[int, dict[int, tuple[str, int]]] = {}
+        # Riga dello specializzando di turno -> sala.
+        self._righe_specializzando: dict[int, str] = {}
 
         self._connect_signals()
 
     def _connect_signals(self):
-        self.view.combo_versione.currentIndexChanged.connect(
-            lambda _index: self.imposta_versione(self.view.combo_versione.currentData())
+        self.view.scelta_versione.currentIndexChanged.connect(
+            lambda _index: self.imposta_versione(self.view.scelta_versione.currentData())
+        )
+        self.view.scelta_sala.currentIndexChanged.connect(
+            lambda _index: self.imposta_filtro_sala(self.view.scelta_sala.currentData())
         )
         self.view.btn_crea_effettivo.clicked.connect(self.crea_effettivo_settimana)
         self.view.btn_storico.clicked.connect(
@@ -238,6 +270,11 @@ class ControllerSaleOperatorie(QObject):
         self.view.btn_pianificazione.clicked.connect(
             lambda: self.apri_vista("PIANIFICAZIONE"))
         self.view.btn_indietro.clicked.connect(self.torna_alla_dashboard)
+        self.view.riepilogo_ottimizzazione.ripristino_richiesto.connect(
+            self.ripristina_piano_modello
+        )
+        # Le schede della banda cambiano modalità senza passare dalle card.
+        self.view.banda.modalita_scelta.connect(self.apri_vista)
         self.view.btn_prev.clicked.connect(self.settimana_precedente)
         self.view.btn_next.clicked.connect(self.settimana_successiva)
         self.view.btn_pianifica.clicked.connect(self.pianifica_settimana)
@@ -303,26 +340,56 @@ class ControllerSaleOperatorie(QObject):
         """Select a bound calendar without copying data or changing the displayed period."""
         version = CalendarVersion(version)
         if self._planning_worker is not None:
-            self.view.combo_versione.blockSignals(True)
-            self.view.combo_versione.setCurrentIndex(
-                self.view.combo_versione.findData(self.versione)
+            self.view.scelta_versione.blockSignals(True)
+            self.view.scelta_versione.setCurrentIndex(
+                self.view.scelta_versione.findData(self.versione)
             )
-            self.view.combo_versione.blockSignals(False)
+            self.view.scelta_versione.blockSignals(False)
             return
         if version == self.versione:
             return
-        if version == CalendarVersion.EFFETTIVO and self._model_effettivo is None:
-            self._model_effettivo = self._model_previsto.for_version(version)
-        self.versione = version
-        self.model = self._model_effettivo if self._is_effettivo() else self._model_previsto
-        self.model.invalidate_cache()
-        self.view.combo_versione.blockSignals(True)
-        self.view.combo_versione.setCurrentIndex(self.view.combo_versione.findData(version))
-        self.view.combo_versione.blockSignals(False)
+        self._usa_versione(version)
         if self.modalita_corrente == "STORICO":
             self._refresh_history()
         if self.modalita_corrente is not None:
             self.aggiorna_tabella()
+
+    def imposta_filtro_sala(self, room_id: str | None) -> None:
+        """Mostra una sola sala (con il suo specializzando di turno) o, con None, tutte.
+
+        Il filtro resta cambiando settimana, vista o versione. Anche con una sola sala si
+        spostano, scambiano e inseriscono interventi: ogni riga sa di quale sala è, e le
+        modifiche finiscono nella stessa lista del giorno che mostra tutte le sale.
+        """
+        self.filtro_sala = room_id if room_id in ROOM_IDS else None
+        if self.modalita_corrente is not None:
+            self.aggiorna_tabella()
+
+    def _modifica_per_posizione(self) -> bool:
+        """Spostamenti, scambi e inserimenti indicati dalla riga della tabella.
+
+        Valgono anche con il filtro su una sala: la mappa delle righe porta sempre
+        all'intervento giusto nella lista completa del giorno.
+        """
+        return self._can_edit_week()
+
+    def _indice_operazione(self, col: int, riga: int) -> int | None:
+        """Indice nella lista del giorno dell'intervento mostrato nella riga ``riga``."""
+        posizione = self._mappa_righe.get(col, {}).get(riga)
+        return posizione[1] if posizione is not None else None
+
+    def _sala_della_riga(self, riga: int) -> str | None:
+        """Sala del blocco a cui appartiene la riga ``riga`` della tabella."""
+        for sala, (intestazione, _prima, righe) in self.view.righe_sala.items():
+            if intestazione <= riga <= intestazione + righe:
+                return sala
+        return None
+
+    def _specializzando_di_turno(self, data_str: str, room_id: str) -> str:
+        """Specializzando assegnato alla sala nel giorno, nella versione mostrata."""
+        day = datetime.date.fromisoformat(data_str)
+        turno = self.model.load_mese(day.year, day.month).get("turni", {}).get(data_str, {})
+        return (turno.get("specializzandi") or {}).get(ROOM_ROLES[room_id], "").strip()
 
     def crea_effettivo_settimana(self) -> None:
         """Explicitly initialize a missing actual week from its confirmed forecast."""
@@ -341,12 +408,20 @@ class ControllerSaleOperatorie(QObject):
             self._refresh_history()
         self.aggiorna_tabella()
 
-    def apri_vista(self, modalita):
-        self.modalita_corrente = modalita
-        self.visualizzazione = "SETTIMANA"
-        if hasattr(self.view, "set_month_mode"):
-            self.view.set_month_mode(False)
+    def _usa_versione(self, version: CalendarVersion) -> None:
+        """Passa a ``version`` (modelli e pulsanti Versione) senza ridisegnare."""
+        if version == CalendarVersion.EFFETTIVO and self._model_effettivo is None:
+            self._model_effettivo = self._model_previsto.for_version(version)
+        self.versione = version
+        self.model = self._model_effettivo if self._is_effettivo() else self._model_previsto
+        self.model.invalidate_cache()
+        self.view.scelta_versione.blockSignals(True)
+        self.view.scelta_versione.setCurrentIndex(self.view.scelta_versione.findData(version))
+        self.view.scelta_versione.blockSignals(False)
 
+    def apri_vista(self, modalita):
+        # Prima il controllo, poi lo stato: dalle schede della banda si arriva qui con un
+        # calendario già aperto, che con uno storico vuoto deve restare com'era.
         if modalita == "STORICO":
             self._refresh_history()
             if not self._settimane_convalidate:
@@ -356,6 +431,13 @@ class ControllerSaleOperatorie(QObject):
                     "Convalida una settimana dalla sezione Consultazione.",
                 )
                 return
+
+        self.modalita_corrente = modalita
+        self.visualizzazione = "SETTIMANA"
+        if hasattr(self.view, "set_month_mode"):
+            self.view.set_month_mode(False)
+
+        if modalita == "STORICO":
             self._idx_storico = len(self._settimane_convalidate) - 1
             self.settimana_display = self._settimane_convalidate[self._idx_storico]
         elif modalita == "CONSULTAZIONE":
@@ -363,6 +445,9 @@ class ControllerSaleOperatorie(QObject):
 
         elif modalita == "PIANIFICAZIONE":
             self.settimana_display = self.settimana_corrente + datetime.timedelta(weeks=1)
+            # Le settimane future esistono solo come Previsto: la vista nasconde la scelta.
+            if self._is_effettivo():
+                self._usa_versione(CalendarVersion.PREVISTO)
 
         self.view.stacked_widget.setCurrentIndex(1)
         self.aggiorna_tabella()
@@ -481,51 +566,56 @@ class ControllerSaleOperatorie(QObject):
         return f"{lun.day} {ml} – {ven.day} {mv} {lun.year}"
 
     def esporta_pdf(self) -> None:
-        """Esporta il mese o una settimana in PDF."""
+        """Esporta in PDF il periodo mostrato, con tutte le sale o con una sola.
 
-        anchor = (
-            self.mese_display
-            if self.visualizzazione == "MESE"
-            else self.settimana_display.replace(day=1)
-        )
-        weeks = tuple(
-            tuple(day for day in week if day.weekday() < 5)
-            for week in month_weeks(anchor.year, anchor.month)
-        )
-        weeks = tuple(week for week in weeks if week)
-        choices = ["Mese intero"] + [
-            f"Settimana {index}: {week[0].strftime('%d/%m')} - {week[-1].strftime('%d/%m')}"
-            for index, week in enumerate(weeks, 1)
-        ]
-        choice = messages.choose_option(
-            self.view,
-            "Esporta sale operatorie",
-            "Intervallo da esportare:",
-            choices,
-            section=_SEZIONE,
-        )
-        if choice is None:
-            return
-        if choice == choices[0]:
-            dates = month_dates(anchor.year, anchor.month)
-            scope = "mese"
+        Dalla vista settimanale la settimana, dall'«Intero mese» il mese: nel dialog si
+        sceglie soltanto quali sale, proponendo quella che si sta guardando.
+        """
+
+        prefisso = f"sale-operatorie-{self.versione_label.lower()}"
+        if self.visualizzazione == "MESE":
+            mese = self.mese_display
+            days = month_dates(mese.year, mese.month)
+            nome_mese = MESI_ITA_COMPLETI[mese.month - 1]
+            periodo = f"{nome_mese} {mese.year}"
+            intervallo = Intervallo(
+                "Mese intero",
+                f"1 – {days[-1].day} {nome_mese.lower()} {mese.year}",
+                f"{prefisso}-{mese.year:04d}-{mese.month:02d}-mese.pdf",
+            )
         else:
-            week_index = choices.index(choice) - 1
-            dates = weeks[week_index]
-            scope = f"settimana-{week_index + 1}"
-
-        suggested = (
-            f"sale-operatorie-{self.versione_label.lower()}-"
-            f"{anchor.year:04d}-{anchor.month:02d}-{scope}.pdf"
-        )
-        path, _ = QFileDialog.getSaveFileName(
+            days = tuple(
+                self.settimana_display + datetime.timedelta(days=offset) for offset in range(5)
+            )
+            periodo = f"Settimana {self._label_settimana()}"
+            intervallo = Intervallo(
+                "Settimana",
+                f"{days[0]:%d/%m} – {days[-1]:%d/%m}",
+                f"{prefisso}-settimana-{days[0].isoformat()}.pdf",
+            )
+        viste = [Vista("TUTTE", "Tutte le sale", "OR-1 e OR-2")] + [
+            Vista(room_id, f"Sala {room_id}", f"Solo {room_id}", f"-{room_id.lower()}")
+            for room_id in ROOM_IDS
+        ]
+        scelta = chiedi_esportazione(
             self.view,
-            "Salva calendario PDF",
-            str(Path.home() / suggested),
-            "Documento PDF (*.pdf)",
+            sezione=_SEZIONE,
+            titolo="Esporta PDF",
+            riepilogo=f"Sale Operatorie · {periodo} · {self.versione_label}",
+            intervalli=[intervallo],
+            viste=viste,
+            # Propone la sala che si sta guardando (o tutte).
+            vista_predefinita=next(
+                (index for index, vista in enumerate(viste) if vista.codice == self.filtro_sala),
+                0,
+            ),
+            titolo_viste="Sale da esportare",
         )
-        if not path:
+        if scelta is None:
             return
+        dates = days
+        rooms = ROOM_IDS if scelta.vista in (None, "TUTTE") else (scelta.vista,)
+        path = scelta.percorso
         residents = getattr(self.model_scad, "specializzandi", None)
         if residents is None:
             residents = getattr(self.model, "specializzandi", [])
@@ -534,6 +624,7 @@ class ControllerSaleOperatorie(QObject):
                 self.model,
                 dates,
                 residents,
+                rooms=rooms,
             )
             document = replace(document, title=f"{document.title} · {self.versione_label}")
             output_path = write_calendar_pdf(path, document)
@@ -657,14 +748,14 @@ class ControllerSaleOperatorie(QObject):
             self.view.btn_mese_anno.setText(self._label_settimana())
         self.view.tabella.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.view.aggiorna_badge(self.modalita_corrente, stato, self.versione_label)
+        self._aggiorna_riepilogo_ottimizzazione(month_mode, stato)
         missing_weeks = {
             _get_lunedi(day) for day in dates
             if day.weekday() < 5 and not self._week_exists(_get_lunedi(day))
         }
         if missing_weeks:
             self.view.lbl_versione_status.setText(
-                "Effettivo non ancora creato per questa settimana. "
-                "La copia può essere creata dal Previsto convalidato."
+                "La copia si crea dal Previsto della settimana, dopo averlo convalidato."
                 if not month_mode else
                 "L'Effettivo manca per alcune settimane del mese. "
                 "Passa alla vista settimanale per creare le copie dai Previsti convalidati."
@@ -681,16 +772,33 @@ class ControllerSaleOperatorie(QObject):
                 ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"]
             )
 
-        can_edit = self._can_edit_week()
+        can_edit = self._modifica_per_posizione()
 
-        max_operations = max(
-            (len(self.model.get_operazioni(day.isoformat())) for day in dates
-             if self._week_exists(_get_lunedi(day))),
-            default=0,
-        )
-        self.view.adatta_righe_operazioni(max_operations)
+        # Un blocco di righe per sala: prima OR-1, poi OR-2 (o solo la sala filtrata).
+        sale = (self.filtro_sala,) if self.filtro_sala is not None else ROOM_IDS
+        disponibili = {
+            day: self.model.get_operazioni(day.isoformat())
+            for day in dates
+            if day.weekday() < 5 and self._week_exists(_get_lunedi(day))
+        }
+        blocchi = []
+        for sala in sale:
+            massimo = max(
+                (sum(self._room_id(op) == sala for op in operazioni)
+                 for operazioni in disponibili.values()),
+                default=0,
+            )
+            # Una riga in più per il «+» del primo intervento libero della sala.
+            righe = massimo + (1 if can_edit and massimo < MAX_OPERATIONS_PER_ROOM else 0)
+            blocchi.append((sala, max(righe, 1 if month_mode else MIN_RIGHE_SALA)))
+        self.view.imposta_blocchi(blocchi)
+        righe_sala = self.view.righe_sala
 
-        drop_targets: dict = {}
+        mappa: dict[int, dict] = {}
+        self._mappa_righe = {}
+        self._righe_specializzando = {
+            intestazione: sala for sala, (intestazione, _prima, _n) in righe_sala.items()
+        }
         for col, data_col in enumerate(dates):
             data_str = data_col.strftime("%Y-%m-%d")
             is_oggi = (data_col == self.oggi)
@@ -706,40 +814,142 @@ class ControllerSaleOperatorie(QObject):
                 self.view.crea_item_giorno(giorno_label, is_weekend, is_oggi),
             )
 
-            available = not is_weekend and self._week_exists(_get_lunedi(data_col))
-            spec_val = self.model.get_specializzandi(data_str) if available else ""
-            item_spec = self.view.crea_item_cella(
-                spec_val,
-                is_weekend,
-                is_oggi,
-                compact=month_mode,
-            )
-            item_spec.setFlags(item_spec.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            self.view.tabella.setItem(1, col, item_spec)
+            available = data_col in disponibili
+            operazioni = disponibili.get(data_col, [])
+            interventi: dict[int, tuple[str, int]] = {}
+            libere: dict[str, int] = {}
+            for sala in sale:
+                intestazione, prima, righe = righe_sala[sala]
+                spec_val = self._specializzando_di_turno(data_str, sala) if available else ""
+                item_spec = self.view.crea_item_cella(
+                    spec_val, is_weekend, is_oggi, compact=month_mode, sala=sala,
+                )
+                item_spec.setFlags(item_spec.flags() & ~Qt.ItemFlag.ItemIsEditable)
+                # Cambiando vista o settimana questa riga può essere stata una riga
+                # intervento: il suo riquadro coprirebbe il nome.
+                self.view.tabella.removeCellWidget(intestazione, col)
+                self.view.tabella.setItem(intestazione, col, item_spec)
 
-            operazioni = self.model.get_operazioni(data_str) if available else []
-            drop_targets[col] = 2 + len(operazioni)
-            for op_idx in range(self.view.current_max_ops):
-                row = op_idx + 2
-                if op_idx < len(operazioni):
-                    op = operazioni[op_idx]
-                    ha_paziente = bool(op.get("nome_paziente"))
-                    on_click = (lambda r=row, c=col: self._on_cella_cliccata(r, c)) if ha_paziente else None
-                    widget = self.view.crea_widget_operazione(
-                        op, is_oggi, on_click,
-                        draggable=can_edit and ha_paziente,
-                        col=col, op_idx=op_idx,
-                        compact=month_mode,
-                    )
+                della_sala = [
+                    (op_idx, op) for op_idx, op in enumerate(operazioni)
+                    if self._room_id(op) == sala
+                ]
+                for posizione in range(righe):
+                    row = prima + posizione
+                    if posizione < len(della_sala):
+                        op_idx, op = della_sala[posizione]
+                        interventi[row] = (sala, op_idx)
+                        ha_paziente = bool(op.get("nome_paziente"))
+                        on_click = (
+                            (lambda r=row, c=col: self._on_cella_cliccata(r, c))
+                            if ha_paziente else None
+                        )
+                        widget = self.view.crea_widget_operazione(
+                            op, is_oggi, on_click,
+                            draggable=can_edit and ha_paziente,
+                            col=col, op_idx=op_idx,
+                            compact=month_mode,
+                            sala=sala,
+                        )
+                    else:
+                        on_click_vuoto = None
+                        if can_edit and available and posizione == len(della_sala):
+                            libere[sala] = row
+                            on_click_vuoto = (
+                                lambda r=row, c=col: self._on_slot_vuoto_cliccato(r, c)
+                            )
+                        widget = self.view.crea_widget_vuoto(is_oggi, on_click_vuoto, sala=sala)
                     self.view.tabella.setCellWidget(row, col, widget)
-                else:
-                    on_click_vuoto = None
-                    if can_edit and op_idx == len(operazioni):
-                        on_click_vuoto = (lambda r=row, c=col: self._on_slot_vuoto_cliccato(r, c))
-                    self.view.tabella.setCellWidget(row, col, self.view.crea_widget_vuoto(is_oggi, on_click_vuoto))
+            self._mappa_righe[col] = interventi
+            mappa[col] = {"interventi": interventi, "libere": libere}
 
-        self.view.tabella.set_drop_targets(drop_targets if can_edit else {})
+        self.view.tabella.imposta_mappa(mappa if can_edit else {})
         self.view.tabella.blockSignals(False)
+
+    def _aggiorna_riepilogo_ottimizzazione(self, month_mode: bool, stato: str) -> None:
+        """Valore obiettivo del piano del modello e di quello attuale, con le modifiche.
+
+        Solo Previsto e vista settimanale: il modello pianifica il Previsto, una
+        settimana alla volta. Il valore attuale si ricalcola qui a ogni aggiornamento
+        della tabella, quindi dopo ogni modifica manuale.
+        """
+        pannello = self.view.riepilogo_ottimizzazione
+        monday = self.settimana_display
+        riepilogo = (
+            self.model.get_riepilogo_ottimizzazione(monday)
+            if not month_mode and not self._is_effettivo() else None
+        )
+        if not riepilogo:
+            pannello.mostra(None)
+            return
+        attuali = self.model.operazioni_settimana(monday)
+        try:
+            attuale = obiettivo_della_settimana(
+                self._project_root, monday, attuali, data_directory=self._data_directory
+            )
+            errore = ""
+        except (OptimizationError, CorruptedDataError, OSError, ValueError) as exc:
+            attuale, errore = None, describe_error(exc)
+        try:
+            piano_modello = self.model.get_piano_modello(monday)
+        except CorruptedDataError:
+            piano_modello = None
+        modificato = piano_modello is not None and not self._stessi_interventi(
+            attuali, operazioni_del_piano(piano_modello)
+        )
+        if piano_modello is None:
+            motivo = "Il piano originale del modello non è stato salvato per questa settimana."
+        elif stato == "CONVALIDATO":
+            motivo = "La settimana è convalidata: il piano non si modifica più."
+        else:
+            motivo = "In questo momento la settimana non si può modificare."
+        pannello.mostra(
+            riepilogo,
+            attuale=attuale,
+            errore_attuale=errore,
+            modificato=modificato,
+            originale_disponibile=piano_modello is not None,
+            ripristinabile=piano_modello is not None and self._can_edit_week(),
+            motivo_non_ripristinabile=motivo,
+        )
+
+    @staticmethod
+    def _stessi_interventi(attuali: dict, originali: dict) -> bool:
+        """Stessi pazienti, sale, orari e specializzandi, giorno per giorno."""
+
+        def firma(operazioni) -> list[tuple]:
+            return [
+                tuple(str(op.get(campo) or "") for campo in (
+                    "id_paziente", "sala_operatoria", "ora_inizio", "ora_fine",
+                    "id_specializzando",
+                ))
+                for op in operazioni
+            ]
+
+        giorni = set(attuali) | set(originali)
+        return all(
+            firma(attuali.get(giorno, [])) == firma(originali.get(giorno, []))
+            for giorno in giorni
+        )
+
+    def ripristina_piano_modello(self) -> None:
+        """Torna al piano calcolato dal modello, scartando le modifiche manuali."""
+        if self._is_effettivo() or not self._can_edit_week():
+            return
+        if not self._conferma(
+            "Ripristina piano del modello",
+            f"Vuoi tornare al piano calcolato dal modello per la settimana "
+            f"{self._label_settimana()}?\n\n"
+            "Le modifiche manuali di questa settimana andranno perse; gli stati dei "
+            "pazienti verranno aggiornati di conseguenza.",
+            testo_si="Ripristina",
+        ):
+            return
+        try:
+            self.model.ripristina_piano_modello(self.settimana_display)
+        except (CalendarVersionError, CorruptedDataError, OSError, ValueError) as exc:
+            self._avviso("Ripristino non riuscito", describe_error(exc), tipo="warning")
+        self.aggiorna_tabella()
 
     def _ha_piano_esistente(self) -> bool:
         for col in range(5):
@@ -763,18 +973,54 @@ class ControllerSaleOperatorie(QObject):
             self._avviso("Errore", "Dati scadenzario non disponibili.", tipo="warning")
             return
 
+        monday = self.settimana_display
         overwrite = self._ha_piano_esistente()
-        if overwrite and not self._conferma(
-            "Ripianifica settimana",
-            f"La settimana {self._label_settimana()} ha già un piano.\n\n"
-            "Vuoi rigenerarlo sovrascrivendo i dati attuali?",
-            testo_si="Rigenera",
-        ):
+        iniziali, nota = self._parametri_proposti(monday)
+        # Una sola finestra: parametri del risolutore e, se serve, avviso di sovrascrittura.
+        parametri = chiedi_parametri_pianificazione(
+            self.view,
+            configurazione=self._configurazione_parametri,
+            iniziali=iniziali,
+            nota_iniziali=nota,
+            settimana=self._label_settimana(),
+            sovrascrive=overwrite,
+        )
+        if parametri is None:
             return
+        self._parametri_settimana[monday] = parametri
+        self._start_planning_worker(monday, overwrite=overwrite, parametri=parametri)
 
-        self._start_planning_worker(self.settimana_display, overwrite=overwrite)
+    def _parametri_proposti(
+        self, monday: datetime.date
+    ) -> tuple[ParametriPianificazione, str]:
+        """Ultimi parametri usati per la settimana, altrimenti i predefiniti.
 
-    def _start_planning_worker(self, monday: datetime.date, *, overwrite: bool) -> None:
+        Prima quelli scelti in questa sessione, poi quelli salvati con il piano.
+        """
+        if monday in self._parametri_settimana:
+            return (
+                self._parametri_settimana[monday],
+                "Proposti i parametri dell'ultima pianificazione di questa settimana.",
+            )
+        riepilogo = self._model_previsto.get_riepilogo_ottimizzazione(monday) or {}
+        salvati = ParametriPianificazione.da_dizionario(riepilogo.get("parametri"))
+        if salvati is not None:
+            return (
+                salvati,
+                "Proposti i parametri usati per il piano attuale di questa settimana.",
+            )
+        return (
+            self._configurazione_parametri.predefiniti(),
+            "Proposti i valori predefiniti dell'applicazione.",
+        )
+
+    def _start_planning_worker(
+        self,
+        monday: datetime.date,
+        *,
+        overwrite: bool,
+        parametri: ParametriPianificazione | None = None,
+    ) -> None:
         if self._is_effettivo():
             return
         cancel_event = Event()
@@ -785,6 +1031,7 @@ class ControllerSaleOperatorie(QObject):
             data_directory=self._data_directory,
             cancel_event=cancel_event,
             planning_service=self._planning_service,
+            solver_config=parametri.come_config_solver() if parametri is not None else None,
             parent=self,
         )
 
@@ -800,6 +1047,17 @@ class ControllerSaleOperatorie(QObject):
         self._planning_cancelled = False
         self._set_planning_busy(True)
         worker.start()
+        # Finestra con la rotellina finché il calcolo non finisce; da lì si può annullare.
+        self._dialog_attesa = DialogAttesaPianificazione(
+            settimana=self._label_settimana(),
+            limite_secondi=(
+                parametri.limite_tempo_secondi if parametri is not None
+                else self._configurazione_parametri.predefiniti().limite_tempo_secondi
+            ),
+            parent=self.view,
+        )
+        self._dialog_attesa.annullamento_richiesto.connect(self._request_planning_cancellation)
+        self._dialog_attesa.open()
 
     def _request_planning_cancellation(self) -> None:
         if self._planning_cancel_event is None:
@@ -832,6 +1090,10 @@ class ControllerSaleOperatorie(QObject):
         self._planning_result = None
         self._planning_error = None
         self._planning_cancelled = False
+        dialog_attesa, self._dialog_attesa = self._dialog_attesa, None
+        if dialog_attesa is not None:
+            dialog_attesa.chiudi()
+            dialog_attesa.deleteLater()
         try:
             self._set_planning_busy(False)
 
@@ -868,13 +1130,13 @@ class ControllerSaleOperatorie(QObject):
 
     def _set_planning_busy(self, busy: bool) -> None:
         for control in (
-            self.view.btn_indietro,
+            self.view.banda,  # Indietro e schede: niente cambi di modalità durante il calcolo
             self.view.btn_prev,
             self.view.btn_next,
             self.view.btn_pulisci,
             self.view.btn_convalida,
             self.view.btn_crea_effettivo,
-            self.view.combo_versione,
+            self.view.scelta_versione,
             self.view.tabella,
         ):
             control.setEnabled(not busy)
@@ -905,7 +1167,9 @@ class ControllerSaleOperatorie(QObject):
             "Pulisci piano",
             f"Vuoi eliminare tutte le assegnazioni di pazienti\n"
             f"per la settimana {self._label_settimana()}?\n\n"
-            "Gli specializzandi rimarranno invariati.",
+            "Gli specializzandi rimarranno invariati. Se la settimana era stata "
+            "pianificata dal modello, anche il punteggio e il piano del modello "
+            "verranno eliminati: non si potrà più ripristinarlo.",
             testo_si="Pulisci",
         ):
             return
@@ -914,6 +1178,8 @@ class ControllerSaleOperatorie(QObject):
             data_col = self.settimana_display + datetime.timedelta(days=col)
             data_str = data_col.strftime("%Y-%m-%d")
             self.model.set_operazioni(data_str, [])
+        # Si riparte da zero: via punteggio e piano del modello, il pannello sparisce.
+        self.model.elimina_esito_pianificazione(self.settimana_display)
 
         self.aggiorna_tabella()
 
@@ -1100,7 +1366,7 @@ class ControllerSaleOperatorie(QObject):
 
     def _scambia_operazioni(self, col: int, src_idx: int, dst_idx: int):
         """Swap di due operazioni nello stesso giorno, con conferma modal."""
-        if not self._can_edit_week():
+        if not self._modifica_per_posizione():
             return
         if not (0 <= col < len(GIORNI_ITA) and src_idx >= 0 and dst_idx >= 0):
             return
@@ -1111,6 +1377,9 @@ class ControllerSaleOperatorie(QObject):
 
         if src_idx >= len(operazioni) or dst_idx >= len(operazioni):
             return
+        sala = self._room_id(operazioni[src_idx])
+        if sala != self._room_id(operazioni[dst_idx]):
+            return  # ogni sala ha il suo ordine: tra sale diverse non si scambia
 
         nome_src = operazioni[src_idx].get("nome_paziente", "—")
         nome_dst = operazioni[dst_idx].get("nome_paziente", "—")
@@ -1120,7 +1389,7 @@ class ControllerSaleOperatorie(QObject):
         if not self._conferma(
             "Scambia operazioni",
             f"Vuoi scambiare l'ordine di queste due operazioni\n"
-            f"del {giorno} {data_col.day} {mese}?\n\n"
+            f"in {sala}, {giorno} {data_col.day} {mese}?\n\n"
             f"  • {nome_src}\n"
             f"  • {nome_dst}\n\n"
             "Gli orari verranno ricalcolati automaticamente.",
@@ -1136,7 +1405,7 @@ class ControllerSaleOperatorie(QObject):
 
     def _sposta_operazione(self, src_col: int, src_op_idx: int, dst_col: int):
         """Sposta un'operazione da un giorno a un altro (in coda) e salva il JSON."""
-        if not self._can_edit_week():
+        if not self._modifica_per_posizione():
             return
         if not (0 <= src_col < len(GIORNI_ITA)
                 and 0 <= dst_col < len(GIORNI_ITA)
@@ -1221,9 +1490,15 @@ class ControllerSaleOperatorie(QObject):
             key in op
             for key in ("id_specializzando", "specializzando", "ruolo_specializzando")
         ):
-            op["id_specializzando"] = ""
-            op["specializzando"] = ""
-            op["ruolo_specializzando"] = ""
+            # Nel giorno di arrivo l'intervento va a chi è di turno nella stessa sala, come
+            # farebbe il planner; senza nessuno di turno resta senza specializzando.
+            nome = self._specializzando_di_turno(dst_str, moved_room)
+            op["specializzando"] = nome
+            op["ruolo_specializzando"] = ROOM_ROLES[moved_room] if nome else ""
+            op["id_specializzando"] = (
+                self.model_lib.trova_id_specializzando(nome)
+                if nome and self.model_lib is not None else ""
+            )
         dst_ops.append(op)
 
         self._ricalcola_orari(src_ops)
@@ -1273,6 +1548,7 @@ class ControllerSaleOperatorie(QObject):
         data_str: str,
         data_col: datetime.date,
         starts_by_room: dict[str, int],
+        sala: str | None = None,
     ):
         if not self._can_edit_week() or not self._day_in_selected_week(data_str):
             return
@@ -1319,8 +1595,13 @@ class ControllerSaleOperatorie(QObject):
         combo_room.setObjectName("ComboDialog")
         combo_room.addItems(ROOM_IDS)
         combo_room.setFixedHeight(40)
-        first_room = min(ROOM_IDS, key=lambda room_id: (starts_by_room[room_id], room_id))
-        combo_room.setCurrentText(first_room)
+        if sala in ROOM_IDS:
+            # Dal «+» di un blocco la sala è quella del blocco.
+            combo_room.setCurrentText(sala)
+            combo_room.setEnabled(False)
+        else:
+            first_room = min(ROOM_IDS, key=lambda room_id: (starts_by_room[room_id], room_id))
+            combo_room.setCurrentText(first_room)
         root.addWidget(combo_room)
 
         lbl_lista = QLabel("PAZIENTI IN LISTA D'ATTESA")
@@ -1566,7 +1847,7 @@ class ControllerSaleOperatorie(QObject):
     def _on_cella_cliccata(self, riga, colonna):
         """Apre il popup con i dettagli del paziente se la cella contiene un'assegnazione."""
         data_col = self._date_for_column(colonna)
-        if riga == 1 and self.visualizzazione == "MESE":
+        if riga in self._righe_specializzando and self.visualizzazione == "MESE":
             item = self.view.tabella.item(riga, colonna)
             raw_names = item.data(Qt.ItemDataRole.UserRole) if item else ""
             full_names = [
@@ -1575,16 +1856,14 @@ class ControllerSaleOperatorie(QObject):
                 if value.strip()
             ]
             self.view.lbl_dettaglio_cella.setText(
-                f"{data_col.strftime('%d/%m/%Y')} · Specializzandi: "
-                + (" / ".join(full_names) if full_names else "—")
+                f"{data_col.strftime('%d/%m/%Y')} · {self._righe_specializzando[riga]} · "
+                "Specializzando: " + (" / ".join(full_names) if full_names else "—")
             )
             return
-        if riga < 2:
-            return
-        op_idx = riga - 2
+        op_idx = self._indice_operazione(colonna, riga)
         data_str = data_col.strftime("%Y-%m-%d")
         operazioni = self.model.get_operazioni(data_str)
-        if op_idx >= len(operazioni):
+        if op_idx is None or op_idx >= len(operazioni):
             return
         op = operazioni[op_idx]
         if not op.get("nome_paziente"):
@@ -1595,8 +1874,8 @@ class ControllerSaleOperatorie(QObject):
         self._mostra_popup_paziente(op, paz_full, data_str=data_str, op_idx=op_idx)
 
     def _on_slot_vuoto_cliccato(self, riga, colonna):
-        """Apre il dialog di inserimento manuale per il primo slot libero del giorno."""
-        if not self._can_edit_week():
+        """Apre l'inserimento manuale nella sala del blocco in cui si trova il «+»."""
+        if not self._modifica_per_posizione():
             return
         data_col = self._date_for_column(colonna)
         data_str = data_col.strftime("%Y-%m-%d")
@@ -1604,7 +1883,9 @@ class ControllerSaleOperatorie(QObject):
         starts_by_room = {
             room_id: self._next_room_start(operazioni, room_id) for room_id in ROOM_IDS
         }
-        self._mostra_dialog_inserimento_manuale(data_str, data_col, starts_by_room)
+        self._mostra_dialog_inserimento_manuale(
+            data_str, data_col, starts_by_room, sala=self._sala_della_riga(riga)
+        )
 
     def _mostra_popup_paziente(self, slot: dict, paz_full: dict | None,
                                data_str: str = None, op_idx: int = None):

@@ -103,7 +103,11 @@ def test_full_pipeline_updates_patient_state_and_preserves_other_fields(
     assert run.result.status is SolveStatus.OPTIMAL
     assert {item.patient_id for item in run.result.schedule} == {"P0", "P1"}
     assert run.write_receipt is not None
-    assert len(run.write_receipt.updated_paths) == (4 if monday == NEXT_MONDAY else 3)
+    # Months, patients and the model's own copy of the plan (piani_modello/<monday>.json).
+    assert len(run.write_receipt.updated_paths) == (5 if monday == NEXT_MONDAY else 4)
+    assert run.write_receipt.updated_paths[-1] == (
+        synthetic_root / "mock_data/sale_operatorie/piani_modello" / f"{monday.isoformat()}.json"
+    )
     for path in patient_paths:
         assert _read_json(path) == {**json.loads(originals[path]), "stato": "Pianificato"}
     for day in run.plan.days:

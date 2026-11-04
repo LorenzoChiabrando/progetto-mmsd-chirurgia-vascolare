@@ -3,18 +3,47 @@ from src.data_paths import PROJECT_ROOT
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
     QTableWidget, QTableWidgetItem, QHeaderView, QScroller,
-    QStackedWidget, QLabel, QSizePolicy, QGraphicsDropShadowEffect,
-    QGraphicsOpacityEffect, QFrame, QApplication, QComboBox,
+    QStackedWidget, QLabel, QSizePolicy,
+    QGraphicsOpacityEffect, QFrame, QApplication,
 )
 from PySide6.QtCore import QByteArray, QMimeData, Qt, Signal
 from PySide6.QtGui import QPixmap, QColor, QFont, QDrag, QPainter
 
-from src.calendar_presentation import person_initials
+from src.calendar_presentation import ROOM_COLORS, person_initials
 from src.calendar_versions import CalendarVersion
+from src.views.components.calendar_toolbar import (
+    BarraStrumenti, SceltaSegmentata, StatoPeriodo, etichetta_info, pulsante_esporta_pdf,
+    riga_periodo, segmentato,
+)
+from src.views.components.colored_header_view import ColoredHeaderView
 from src.views.components.modal_dialog import register_icon_path
+from src.views.components.mode_card import CardModalita
+from src.views.components.optimization_summary import RiepilogoOttimizzazione
+from src.views.components.section_header import BandaSezione, pagina_scorrevole
 
 
 _OPERATION_MIME_TYPE = "application/x-mmsd-operation"
+
+# Titolo e significato di ogni stato del settimana, mostrati nella fascia sotto il titolo.
+_TESTI_STATO = {
+    "BOZZA": ("Settimana in bozza", "non ancora convalidata: si può ancora modificare"),
+    "CONVALIDATO": ("Settimana convalidata", "definitiva, in sola lettura"),
+    "ASSENTE": ("Effettivo non ancora creato", ""),
+    "RIEPILOGO": ("Riepilogo del mese", "sola consultazione: per modificare passa a Settimana"),
+}
+
+# Codice, titolo, descrizione (card e banda) e icona SVG della card.
+_MODALITA = (
+    ("STORICO", "Storico",
+     "Consulta le settimane\nconvalidate in passato",
+     "modalita-storico.svg"),
+    ("CONSULTAZIONE", "Consultazione",
+     "Rivedi il piano e convalida\nla settimana corrente",
+     "modalita-consultazione.svg"),
+    ("PIANIFICAZIONE", "Pianificazione",
+     "Gestisci il piano\nper le settimane future",
+     "modalita-pianificazione.svg"),
+)
 
 
 class EtichettaAdattiva(QLabel):
@@ -55,6 +84,18 @@ def varianti_codici(codici: list[str]) -> list[str]:
             testo = prefisso + "  ·  ".join(codici[:mostrati])
             varianti.append(f"{testo}  +{nascosti}" if nascosti else testo)
     return varianti
+
+
+def etichetta_durata(durata) -> str:
+    """Durata per il badge della scheda: «45 min» sotto l'ora, poi «1h», «1h30», «2h05».
+
+    Da un'ora in su il testo non è mai più largo di «90 min»: il badge compare in ogni
+    colonna dove compariva già la durata di un intervento di un'ora e mezza.
+    """
+    if isinstance(durata, bool) or not isinstance(durata, int) or durata < 60:
+        return f"{durata} min"
+    ore, minuti = divmod(durata, 60)
+    return f"{ore}h{minuti:02d}" if minuti else f"{ore}h"
 
 
 class DraggableOperationFrame(QFrame):
@@ -165,7 +206,12 @@ class DraggableOperationFrame(QFrame):
 
 
 class TabellaOperatorie(QTableWidget):
-    """QTableWidget con supporto drop: sposta tra giorni o scambia nello stesso giorno."""
+    """QTableWidget con supporto drop: sposta tra giorni o scambia nello stesso giorno.
+
+    Le righe sono divise in blocchi per sala: un intervento si scambia solo con uno della
+    stessa sala e, spostato in un altro giorno, va in coda alla sua sala. La mappa delle
+    righe arriva dal controller con :meth:`imposta_mappa`.
+    """
 
     operazione_spostata  = Signal(int, int, int)  # src_col, src_op_idx, dst_col
     operazione_scambiata = Signal(int, int, int)  # col, src_op_idx, dst_op_idx
@@ -173,7 +219,8 @@ class TabellaOperatorie(QTableWidget):
     def __init__(self):
         super().__init__()
         self._drag_over_col = -1
-        self._drop_targets: dict = {}  # col → prima riga vuota (per move cross-giorno)
+        # col -> {"interventi": {riga: (sala, indice)}, "libere": {sala: riga per il drop}}
+        self._mappa: dict[int, dict] = {}
         self.setAcceptDrops(True)
         self.viewport().setAcceptDrops(True)
 
@@ -182,8 +229,38 @@ class TabellaOperatorie(QTableWidget):
         self._cell_overlay.hide()
         self._cell_overlay_mode = ""  # "move" | "swap"
 
-    def set_drop_targets(self, targets: dict):
-        self._drop_targets = targets
+    def imposta_mappa(self, mappa: dict[int, dict]) -> None:
+        """Righe di ogni colonna; vuota quando il calendario non si può modificare."""
+        self._mappa = mappa
+
+    def _sala_e_riga(self, col: int, op_idx: int) -> tuple[str, int] | None:
+        for riga, (sala, indice) in self._mappa.get(col, {}).get("interventi", {}).items():
+            if indice == op_idx:
+                return sala, riga
+        return None
+
+    def azione_drop(
+        self, src_col: int, src_idx: int, col: int, riga: int
+    ) -> tuple[str, int, int] | None:
+        """Che cosa farebbe il rilascio sulla cella ``(riga, col)``.
+
+        ``("scambia", indice di destinazione, riga)`` nello stesso giorno e nella stessa
+        sala; ``("sposta", -1, riga libera della sala)`` in un altro giorno; ``None``
+        altrimenti (altra sala, stessa cella, sala piena).
+        """
+        sorgente = self._sala_e_riga(src_col, src_idx)
+        if sorgente is None or col not in self._mappa:
+            return None
+        sala, riga_sorgente = sorgente
+        if col == src_col:
+            destinazione = self._mappa[col]["interventi"].get(riga)
+            if destinazione is None or riga == riga_sorgente or destinazione[0] != sala:
+                return None
+            return "scambia", destinazione[1], riga
+        riga_libera = self._mappa[col]["libere"].get(sala)
+        if riga_libera is None:
+            return None
+        return "sposta", -1, riga_libera
 
     def _decode_drag_payload(self, event) -> tuple[int, int] | None:
         mime = event.mimeData()
@@ -198,8 +275,7 @@ class TabellaOperatorie(QTableWidget):
         except (UnicodeDecodeError, ValueError):
             return None
 
-        n_ops = self._drop_targets.get(src_col, 2) - 2
-        if not (0 <= src_col < self.columnCount() and 0 <= src_op_idx < n_ops):
+        if self._sala_e_riga(src_col, src_op_idx) is None:
             return None
         return src_col, src_op_idx
 
@@ -228,26 +304,12 @@ class TabellaOperatorie(QTableWidget):
         self._cell_overlay.raise_()
 
     def _aggiorna_overlay(self, col: int, src_col: int, src_op_idx: int, cursor_y: int):
-        if col < 0:
+        azione = self.azione_drop(src_col, src_op_idx, col, self.rowAt(cursor_y))
+        if azione is None:
             self._cell_overlay.hide()
             return
-
-        if col == src_col:
-            target_row = self.rowAt(cursor_y)
-            src_row = src_op_idx + 2
-            n_ops = self._drop_targets.get(col, 2) - 2
-            if (target_row >= 2
-                    and target_row != src_row
-                    and (target_row - 2) < n_ops):
-                self._mostra_overlay(target_row, col, "swap")
-            else:
-                self._cell_overlay.hide()
-        else:
-            target_row = self._drop_targets.get(col, -1)
-            if target_row < 0 or target_row >= self.rowCount():
-                self._cell_overlay.hide()
-                return
-            self._mostra_overlay(target_row, col, "move")
+        tipo, _indice, riga = azione
+        self._mostra_overlay(riga, col, "swap" if tipo == "scambia" else "move")
 
     def dragEnterEvent(self, event):
         if self._decode_drag_payload(event) is None:
@@ -295,20 +357,14 @@ class TabellaOperatorie(QTableWidget):
             return
 
         accepted = False
-        if dst_col == src_col:
-            target_row = self.rowAt(pos.y())
-            n_ops = self._drop_targets.get(dst_col, 2) - 2
-            src_row = src_idx + 2
-            if (target_row >= 2
-                    and target_row != src_row
-                    and (target_row - 2) < n_ops):
-                self.operazione_scambiata.emit(dst_col, src_idx, target_row - 2)
-                accepted = True
-        else:
-            target_row = self._drop_targets.get(dst_col, -1)
-            if 0 <= target_row < self.rowCount():
+        azione = self.azione_drop(src_col, src_idx, dst_col, self.rowAt(pos.y()))
+        if azione is not None:
+            tipo, dst_idx, _riga = azione
+            if tipo == "scambia":
+                self.operazione_scambiata.emit(dst_col, src_idx, dst_idx)
+            else:
                 self.operazione_spostata.emit(src_col, src_idx, dst_col)
-                accepted = True
+            accepted = True
 
         if accepted:
             event.setDropAction(Qt.DropAction.MoveAction)
@@ -318,21 +374,16 @@ class TabellaOperatorie(QTableWidget):
 
 
 class ViewSaleOperatorie(QWidget):
-    DEFAULT_OPS = 5   # righe operazione visibili di default
-    MIN_VISIBLE_OPS = 2   # sotto, la tabella scorre invece di spingere fuori i pulsanti
     ACTION_HEIGHT = 52
-    MAX_OPS = 24      # 12 interventi per ciascuna delle due sale fisiche
 
     def __init__(self):
         super().__init__()
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         self._month_mode = False
-
-        self.current_max_ops = self.DEFAULT_OPS
-        self.row_labels = (
-            ["Giorno", "Specializzandi"]
-            + [f"Op. {i+1}" for i in range(self.current_max_ops)]
-        )
+        # Blocchi di righe (sala, righe intervento) e, per sala, la posizione nella
+        # tabella: (riga dello specializzando, prima riga intervento, numero di righe).
+        self._blocchi: list[tuple[str, int]] = [(sala, 2) for sala in ROOM_COLORS]
+        self.righe_sala: dict[str, tuple[int, int, int]] = {}
 
         self.setup_ui()
         self.load_styles()
@@ -340,12 +391,26 @@ class ViewSaleOperatorie(QWidget):
     def setup_ui(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+
+        # Fuori dai margini della pagina calendario, così occupa tutta la larghezza.
+        self.banda = BandaSezione(
+            "Sale Operatorie",
+            [(codice, titolo, descrizione.replace("\n", " "))
+             for codice, titolo, descrizione, _icona in _MODALITA],
+        )
+        self.btn_indietro = self.banda.btn_indietro
 
         self.stacked_widget = QStackedWidget()
-        main_layout.addWidget(self.stacked_widget)
-
-        self._build_page_selezione()
+        self._build_page_selezione()  # indice 0: le card
         self._build_page_calendario()
+        # Indice 1: banda e calendario, che scorrono insieme; le card restano fisse.
+        self.scroll_pagina = pagina_scorrevole(self.banda, self.page_calendario)
+        self.stacked_widget.addWidget(self.scroll_pagina)
+        self.stacked_widget.currentChanged.connect(
+            lambda _indice: self.scroll_pagina.verticalScrollBar().setValue(0)
+        )
+        main_layout.addWidget(self.stacked_widget)
 
     def _build_page_selezione(self):
         self.page_selezione = QWidget()
@@ -385,24 +450,13 @@ class ViewSaleOperatorie(QWidget):
         cards_layout.setSpacing(40)
         cards_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.btn_storico = self._crea_card(
-            "Storico",
-            "Consulta le settimane\nconvalidate in passato",
-            "asset/images/scadenzario/icona_storico.png",
-            "CardStorico",
-        )
-        self.btn_consultazione = self._crea_card(
-            "Consultazione",
-            "Rivedi il piano e convalida\nla settimana corrente",
-            "asset/images/scadenzario/icona_corrente.png",
-            "CardConsultazione",
-        )
-        self.btn_pianificazione = self._crea_card(
-            "Pianificazione",
-            "Gestisci il piano\nper le settimane future",
-            "asset/images/scadenzario/icona_pianificazione.png",
-            "CardPianificazione",
-        )
+        card = {
+            codice: CardModalita(codice, titolo, descrizione, icona)
+            for codice, titolo, descrizione, icona in _MODALITA
+        }
+        self.btn_storico = card["STORICO"]
+        self.btn_consultazione = card["CONSULTAZIONE"]
+        self.btn_pianificazione = card["PIANIFICAZIONE"]
 
         cards_layout.addWidget(self.btn_storico)
         cards_layout.addWidget(self.btn_consultazione)
@@ -414,16 +468,8 @@ class ViewSaleOperatorie(QWidget):
     def _build_page_calendario(self):
         self.page_calendario = QWidget()
         layout = QVBoxLayout(self.page_calendario)
-        layout.setContentsMargins(30, 16, 30, 24)
+        layout.setContentsMargins(30, 12, 30, 24)
         layout.setSpacing(10)
-
-        nav = QHBoxLayout()
-        nav.setContentsMargins(0, 0, 0, 6)
-
-        self.btn_indietro = QPushButton("← Indietro")
-        self.btn_indietro.setObjectName("BtnIndietroSaleOperatorie")
-        self.btn_indietro.setFixedSize(150, 42)
-        self.btn_indietro.setCursor(Qt.CursorShape.PointingHandCursor)
 
         self.btn_prev = QPushButton("‹")
         self.btn_prev.setObjectName("btnNav")
@@ -446,98 +492,70 @@ class ViewSaleOperatorie(QWidget):
         sp2.setRetainSizeWhenHidden(True)
         self.btn_next.setSizePolicy(sp2)
 
-        self.lbl_modalita = QLabel("")
-        self.lbl_modalita.setObjectName("LblModalita")
-        self.lbl_modalita.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addLayout(riga_periodo(self.btn_prev, self.btn_mese_anno, self.btn_next))
 
-        self.lbl_stato = QLabel("")
-        self.lbl_stato.setObjectName("LblStato")
-        self.lbl_stato.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # Lo stato ha una fascia tutta sua: si deve capire subito se si guarda una bozza.
+        self.stato_periodo = StatoPeriodo(_TESTI_STATO)
+        self.lbl_versione_status = self.stato_periodo.lbl_dettaglio  # messaggi del controller
+        layout.addWidget(self.stato_periodo)
 
-        badge_row = QHBoxLayout()
-        badge_row.setSpacing(8)
-        badge_row.addWidget(self.lbl_modalita)
-        badge_row.addWidget(self.lbl_stato)
+        # Esito dell'ultima pianificazione automatica (nascosto se la settimana non ne ha).
+        self.riepilogo_ottimizzazione = RiepilogoOttimizzazione()
+        layout.addWidget(self.riepilogo_ottimizzazione)
 
-        nav.addWidget(self.btn_indietro)
-        nav.addStretch()
-        nav.addWidget(self.btn_prev)
-        nav.addWidget(self.btn_mese_anno)
-        nav.addWidget(self.btn_next)
-        nav.addStretch()
-        nav.addLayout(badge_row)
+        # Stessa barra dello Scadenzario: filtri a sinistra, azioni a destra, note sotto.
+        barra = self.barra_filtri = BarraStrumenti()
 
-        layout.addLayout(nav)
+        # Pulsanti e non menu a tendina: la versione su cui si lavora deve vedersi subito.
+        self.scelta_versione = SceltaSegmentata()
+        self.scelta_versione.setProperty("evidenza", True)
+        self.scelta_versione.addItem("Previsto", CalendarVersion.PREVISTO)
+        self.scelta_versione.addItem("Effettivo", CalendarVersion.EFFETTIVO)
+        self.scelta_versione.setAccessibleName("Versione del calendario sale operatorie")
+        barra.aggiungi_gruppo("Versione", self.scelta_versione)
 
-        # Come nello Scadenzario: la versione si sceglie accanto al calendario che cambia.
-        version_row = QHBoxLayout()
-        version_row.setSpacing(12)
-        version_label = QLabel("Versione:")
-        version_label.setObjectName("LblCalendarTools")
-        version_row.addWidget(version_label)
-        self.combo_versione = QComboBox()
-        self.combo_versione.setObjectName("ComboVersioneSale")
-        self.combo_versione.setMinimumWidth(145)
-        self.combo_versione.addItem("Previsto", CalendarVersion.PREVISTO)
-        self.combo_versione.addItem("Effettivo", CalendarVersion.EFFETTIVO)
-        self.combo_versione.setAccessibleName("Versione del calendario sale operatorie")
-        version_row.addWidget(self.combo_versione)
-        self.lbl_versione_status = QLabel()
-        self.lbl_versione_status.setObjectName("LblCellDetail")
-        self.lbl_versione_status.setWordWrap(True)
-        self.lbl_versione_status.hide()
-        version_row.addWidget(self.lbl_versione_status, 1)
-        version_row.addStretch()  # tiene il menu a sinistra quando il messaggio è nascosto
-        layout.addLayout(version_row)
-
-        tools = QHBoxLayout()
-        tools.setSpacing(8)
-        lbl_vista = QLabel("Visualizzazione:")
-        lbl_vista.setObjectName("LblCalendarTools")
-        tools.addWidget(lbl_vista)
+        self.scelta_sala = SceltaSegmentata()
+        self.scelta_sala.addItem("Tutte le sale", None)
+        self.scelta_sala.addItem("OR-1", "OR-1")
+        self.scelta_sala.addItem("OR-2", "OR-2")
+        self.scelta_sala.setAccessibleName("Sala operatoria da visualizzare")
+        barra.aggiungi_gruppo("Sala", self.scelta_sala)
 
         self.btn_vista_settimana = QPushButton("Settimana")
-        self.btn_vista_settimana.setObjectName("BtnCalendarTool")
-        self.btn_vista_settimana.setCheckable(True)
-        self.btn_vista_settimana.setChecked(True)
-        self.btn_vista_settimana.setCursor(Qt.CursorShape.PointingHandCursor)
-
         self.btn_vista_mese = QPushButton("Intero mese")
-        self.btn_vista_mese.setObjectName("BtnCalendarTool")
-        self.btn_vista_mese.setCheckable(True)
-        self.btn_vista_mese.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.gruppo_visualizzazione = segmentato(self.btn_vista_settimana, self.btn_vista_mese)
+        barra.aggiungi_gruppo("Visualizzazione", self.gruppo_visualizzazione)
+        self.btn_vista_settimana.setChecked(True)
 
-        self.lbl_dettaglio_cella = QLabel(
+        self.btn_esporta_pdf = pulsante_esporta_pdf("#6f42c1")
+        barra.aggiungi_azione(self.btn_esporta_pdf)
+
+        self.lbl_dettaglio_cella = etichetta_info(
             "La vista mensile usa le iniziali; fai click per aprire i dettagli."
         )
-        self.lbl_dettaglio_cella.setObjectName("LblCellDetail")
-
-        self.btn_esporta_pdf = QPushButton("Esporta PDF")
-        self.btn_esporta_pdf.setObjectName("BtnCalendarExport")
-        self.btn_esporta_pdf.setCursor(Qt.CursorShape.PointingHandCursor)
-
-        tools.addWidget(self.btn_vista_settimana)
-        tools.addWidget(self.btn_vista_mese)
-        tools.addWidget(self.lbl_dettaglio_cella, 1)
-        tools.addWidget(self.btn_esporta_pdf)
-        layout.addLayout(tools)
+        barra.aggiungi_info(self.lbl_dettaglio_cella, 1)
+        # Le Sale si consultano solo per settimana: la scelta «Settimana / Intero mese» e
+        # la nota sulla vista mensile non si mostrano. Pulsanti, segnali e vista mensile
+        # restano nel codice (imposta_visualizzazione("MESE") funziona ancora).
+        barra.imposta_gruppo_visibile(self.gruppo_visualizzazione, False)
+        barra.mostra_riga_info(False)
+        layout.addWidget(barra)
 
         self.tabella = TabellaOperatorie()
-        self.tabella.setRowCount(2 + self.current_max_ops)
-        self.tabella.setVerticalHeaderLabels(self.row_labels)
 
         self.tabella.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.tabella.horizontalHeader().setSectionsClickable(False)
         self.tabella.horizontalHeader().setHighlightSections(False)
 
+        # Intestazioni di riga colorate per sala, come nello Scadenzario mensile.
+        self._intestazioni_righe = ColoredHeaderView(
+            Qt.Orientation.Vertical, {}, self.tabella, font_size=9
+        )
+        self.tabella.setVerticalHeader(self._intestazioni_righe)
         self.tabella.verticalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Fixed)
         self.tabella.verticalHeader().setSectionsClickable(False)
         self.tabella.verticalHeader().setHighlightSections(False)
-
-        self.tabella.setRowHeight(0, 46)   # Giorno
-        self.tabella.setRowHeight(1, 60)   # Specializzandi
-        for i in range(2, 2 + self.current_max_ops):
-            self.tabella.setRowHeight(i, 82)
+        self.imposta_blocchi(self._blocchi)
 
         self.tabella.setCornerButtonEnabled(False)
         self.tabella.setWordWrap(True)
@@ -579,102 +597,50 @@ class ViewSaleOperatorie(QWidget):
         layout.addLayout(azioni)
         layout.addStretch()  # lo spazio in più va sotto i pulsanti, non dentro la tabella
 
-        self.stacked_widget.addWidget(self.page_calendario)
 
-    def _crea_card(self, titolo, descrizione, icon_path, object_name):
-        icon_path = str(PROJECT_ROOT / icon_path)
-        btn = QPushButton()
-        btn.setObjectName(object_name)
-        btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        btn.setMinimumSize(240, 290)
-        btn.setMaximumSize(380, 360)
-        btn.setCursor(Qt.CursorShape.PointingHandCursor)
+    def imposta_blocchi(self, blocchi: list[tuple[str, int]]) -> None:
+        """Righe della tabella: «Giorno», poi un blocco per sala.
 
-        shadow = QGraphicsDropShadowEffect()
-        shadow.setBlurRadius(30)
-        shadow.setColor(QColor(0, 0, 0, 25))
-        shadow.setOffset(0, 8)
-        btn.setGraphicsEffect(shadow)
-
-        inner = QVBoxLayout(btn)
-        inner.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        inner.setContentsMargins(28, 32, 28, 28)
-        inner.setSpacing(10)
-
-        lbl_icona = QLabel()
-        lbl_icona.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        if os.path.exists(icon_path):
-            px = QPixmap(icon_path).scaled(
-                80, 80, Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation,
-            )
-            lbl_icona.setPixmap(px)
-
-        lbl_titolo = QLabel(titolo)
-        lbl_titolo.setObjectName("CardTitolo")
-        lbl_titolo.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        lbl_desc = QLabel(descrizione)
-        lbl_desc.setObjectName("CardDescrizione")
-        lbl_desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        lbl_desc.setWordWrap(True)
-
-        sep = QFrame()
-        sep.setObjectName("CardSeparatore")
-        sep.setFrameShape(QFrame.Shape.HLine)
-        sep.setFixedHeight(1)
-
-        lbl_azione = QLabel("Accedi  →")
-        lbl_azione.setObjectName("CardAzione")
-        lbl_azione.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        inner.addStretch()
-        inner.addWidget(lbl_icona)
-        inner.addSpacing(4)
-        inner.addWidget(lbl_titolo)
-        inner.addWidget(lbl_desc)
-        inner.addStretch()
-        inner.addWidget(sep)
-        inner.addSpacing(4)
-        inner.addWidget(lbl_azione)
-
-        return btn
-
-    def adatta_righe_operazioni(self, n_actual: int):
+        Ogni blocco ha la riga dello specializzando di turno in quella sala e ``righe``
+        righe per gli interventi, con i colori della sala (:data:`ROOM_COLORS`).
+        Le posizioni finiscono in :attr:`righe_sala`.
         """
-        Ridimensiona le righe operazione (min DEFAULT_OPS, max MAX_OPS)
-        e aggiorna l'altezza massima della tabella per evitare spazio bianco
-        vuoto sotto l'ultima riga prima dei pulsanti.
-        """
-        n_display = max(self.DEFAULT_OPS, min(n_actual, self.MAX_OPS))
-
-        if n_display != self.current_max_ops:
-            self.current_max_ops = n_display
-            self.tabella.setRowCount(n_display + 2)
-            specialist_label = "Spec." if self._month_mode else "Specializzandi"
-            labels = ["Giorno", specialist_label] + [f"Op. {i+1}" for i in range(n_display)]
-            self.tabella.setVerticalHeaderLabels(labels)
-        operation_height = 38 if self._month_mode else 82
+        self._blocchi = [(sala, max(1, righe)) for sala, righe in blocchi]
+        self.righe_sala = {}
+        etichette = ["Giorno"]
+        colori = {0: "#f8fafc"}
+        riga = 1
+        for sala, righe in self._blocchi:
+            tinte = ROOM_COLORS[sala]
+            self.righe_sala[sala] = (riga, riga + 1, righe)
+            etichette.append(sala if self._month_mode else f"Sala {sala}")
+            colori[riga] = tinte["intestazione"]
+            for numero in range(1, righe + 1):
+                etichette.append(f"Op. {numero}")
+                colori[riga + numero] = tinte["etichetta"]
+            riga += 1 + righe
+        self.tabella.setRowCount(riga)
+        self.tabella.setVerticalHeaderLabels(etichette)
+        self._intestazioni_righe.set_color_map(colori)
         self.tabella.setRowHeight(0, 34 if self._month_mode else 46)
-        self.tabella.setRowHeight(1, 44 if self._month_mode else 60)
-        for i in range(2, n_display + 2):
-            self.tabella.setRowHeight(i, operation_height)
-
+        for intestazione, prima, righe in self.righe_sala.values():
+            self.tabella.setRowHeight(intestazione, 30 if self._month_mode else 40)
+            for numero in range(righe):
+                self.tabella.setRowHeight(prima + numero, 38 if self._month_mode else 82)
         self._adatta_altezza_tabella()
 
     def _adatta_altezza_tabella(self):
-        """Tutte le righe se c'è spazio, almeno MIN_VISIBLE_OPS interventi se lo schermo è basso.
+        """La tabella è alta esattamente quanto tutte le sue righe.
 
-        Il massimo evita lo spazio bianco sotto l'ultima riga; il minimo basso lascia la
-        pagina dentro uno schermo da portatile: la tabella scorre, i pulsanti restano visibili.
+        Niente barra di scorrimento verticale nel calendario e niente spazio bianco sotto
+        l'ultima riga: se lo schermo è basso scorre la pagina intera.
         """
-        h_header = self.tabella.horizontalHeader().height()
-        if h_header <= 0:
-            h_header = 42
-        h_fisse = h_header + self.tabella.rowHeight(0) + self.tabella.rowHeight(1) + 4
-        h_operazioni = [self.tabella.rowHeight(i) for i in range(2, self.tabella.rowCount())]
-        self.tabella.setMinimumHeight(h_fisse + sum(h_operazioni[: self.MIN_VISIBLE_OPS]))
-        self.tabella.setMaximumHeight(h_fisse + sum(h_operazioni))
+        altezza = (
+            self.tabella.horizontalHeader().sizeHint().height()
+            + sum(self.tabella.rowHeight(riga) for riga in range(self.tabella.rowCount()))
+            + 2 * self.tabella.frameWidth()
+        )
+        self.tabella.setFixedHeight(altezza)
 
     def crea_item_giorno(self, nome_giorno, is_festivo, is_oggi=False):
         display_name = nome_giorno[:1] if self._month_mode else nome_giorno
@@ -695,7 +661,12 @@ class ViewSaleOperatorie(QWidget):
             item.setForeground(QColor("#475569"))
         return item
 
-    def crea_item_cella(self, valore, is_inattivo, is_oggi=False, compact=False):
+    def crea_item_cella(self, valore, is_inattivo, is_oggi=False, compact=False, sala=None):
+        """Cella dello specializzando di turno, con il colore della sala.
+
+        ``is_oggi`` resta per compatibilità: il giorno corrente si vede già
+        nell'intestazione, e il giallo su celle senza pazienti dava fastidio.
+        """
         display_value = valore
         if compact and valore:
             display_value = "\n".join(
@@ -709,11 +680,12 @@ class ViewSaleOperatorie(QWidget):
 
         if is_inattivo:
             item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)
-            item.setBackground(QColor("#fffbeb") if is_oggi else QColor(Qt.GlobalColor.transparent))
+            item.setBackground(QColor(Qt.GlobalColor.transparent))
             item.setForeground(QColor(Qt.GlobalColor.transparent))
             item.setFont(QFont("Segoe UI", 10, QFont.Weight.Normal))
         else:
-            item.setBackground(QColor("#fef3c7") if is_oggi else QColor(Qt.GlobalColor.transparent))
+            sfondo = ROOM_COLORS[sala]["etichetta"] if sala in ROOM_COLORS else None
+            item.setBackground(QColor(sfondo) if sfondo else QColor(Qt.GlobalColor.transparent))
             item.setForeground(QColor("#1e293b"))
             item.setFont(QFont("Segoe UI", 10, QFont.Weight.DemiBold))
         return item
@@ -721,10 +693,12 @@ class ViewSaleOperatorie(QWidget):
     def crea_widget_operazione(self, op: dict, is_oggi: bool = False, on_click=None,
                                draggable: bool = False, col: int = -1,
                                op_idx: int = -1,
-                               compact: bool = False) -> DraggableOperationFrame:
+                               compact: bool = False,
+                               sala: str | None = None) -> DraggableOperationFrame:
         frame = DraggableOperationFrame()
         frame.setObjectName("CellaOperazioneOggi" if is_oggi else "CellaOperazione")
         frame.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        frame.setProperty("sala", sala or "")  # bordo sinistro nel colore della sala
 
         if compact:
             layout = QVBoxLayout(frame)
@@ -765,9 +739,10 @@ class ViewSaleOperatorie(QWidget):
         if room_id:
             badge_room = QLabel(room_id)
             badge_room.setObjectName("BadgeSalaOp")
+            badge_room.setProperty("sala", room_id)
             badge_room.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
             ora_row.addWidget(badge_room)
-        badge_dur = QLabel(f"{op.get('durata', '?')} min")
+        badge_dur = QLabel(etichetta_durata(op.get("durata", "?")))
         badge_dur.setObjectName("BadgeDurataOp")
         badge_dur.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         ora_row.addWidget(lbl_ora)
@@ -825,23 +800,22 @@ class ViewSaleOperatorie(QWidget):
             header.setMinimumSectionSize(20)
             header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
             self.tabella.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-            labels = ["Giorno", "Spec."] + [
-                f"Op. {index + 1}" for index in range(self.current_max_ops)
-            ]
         else:
             header.setMinimumSectionSize(80)
             header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
             self.tabella.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-            labels = ["Giorno", "Specializzandi"] + [
-                f"Op. {index + 1}" for index in range(self.current_max_ops)
-            ]
-        self.tabella.setVerticalHeaderLabels(labels)
-        self.adatta_righe_operazioni(self.current_max_ops)
+        self.imposta_blocchi(self._blocchi)
         self.tabella.viewport().update()
         header.viewport().update()
 
-    def crea_widget_vuoto(self, is_oggi: bool = False, on_click=None) -> QFrame:
+    def crea_widget_vuoto(self, is_oggi: bool = False, on_click=None, sala=None) -> QFrame:
+        """Cella senza intervento: con il colore della sala, anche nel giorno corrente.
+
+        ``is_oggi`` resta per compatibilità: il giorno corrente è già evidenziato
+        nell'intestazione, il giallo sulle celle vuote confondeva.
+        """
         frame = QFrame()
+        frame.setProperty("sala", sala or "")  # sfondo nel colore della sala
         if on_click:
             frame.setObjectName("SlotVuotoClickable")
             frame.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -854,34 +828,20 @@ class ViewSaleOperatorie(QWidget):
             vl.addWidget(lbl)
             frame.mousePressEvent = lambda e: on_click()
         else:
-            frame.setObjectName("CellaVuotaOggi" if is_oggi else "CellaVuota")
+            frame.setObjectName("CellaVuota")
         frame.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         return frame
 
     def aggiorna_badge(self, modalita, stato, versione="Previsto"):
-        colori_modalita = {
-            "STORICO":        ("#334155", "#e2e8f0"),
-            "CONSULTAZIONE":  ("#14532d", "#dcfce7"),
-            "PIANIFICAZIONE": ("#1e3a8a", "#dbeafe"),
-        }
-        colori_stato = {
-            "BOZZA":       ("#92400e", "#fef3c7"),
-            "CONVALIDATO": ("#14532d", "#dcfce7"),
-        }
+        """Aggiorna la banda della modalità e la fascia dello stato della settimana.
 
-        fg_m, bg_m = colori_modalita.get(modalita, ("#334155", "#e2e8f0"))
-        self.lbl_modalita.setText(f"  {modalita} · {versione.upper()}  ")
-        self.lbl_modalita.setStyleSheet(
-            f"color: {fg_m}; background-color: {bg_m}; font-weight: bold; "
-            f"font-size: 12px; border-radius: 8px; padding: 5px 10px;"
-        )
-
-        self.lbl_stato.setVisible(True)
-        fg_s, bg_s = colori_stato.get(stato, ("#334155", "#e2e8f0"))
-        self.lbl_stato.setText(f"  {stato}  ")
-        self.lbl_stato.setStyleSheet(
-            f"color: {fg_s}; background-color: {bg_s}; font-weight: bold; "
-            f"font-size: 12px; border-radius: 8px; padding: 5px 10px;"
+        La versione si legge nei pulsanti Versione del pannello dei filtri.
+        """
+        self.banda.imposta_modalita(modalita)
+        self.stato_periodo.imposta_stato(stato)
+        # In Pianificazione esiste solo il Previsto: la scelta della versione non compare.
+        self.barra_filtri.imposta_gruppo_visibile(
+            self.scelta_versione, modalita != "PIANIFICAZIONE"
         )
 
     def load_styles(self):

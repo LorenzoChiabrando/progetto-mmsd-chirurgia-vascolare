@@ -8,151 +8,167 @@
     "dati_sintetici": true,
     "attivita": [
         {
-            "id_paziente": "PZ0001",
-            "nome_paziente": "VerdeScuro Pippo",
-            "diagnosi": "[D001] Diagnosi sintetica 01",
-            "codice_diagnosi": "D001",
-            "descrizione_diagnosi": "Diagnosi sintetica 01",
-            "intervento": "Procedura sintetica 01",
-            "codice_intervento": "DEMO-001",
+            "data": "2026-09-28",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0018 Paziente",
+            "id_paziente": "PZ0018",
+            "diagnosi": "[D0018] Diagnosi sintetica 0018",
+            "intervento": "Procedura sintetica 0018, parte 1",
+            "codice_intervento": "DEMO-0018-1",
+            "chirurgo": "Chirurgo demo",
             "interventi": [
                 {
-                    "codice": "DEMO-001",
-                    "descrizione": "Procedura sintetica 01",
+                    "codice": "DEMO-0018-1",
+                    "descrizione": "Procedura sintetica 0018, parte 1",
+                    "durata": 180
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
+            "ora_inizio": "08:00",
+            "ora_fine": "11:00",
+            "durata": 180,
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-09-30",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0020 Paziente",
+            "id_paziente": "PZ0020",
+            "diagnosi": "[D0020] Diagnosi sintetica 0020",
+            "intervento": "Procedura sintetica 0020, parte 1",
+            "codice_intervento": "DEMO-0020-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0020-1",
+                    "descrizione": "Procedura sintetica 0020, parte 1",
                     "durata": 60
                 }
             ],
-            "durata": 60,
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
             "ora_inizio": "08:00",
             "ora_fine": "09:00",
-            "sala_operatoria": "OR-1",
-            "chirurgo": "Chirurgo demo",
-            "complessita": "Media",
-            "tipo_chirurgia": "Aperta",
-            "specializzando": "Verdone V.",
-            "id_specializzando": "SP003",
-            "ruolo_specializzando": "OR I",
-            "data": "2026-10-05",
-            "slot": "08:00-10:00",
-            "ruolo": "OR I"
+            "durata": 60,
+            "ruolo": "OR II"
         },
         {
-            "id_paziente": "PZ0002",
-            "nome_paziente": "Serra Massimo",
-            "diagnosi": "[D002] Diagnosi sintetica 02",
-            "codice_diagnosi": "D002",
-            "descrizione_diagnosi": "Diagnosi sintetica 02",
-            "intervento": "Procedura sintetica 02",
-            "codice_intervento": "DEMO-002",
-            "interventi": [
-                {
-                    "codice": "DEMO-002",
-                    "descrizione": "Procedura sintetica 02",
-                    "durata": 90
-                }
-            ],
-            "durata": 90,
-            "ora_inizio": "08:00",
-            "ora_fine": "09:30",
-            "sala_operatoria": "OR-1",
+            "data": "2026-10-01",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0022 Paziente",
+            "id_paziente": "PZ0022",
+            "diagnosi": "[D0022] Diagnosi sintetica 0022",
+            "intervento": "Procedura sintetica 0022, parte 1",
+            "codice_intervento": "DEMO-0022-1",
             "chirurgo": "Chirurgo demo",
-            "complessita": "Bassa",
-            "tipo_chirurgia": "Endovascolare",
-            "specializzando": "Verdone V.",
-            "id_specializzando": "SP003",
-            "ruolo_specializzando": "OR I",
-            "data": "2026-10-06",
-            "slot": "08:00-10:00",
-            "ruolo": "OR I"
-        },
-        {
-            "id_paziente": "PZ0003",
-            "nome_paziente": "Ferretti Giovanni",
-            "diagnosi": "[D003] Diagnosi sintetica 03",
-            "codice_diagnosi": "D003",
-            "descrizione_diagnosi": "Diagnosi sintetica 03",
-            "intervento": "Procedura sintetica 03",
-            "codice_intervento": "DEMO-003",
             "interventi": [
                 {
-                    "codice": "DEMO-003",
-                    "descrizione": "Procedura sintetica 03",
+                    "codice": "DEMO-0022-1",
+                    "descrizione": "Procedura sintetica 0022, parte 1",
                     "durata": 120
                 }
             ],
-            "durata": 120,
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
             "ora_inizio": "08:00",
             "ora_fine": "10:00",
-            "sala_operatoria": "OR-1",
-            "chirurgo": "Chirurgo demo",
-            "complessita": "Alta",
-            "tipo_chirurgia": "Aperta",
-            "specializzando": "Verdone V.",
-            "id_specializzando": "SP003",
-            "ruolo_specializzando": "OR I",
-            "data": "2026-10-07",
-            "slot": "08:00-10:00",
-            "ruolo": "OR I"
+            "durata": 120,
+            "ruolo": "OR II"
         },
         {
-            "id_paziente": "PZ0004",
-            "nome_paziente": "Marchetti Luisa",
-            "diagnosi": "[D004] Diagnosi sintetica 04",
-            "codice_diagnosi": "D004",
-            "descrizione_diagnosi": "Diagnosi sintetica 04",
-            "intervento": "Procedura sintetica 04",
-            "codice_intervento": "DEMO-004",
+            "data": "2026-10-06",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0025 Paziente",
+            "id_paziente": "PZ0025",
+            "diagnosi": "[D0025] Diagnosi sintetica 0025",
+            "intervento": "Procedura sintetica 0025, parte 1",
+            "codice_intervento": "DEMO-0025-1",
+            "chirurgo": "Chirurgo demo",
             "interventi": [
                 {
-                    "codice": "DEMO-004",
-                    "descrizione": "Procedura sintetica 04",
+                    "codice": "DEMO-0025-1",
+                    "descrizione": "Procedura sintetica 0025, parte 1",
                     "durata": 45
                 }
             ],
-            "durata": 45,
+            "complessita": "Media",
+            "tipo_chirurgia": "Aperta",
             "ora_inizio": "08:00",
             "ora_fine": "08:45",
-            "sala_operatoria": "OR-1",
-            "chirurgo": "Chirurgo demo",
-            "complessita": "Media",
-            "tipo_chirurgia": "Endovascolare",
-            "specializzando": "Verdone V.",
-            "id_specializzando": "SP003",
-            "ruolo_specializzando": "OR I",
-            "data": "2026-10-08",
-            "slot": "08:00-10:00",
+            "durata": 45,
             "ruolo": "OR I"
         },
         {
-            "id_paziente": "PZ0005",
-            "nome_paziente": "Conti Roberto",
-            "diagnosi": "[D005] Diagnosi sintetica 05",
-            "codice_diagnosi": "D005",
-            "descrizione_diagnosi": "Diagnosi sintetica 05",
-            "intervento": "Procedura sintetica 05",
-            "codice_intervento": "DEMO-005",
+            "data": "2026-10-08",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0027 Paziente",
+            "id_paziente": "PZ0027",
+            "diagnosi": "[D0027] Diagnosi sintetica 0027",
+            "intervento": "Procedura sintetica 0027, parte 1",
+            "codice_intervento": "DEMO-0027-1",
+            "chirurgo": "Chirurgo demo",
             "interventi": [
                 {
-                    "codice": "DEMO-005",
-                    "descrizione": "Procedura sintetica 05",
-                    "durata": 60
+                    "codice": "DEMO-0027-1",
+                    "descrizione": "Procedura sintetica 0027, parte 1",
+                    "durata": 90
                 }
             ],
-            "durata": 60,
-            "ora_inizio": "08:00",
-            "ora_fine": "09:00",
-            "sala_operatoria": "OR-1",
-            "chirurgo": "Chirurgo demo",
-            "complessita": "Bassa",
+            "complessita": "Media",
             "tipo_chirurgia": "Aperta",
-            "specializzando": "Verdone V.",
-            "id_specializzando": "SP003",
-            "ruolo_specializzando": "OR I",
-            "data": "2026-10-09",
-            "slot": "08:00-10:00",
+            "ora_inizio": "08:00",
+            "ora_fine": "09:30",
+            "durata": 90,
             "ruolo": "OR I"
         }
     ],
-    "attivita_extra": [],
+    "attivita_extra": [
+        {
+            "data": "2026-09-21",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-09-22",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-09-23",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-09-24",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-09-25",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        }
+    ],
     "meta_giorni": {}
 }

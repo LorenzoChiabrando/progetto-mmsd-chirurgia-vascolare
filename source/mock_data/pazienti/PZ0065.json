@@ -1,0 +1,30 @@
+{
+    "id": "PZ0065",
+    "nome": "Paziente",
+    "cognome": "Demo 0065",
+    "codice_diagnosi": "D0065",
+    "descrizione_diagnosi": "Diagnosi sintetica 0065",
+    "diagnosi": "[D0065] Diagnosi sintetica 0065",
+    "interventi": [
+        {
+            "codice": "DEMO-0065-1",
+            "descrizione": "Procedura sintetica 0065, parte 1",
+            "durata": 150
+        }
+    ],
+    "codice_intervento": "DEMO-0065-1",
+    "descrizione_intervento": "Procedura sintetica 0065, parte 1",
+    "durata_intervento": 150,
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Alta",
+    "urgenza": "Media",
+    "stato": "Pianificato",
+    "data_inserimento": "25/10/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
+}

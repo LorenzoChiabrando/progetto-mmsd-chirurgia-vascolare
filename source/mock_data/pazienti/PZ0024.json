@@ -1,0 +1,35 @@
+{
+    "id": "PZ0024",
+    "nome": "Paziente",
+    "cognome": "Demo 0024",
+    "codice_diagnosi": "D0024",
+    "descrizione_diagnosi": "Diagnosi sintetica 0024",
+    "diagnosi": "[D0024] Diagnosi sintetica 0024",
+    "interventi": [
+        {
+            "codice": "DEMO-0024-1",
+            "descrizione": "Procedura sintetica 0024, parte 1",
+            "durata": 90
+        },
+        {
+            "codice": "DEMO-0024-2",
+            "descrizione": "Procedura sintetica 0024, parte 2",
+            "durata": 90
+        }
+    ],
+    "codice_intervento": "DEMO-0024-1",
+    "descrizione_intervento": "Procedura sintetica 0024, parte 1",
+    "durata_intervento": 180,
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Alta",
+    "urgenza": "Bassa",
+    "stato": "Completato",
+    "data_inserimento": "01/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 180
+    }
+}

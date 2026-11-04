@@ -6,8 +6,9 @@ import tempfile
 from collections import Counter
 from contextlib import contextmanager
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date, timedelta
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
@@ -44,6 +45,7 @@ class PlatformWriteReceipt:
 
     updated_paths: tuple[Path, ...]
     backup_paths: tuple[Path, ...]
+    committed_fingerprint: str | None = None
 
 
 def load_platform_context(
@@ -62,6 +64,7 @@ def load_platform_context(
     active_policy = policy or PlatformPlanningPolicy()
     if monday.weekday() != 0:
         raise PlatformDataError("La settimana da pianificare deve iniziare di lunedì.")
+    fingerprint = _planning_input_fingerprint(root)
     expected_days = tuple(monday + timedelta(days=offset) for offset in range(5))
     scadenzario_by_month = _load_convalidated_scadenzario_months(root, expected_days)
     patient_records = _read_catalog(root / "pazienti")
@@ -84,8 +87,7 @@ def load_platform_context(
             display_name = daily_data.get(roster_field)
             if not isinstance(display_name, str) or not display_name.strip():
                 raise PlatformDataError(
-                    f"Lo scadenzario del {day:%d/%m/%Y} non ha lo specializzando "
-                    f"di {roster_field}."
+                    f"Lo scadenzario del {day:%d/%m/%Y} non ha lo specializzando di {roster_field}."
                 )
             resident_id = resident_by_display_name.get(_normalize_display_name(display_name))
             if resident_id is None:
@@ -118,7 +120,7 @@ def load_platform_context(
         for patient_id in identifiers
     }
     current_draft_patient_ids = reservations.get(monday, set())
-    return build_platform_context(
+    context = build_platform_context(
         monday=monday,
         patient_records=patient_records,
         resident_records=resident_records,
@@ -127,6 +129,11 @@ def load_platform_context(
         current_draft_patient_ids=frozenset(current_draft_patient_ids),
         policy=active_policy,
     )
+    if fingerprint != _planning_input_fingerprint(root):
+        raise PlatformDataError(
+            "I dati sono cambiati durante la lettura. Ripetere la pianificazione."
+        )
+    return replace(context, source_fingerprint=fingerprint)
 
 
 def persist_platform_week_plan(
@@ -202,6 +209,16 @@ def persist_platform_week_plan(
                 "per rigenerare il piano."
             )
 
+        if (
+            plan.source_fingerprint is not None
+            and plan.source_fingerprint != _planning_input_fingerprint(root)
+        ):
+            raise PlatformPersistenceError(
+                "I dati sono cambiati durante il calcolo. Ripetere la pianificazione "
+                "prima di salvare."
+            )
+        _validate_current_reservations(root, plan)
+
         updated = deepcopy(month_data)
         for day in expected_days:
             day_plan = plan_by_day[day]
@@ -224,7 +241,9 @@ def persist_platform_week_plan(
         }
         try:
             patient_updates = patient_status_updates(
-                root / "pazienti", sale_directory, updates,
+                root / "pazienti",
+                sale_directory,
+                updates,
             )
         except (OSError, TypeError, ValueError) as exc:
             raise PlatformPersistenceError(
@@ -244,6 +263,7 @@ def persist_platform_week_plan(
                 os.replace(temporary_paths[destination], destination)
             for directory in {path.parent for path in updates}:
                 _fsync_directory(directory)
+            committed_fingerprint = _planning_input_fingerprint(root)
         except Exception as exc:
             _restore_originals(originals)
             raise PlatformPersistenceError(
@@ -254,7 +274,69 @@ def persist_platform_week_plan(
             for temporary in temporary_paths.values():
                 temporary.unlink(missing_ok=True)
 
-    return PlatformWriteReceipt(updated_paths=tuple(updates), backup_paths=backup_paths)
+    return PlatformWriteReceipt(
+        updated_paths=tuple(updates),
+        backup_paths=backup_paths,
+        committed_fingerprint=committed_fingerprint,
+    )
+
+
+def _planning_input_fingerprint(root: Path) -> str:
+    """Hash exact planner inputs, including file additions and removals, without logging data."""
+    digest = sha256()
+    for directory in (
+        "pazienti",
+        "libretti",
+        "scadenzario",
+        "sale_operatorie",
+        "sale_operatorie/effettivo",
+    ):
+        for path in sorted((root / directory).glob("*.json")):
+            try:
+                content = path.read_bytes()
+            except OSError as exc:
+                raise PlatformDataError(
+                    "Impossibile verificare i dati della pianificazione. Ripetere il calcolo."
+                ) from exc
+            digest.update(path.relative_to(root).as_posix().encode("utf-8"))
+            digest.update(b"\0")
+            digest.update(sha256(content).digest())
+    return digest.hexdigest()
+
+
+def _validate_current_reservations(root: Path, plan: PlatformWeekPlan) -> None:
+    """Reject duplicate or completed patients under the writer's lock, even for manual plans."""
+    patients = {record.get("id"): record for record in _read_catalog(root / "pazienti")}
+    selected: set[str] = set()
+    for day in plan.days:
+        for operation in day.operations:
+            identifier = operation.get("id_paziente")
+            if not isinstance(identifier, str) or identifier not in patients:
+                raise PlatformPersistenceError("Il piano contiene un paziente inesistente.")
+            if identifier in selected:
+                raise PlatformPersistenceError("Il piano assegna lo stesso paziente più volte.")
+            if patients[identifier].get("stato") not in {"In Attesa", "Pianificato"}:
+                raise PlatformPersistenceError(
+                    "Il piano contiene un paziente non più disponibile per la pianificazione."
+                )
+            selected.add(identifier)
+    for month in read_operational_plan_months(root / "sale_operatorie").values():
+        for day_text, daily in month.get("turni", {}).items():
+            day = date.fromisoformat(day_text)
+            if day - timedelta(days=day.weekday()) == plan.monday:
+                continue
+            operations = list(daily.get("operazioni", []))
+            operations.extend(
+                value
+                for key, value in daily.items()
+                if key not in {"operazioni", "specializzandi"} and isinstance(value, dict)
+            )
+            reserved = {operation.get("id_paziente") for operation in operations}
+            if selected & reserved:
+                raise PlatformPersistenceError(
+                    "Un paziente del piano è già prenotato in un'altra settimana. "
+                    "Ripetere la pianificazione."
+                )
 
 
 def _read_catalog(directory: Path) -> tuple[JsonObject, ...]:
@@ -317,11 +399,7 @@ def _room_configuration_for_day(
             raise PlatformDataError(f"La sala {room_id} non indica la riga dello scadenzario.")
         if not isinstance(role, str) or not role.strip():
             raise PlatformDataError(f"La sala {room_id} non indica il ruolo dello specializzando.")
-        if (
-            not isinstance(capacity, int)
-            or isinstance(capacity, bool)
-            or capacity <= 0
-        ):
+        if not isinstance(capacity, int) or isinstance(capacity, bool) or capacity <= 0:
             raise PlatformDataError(
                 f"La sala {room_id} ha una capacità non valida il {day:%d/%m/%Y}."
             )

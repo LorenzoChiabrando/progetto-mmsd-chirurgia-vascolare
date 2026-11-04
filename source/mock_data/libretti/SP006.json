@@ -6,7 +6,123 @@
     "livello": "Intermediate",
     "stato": "Molinette",
     "dati_sintetici": true,
-    "attivita": [],
-    "attivita_extra": [],
+    "attivita": [
+        {
+            "data": "2026-10-19",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0034 Paziente",
+            "id_paziente": "PZ0034",
+            "diagnosi": "[D0034] Diagnosi sintetica 0034",
+            "intervento": "Procedura sintetica 0034, parte 1",
+            "codice_intervento": "DEMO-0034-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0034-1",
+                    "descrizione": "Procedura sintetica 0034, parte 1",
+                    "durata": 120
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
+            "ora_inizio": "08:00",
+            "ora_fine": "10:00",
+            "durata": 120,
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-10-21",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0036 Paziente",
+            "id_paziente": "PZ0036",
+            "diagnosi": "[D0036] Diagnosi sintetica 0036",
+            "intervento": "Procedura sintetica 0036, parte 1",
+            "codice_intervento": "DEMO-0036-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0036-1",
+                    "descrizione": "Procedura sintetica 0036, parte 1",
+                    "durata": 180
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
+            "ora_inizio": "08:00",
+            "ora_fine": "11:00",
+            "durata": 180,
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-10-23",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0038 Paziente",
+            "id_paziente": "PZ0038",
+            "diagnosi": "[D0038] Diagnosi sintetica 0038",
+            "intervento": "Procedura sintetica 0038, parte 1",
+            "codice_intervento": "DEMO-0038-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0038-1",
+                    "descrizione": "Procedura sintetica 0038, parte 1",
+                    "durata": 60
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
+            "ora_inizio": "08:00",
+            "ora_fine": "09:00",
+            "durata": 60,
+            "ruolo": "OR II"
+        }
+    ],
+    "attivita_extra": [
+        {
+            "data": "2026-10-12",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-10-13",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-10-14",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-10-15",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-10-16",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        }
+    ],
     "meta_giorni": {}
 }

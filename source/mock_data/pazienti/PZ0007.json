@@ -1,30 +1,30 @@
 {
     "id": "PZ0007",
-    "nome": "Stefano",
-    "cognome": "Rizzo",
-    "codice_diagnosi": "D007",
-    "descrizione_diagnosi": "Diagnosi sintetica 07",
-    "diagnosi": "[D007] Diagnosi sintetica 07",
+    "nome": "Paziente",
+    "cognome": "Demo 0007",
+    "codice_diagnosi": "D0007",
+    "descrizione_diagnosi": "Diagnosi sintetica 0007",
+    "diagnosi": "[D0007] Diagnosi sintetica 0007",
     "interventi": [
         {
-            "codice": "DEMO-007",
-            "descrizione": "Procedura sintetica 07",
-            "durata": 120
+            "codice": "DEMO-0007-1",
+            "descrizione": "Procedura sintetica 0007, parte 1",
+            "durata": 45
         }
     ],
-    "codice_intervento": "DEMO-007",
-    "descrizione_intervento": "Procedura sintetica 07",
-    "durata_intervento": 120,
+    "codice_intervento": "DEMO-0007-1",
+    "descrizione_intervento": "Procedura sintetica 0007, parte 1",
+    "durata_intervento": 45,
     "tipo_chirurgia": "Aperta",
-    "complessita": "Media",
-    "urgenza": "Media",
-    "stato": "In Attesa",
-    "data_inserimento": "14/09/2026",
-    "note": "Dati inventati per la demo.",
+    "complessita": "Alta",
+    "urgenza": "Alta",
+    "stato": "Completato",
+    "data_inserimento": "01/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
     "dati_sintetici": true,
     "modello_ottimizzazione": {
         "versione_schema": 1,
         "categoria_paper": "I'",
-        "attesa_massima_giorni": 60
+        "attesa_massima_giorni": 30
     }
 }

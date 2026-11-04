@@ -33,7 +33,13 @@ is not needed, and neither are extra Qt libraries: they are inside the executabl
 
 Your data is kept in `~/.local/share/ScadenzarioCV/v2/dati` (logs in
 `~/.local/share/ScadenzarioCV/v2/logs`). On the first start it is filled with the demo
-data; delete the `dati` folder to start again from the demo data.
+data; delete the `dati` folder to start again from the demo data. If you started an
+earlier version of the executable, delete or rename that folder to load the current demo.
+
+The demo covers September–December 2026 with 120 synthetic patients, as of 27 October
+2026. The operating-room weeks up to 23 October have Previsto and Effettivo confirmed, with
+the interventions recorded in the logbooks; the week of 26–30 October has the Effettivo
+still in draft. November and December are drafts.
 
 ---
 

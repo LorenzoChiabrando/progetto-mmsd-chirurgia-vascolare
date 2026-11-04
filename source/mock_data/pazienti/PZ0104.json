@@ -1,0 +1,35 @@
+{
+    "id": "PZ0104",
+    "nome": "Paziente",
+    "cognome": "Demo 0104",
+    "codice_diagnosi": "D0104",
+    "descrizione_diagnosi": "Diagnosi sintetica 0104",
+    "diagnosi": "[D0104] Diagnosi sintetica 0104",
+    "interventi": [
+        {
+            "codice": "DEMO-0104-1",
+            "descrizione": "Procedura sintetica 0104, parte 1",
+            "durata": 30
+        },
+        {
+            "codice": "DEMO-0104-2",
+            "descrizione": "Procedura sintetica 0104, parte 2",
+            "durata": 30
+        }
+    ],
+    "codice_intervento": "DEMO-0104-1",
+    "descrizione_intervento": "Procedura sintetica 0104, parte 1",
+    "durata_intervento": 60,
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "In Attesa",
+    "data_inserimento": "06/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
+}

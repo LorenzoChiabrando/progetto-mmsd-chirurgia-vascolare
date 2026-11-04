@@ -1,0 +1,30 @@
+{
+    "id": "PZ0108",
+    "nome": "Paziente",
+    "cognome": "Demo 0108",
+    "codice_diagnosi": "D0108",
+    "descrizione_diagnosi": "Diagnosi sintetica 0108",
+    "diagnosi": "[D0108] Diagnosi sintetica 0108",
+    "interventi": [
+        {
+            "codice": "DEMO-0108-1",
+            "descrizione": "Procedura sintetica 0108, parte 1",
+            "durata": 180
+        }
+    ],
+    "codice_intervento": "DEMO-0108-1",
+    "descrizione_intervento": "Procedura sintetica 0108, parte 1",
+    "durata_intervento": 180,
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Alta",
+    "urgenza": "Bassa",
+    "stato": "In Attesa",
+    "data_inserimento": "02/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 180
+    }
+}

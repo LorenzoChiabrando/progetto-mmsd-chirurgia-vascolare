@@ -1,0 +1,30 @@
+{
+    "id": "PZ0109",
+    "nome": "Paziente",
+    "cognome": "Demo 0109",
+    "codice_diagnosi": "D0109",
+    "descrizione_diagnosi": "Diagnosi sintetica 0109",
+    "diagnosi": "[D0109] Diagnosi sintetica 0109",
+    "interventi": [
+        {
+            "codice": "DEMO-0109-1",
+            "descrizione": "Procedura sintetica 0109, parte 1",
+            "durata": 45
+        }
+    ],
+    "codice_intervento": "DEMO-0109-1",
+    "descrizione_intervento": "Procedura sintetica 0109, parte 1",
+    "durata_intervento": 45,
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Bassa",
+    "urgenza": "Alta",
+    "stato": "In Attesa",
+    "data_inserimento": "28/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 30
+    }
+}

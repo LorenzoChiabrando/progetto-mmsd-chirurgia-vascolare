@@ -1,0 +1,35 @@
+{
+    "id": "PZ0056",
+    "nome": "Paziente",
+    "cognome": "Demo 0056",
+    "codice_diagnosi": "D0056",
+    "descrizione_diagnosi": "Diagnosi sintetica 0056",
+    "diagnosi": "[D0056] Diagnosi sintetica 0056",
+    "interventi": [
+        {
+            "codice": "DEMO-0056-1",
+            "descrizione": "Procedura sintetica 0056, parte 1",
+            "durata": 30
+        },
+        {
+            "codice": "DEMO-0056-2",
+            "descrizione": "Procedura sintetica 0056, parte 2",
+            "durata": 30
+        }
+    ],
+    "codice_intervento": "DEMO-0056-1",
+    "descrizione_intervento": "Procedura sintetica 0056, parte 1",
+    "durata_intervento": 60,
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "Pianificato",
+    "data_inserimento": "23/10/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
+}

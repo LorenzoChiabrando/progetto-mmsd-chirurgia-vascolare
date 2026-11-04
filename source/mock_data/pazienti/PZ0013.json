@@ -1,30 +1,30 @@
 {
     "id": "PZ0013",
-    "nome": "Paolo",
-    "cognome": "Mancini",
-    "codice_diagnosi": "D013",
-    "descrizione_diagnosi": "Diagnosi sintetica 13",
-    "diagnosi": "[D013] Diagnosi sintetica 13",
+    "nome": "Paziente",
+    "cognome": "Demo 0013",
+    "codice_diagnosi": "D0013",
+    "descrizione_diagnosi": "Diagnosi sintetica 0013",
+    "diagnosi": "[D0013] Diagnosi sintetica 0013",
     "interventi": [
         {
-            "codice": "DEMO-013",
-            "descrizione": "Procedura sintetica 13",
-            "durata": 60
+            "codice": "DEMO-0013-1",
+            "descrizione": "Procedura sintetica 0013, parte 1",
+            "durata": 45
         }
     ],
-    "codice_intervento": "DEMO-013",
-    "descrizione_intervento": "Procedura sintetica 13",
-    "durata_intervento": 60,
+    "codice_intervento": "DEMO-0013-1",
+    "descrizione_intervento": "Procedura sintetica 0013, parte 1",
+    "durata_intervento": 45,
     "tipo_chirurgia": "Aperta",
-    "complessita": "Media",
-    "urgenza": "Media",
-    "stato": "In Attesa",
-    "data_inserimento": "08/09/2026",
-    "note": "Dati inventati per la demo.",
+    "complessita": "Bassa",
+    "urgenza": "Alta",
+    "stato": "Completato",
+    "data_inserimento": "01/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
     "dati_sintetici": true,
     "modello_ottimizzazione": {
         "versione_schema": 1,
         "categoria_paper": "I'",
-        "attesa_massima_giorni": 60
+        "attesa_massima_giorni": 30
     }
 }

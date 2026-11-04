@@ -1,0 +1,30 @@
+{
+    "id": "PZ0033",
+    "nome": "Paziente",
+    "cognome": "Demo 0033",
+    "codice_diagnosi": "D0033",
+    "descrizione_diagnosi": "Diagnosi sintetica 0033",
+    "diagnosi": "[D0033] Diagnosi sintetica 0033",
+    "interventi": [
+        {
+            "codice": "DEMO-0033-1",
+            "descrizione": "Procedura sintetica 0033, parte 1",
+            "durata": 90
+        }
+    ],
+    "codice_intervento": "DEMO-0033-1",
+    "descrizione_intervento": "Procedura sintetica 0033, parte 1",
+    "durata_intervento": 90,
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Alta",
+    "urgenza": "Bassa",
+    "stato": "Completato",
+    "data_inserimento": "06/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 180
+    }
+}

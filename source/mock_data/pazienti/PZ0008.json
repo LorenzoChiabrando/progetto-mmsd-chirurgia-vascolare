@@ -1,30 +1,35 @@
 {
     "id": "PZ0008",
-    "nome": "Marina",
-    "cognome": "Greco",
-    "codice_diagnosi": "D008",
-    "descrizione_diagnosi": "Diagnosi sintetica 08",
-    "diagnosi": "[D008] Diagnosi sintetica 08",
+    "nome": "Paziente",
+    "cognome": "Demo 0008",
+    "codice_diagnosi": "D0008",
+    "descrizione_diagnosi": "Diagnosi sintetica 0008",
+    "diagnosi": "[D0008] Diagnosi sintetica 0008",
     "interventi": [
         {
-            "codice": "DEMO-008",
-            "descrizione": "Procedura sintetica 08",
-            "durata": 45
+            "codice": "DEMO-0008-1",
+            "descrizione": "Procedura sintetica 0008, parte 1",
+            "durata": 30
+        },
+        {
+            "codice": "DEMO-0008-2",
+            "descrizione": "Procedura sintetica 0008, parte 2",
+            "durata": 30
         }
     ],
-    "codice_intervento": "DEMO-008",
-    "descrizione_intervento": "Procedura sintetica 08",
-    "durata_intervento": 45,
+    "codice_intervento": "DEMO-0008-1",
+    "descrizione_intervento": "Procedura sintetica 0008, parte 1",
+    "durata_intervento": 60,
     "tipo_chirurgia": "Endovascolare",
-    "complessita": "Bassa",
-    "urgenza": "Bassa",
-    "stato": "In Attesa",
-    "data_inserimento": "13/09/2026",
-    "note": "Dati inventati per la demo.",
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "Completato",
+    "data_inserimento": "01/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
     "dati_sintetici": true,
     "modello_ottimizzazione": {
         "versione_schema": 1,
         "categoria_paper": "I'",
-        "attesa_massima_giorni": 180
+        "attesa_massima_giorni": 60
     }
 }

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Avvio da sorgente: crea (o ripara) l'ambiente virtuale in source/venv, installa le
-# dipendenze e avvia l'applicazione. Non usa mai il Python di sistema né sudo.
+# dipendenze e avvia l'applicazione. Il python3 del sistema serve solo a creare l'ambiente:
+# non installa nulla nel sistema e non usa sudo.
 set -euo pipefail
 
 QUI="$(cd "$(dirname "$0")" && pwd)"
@@ -17,11 +18,18 @@ command -v python3 >/dev/null \
 python3 -c 'import sys; sys.exit(sys.version_info < (3, 10))' \
     || errore "serve Python 3.10 o superiore (trovato $(python3 --version 2>&1))."
 
-# Un ambiente creato a metà (per esempio senza il pacchetto python3-venv) non ha pip:
-# va ricreato, altrimenti l'app partirebbe senza dipendenze.
-if [ ! -x "$VENV/bin/python" ] || ! "$VENV/bin/python" -m pip --version >/dev/null 2>&1; then
+# requirements.txt sceglie le versioni delle dipendenze in base alla versione di Python.
+versione() {
+    "$1" -c 'import sys; print("%d.%d" % sys.version_info[:2])' 2>/dev/null
+}
+
+# Un ambiente creato a metà (per esempio senza il pacchetto python3-venv) non ha pip, e uno
+# creato con un'altra versione di Python (aggiornamento del sistema, cartella copiata da un
+# altro PC) ha le dipendenze sbagliate: in entrambi i casi va ricreato.
+if [ ! -x "$VENV/bin/python" ] || [ "$(versione "$VENV/bin/python")" != "$(versione python3)" ] \
+    || ! "$VENV/bin/python" -m pip --version >/dev/null 2>&1; then
     rm -rf "$VENV"
-    echo "[setup] Creo l'ambiente virtuale in source/venv..."
+    echo "[setup] Creo l'ambiente virtuale in source/venv con $(python3 --version)..."
     if ! python3 -m venv "$VENV"; then
         rm -rf "$VENV"
         errore "manca il modulo venv di Python. Su Ubuntu/Debian: sudo apt install python3-venv
@@ -46,6 +54,7 @@ if [ -z "${WAYLAND_DISPLAY:-}" ] && command -v ldconfig >/dev/null \
     && ! ldconfig -p 2>/dev/null | grep -q 'libxcb-cursor\.so\.0'; then
     echo "ATTENZIONE: manca libxcb-cursor0, necessaria a Qt su X11." >&2
     echo "            Su Ubuntu/Debian: sudo apt install libxcb-cursor0" >&2
+    echo "            Su Fedora/RHEL:   sudo dnf install xcb-util-cursor" >&2
 fi
 
 cd "$SOURCE"

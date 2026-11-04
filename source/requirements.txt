@@ -1,3 +1,9 @@
-PySide6==6.9.3
-pyomo==6.10.1
-highspy==1.15.1
+# Python 3.10–3.13: le versioni dell'eseguibile, compilato con Python 3.11.
+PySide6==6.9.3; python_version < "3.14"
+pyomo==6.10.1; python_version < "3.14"
+highspy==1.15.1; python_version < "3.14"
+# Python 3.14 e successivi: PySide6 6.9 non esiste, si installa la versione più recente
+# compatibile con il Python del sistema, senza cambiare versione principale.
+PySide6>=6.10.1,<7; python_version >= "3.14"
+pyomo>=6.10.1,<7; python_version >= "3.14"
+highspy>=1.15.1,<2; python_version >= "3.14"

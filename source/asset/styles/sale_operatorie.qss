@@ -6,12 +6,14 @@ ViewSaleOperatorie {
 }
 
 QComboBox#ComboVersioneSale {
+    combobox-popup: 0;
     background-color: #ffffff;
     color: #334155;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     padding: 7px 12px;
     font-size: 13px;
+    font-weight: bold;
 }
 QComboBox#ComboVersioneSale:disabled {
     color: #64748b;
@@ -25,6 +27,21 @@ QComboBox#ComboVersioneSale::drop-down {
 QComboBox#ComboVersioneSale::down-arrow {
     image: url(icons:chevron-down.svg);
 }
+/* Tendina aperta: la stessa del menu Calendario dello Scadenzario. */
+QComboBox#ComboVersioneSale QAbstractItemView {
+    border: 1px solid #c7d2fe;
+    border-radius: 8px;
+    background-color: #ffffff;
+    outline: 0;
+    padding: 4px;
+}
+QComboBox#ComboVersioneSale QAbstractItemView::item {
+    min-height: 32px;
+    border-radius: 4px;
+    color: #1e293b;
+}
+QComboBox#ComboVersioneSale QAbstractItemView::item:hover { background-color: #e0e7ff; color: #3730a3; }
+QComboBox#ComboVersioneSale QAbstractItemView::item:selected { background-color: #4338ca; color: white; }
 
 /* =========================================
    PAGINA SELEZIONE

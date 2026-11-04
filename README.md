@@ -52,6 +52,8 @@ the first run. On Ubuntu / Debian:
 sudo apt install python3-venv libxcb-cursor0
 ```
 
+On Fedora / RHEL: `sudo dnf install xcb-util-cursor`.
+
 Then:
 
 ```bash
@@ -59,9 +61,14 @@ chmod +x run.sh
 ./run.sh
 ```
 
-`run.sh` creates a virtual environment in `source/venv`, installs the dependencies there
-and starts the application. It never uses the system Python and never needs `sudo`:
-do not install the dependencies with `sudo pip install`.
+`run.sh` creates a virtual environment in `source/venv` with the system `python3`, installs
+the dependencies there and starts the application. It installs nothing into the system
+Python and never needs `sudo`: do not install the dependencies with `sudo pip install`.
+
+The dependency versions follow the Python version: from 3.10 to 3.13 the same versions as
+the executable (PySide6 6.9.3); on Python 3.14 and newer, where PySide6 6.9 does not exist,
+the most recent compatible PySide6 6.x. When the system Python changes, the next
+`./run.sh` recreates `source/venv` by itself.
 
 ---
 
@@ -72,7 +79,7 @@ do not install the dependencies with `sudo pip install`.
 | `version 'GLIBC_2.xx' not found` | The system is older than Ubuntu 20.04 / Debian 10. Use Option 2. |
 | `ModuleNotFoundError: No module named 'PySide6'` | Start with `./run.sh`, not `python3 main.py`. It also repairs an environment left half-created. |
 | `manca il modulo venv di Python` | `sudo apt install python3-venv`, then `./run.sh` again. |
-| `Could not load the Qt platform plugin "xcb"` (from source) | `sudo apt install libxcb-cursor0`, or use the executable. |
+| `Could not load the Qt platform plugin "xcb"` (from source) | `sudo apt install libxcb-cursor0` (Fedora: `sudo dnf install xcb-util-cursor`), or use the executable. |
 | `Permission denied` | `chmod +x ScadenzarioCV run.sh` |
 
 ---

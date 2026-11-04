@@ -16,6 +16,12 @@ from src.calendar_versions import (
 from src.data_paths import resolve_data_directory
 from src.models.data_manager_libretto import DataManagerLibretto
 from src.models.json_files import read_json_object
+from src.models.model_plans import (
+    leggi_piano_modello,
+    operazioni_del_piano,
+    percorso_piano_modello,
+)
+from src.planning_schema import OPTIMIZATION_RUNS_KEY
 from src.models.patient_plan_state import (
     patient_status_updates,
     read_operational_plan_months,
@@ -390,6 +396,69 @@ class DataManagerSaleOperatorie:
         data = self.load_mese(lun_date.year, lun_date.month)
         settimane = data.get("metadata", {}).get("settimane", {})
         return settimane.get(lun_str, "BOZZA")
+
+    def get_riepilogo_ottimizzazione(self, lun_date: dt.date) -> dict | None:
+        """Esito dell'ultima pianificazione automatica della settimana, se c'è.
+
+        È nei metadati del mese del lunedì (vedi ``persist_platform_week_plan``).
+        """
+        data = self.load_mese(lun_date.year, lun_date.month)
+        riepilogo = data.get("metadata", {}).get(OPTIMIZATION_RUNS_KEY, {}).get(
+            lun_date.isoformat()
+        )
+        return riepilogo if isinstance(riepilogo, dict) else None
+
+    def get_piano_modello(self, lun_date: dt.date) -> dict | None:
+        """Piano della settimana come l'ha prodotto il modello (solo Previsto)."""
+        if self.version != CalendarVersion.PREVISTO:
+            return None
+        return leggi_piano_modello(self.dir_sale_operatorie, lun_date)
+
+    def operazioni_settimana(self, lun_date: dt.date) -> dict[dt.date, list]:
+        """Interventi attuali dei cinque giorni della settimana."""
+        return {giorno: self.get_operazioni(giorno.isoformat()) for giorno in week_days(lun_date)}
+
+    def elimina_esito_pianificazione(self, lun_date: dt.date) -> None:
+        """Toglie punteggio e piano del modello della settimana (solo Previsto).
+
+        Dopo «Pulisci piano» la settimana riparte da zero: il pannello del punteggio
+        sparisce e non c'è più un piano del modello a cui tornare.
+        """
+        if self.version != CalendarVersion.PREVISTO:
+            return
+        data = self.load_mese(lun_date.year, lun_date.month)
+        esiti = data.get("metadata", {}).get(OPTIMIZATION_RUNS_KEY, {})
+        if esiti.pop(lun_date.isoformat(), None) is not None:
+            self.save_mese(lun_date.year, lun_date.month, data)
+        percorso_piano_modello(self.dir_sale_operatorie, lun_date).unlink(missing_ok=True)
+
+    def ripristina_piano_modello(self, lun_date: dt.date) -> None:
+        """Rimette nel calendario gli interventi del piano del modello.
+
+        Solo gli interventi: specializzandi e stato della settimana restano quelli attuali.
+        La scrittura passa da ``_write_updates`` come ogni modifica, quindi aggiorna
+        anche lo stato dei pazienti; ``_validate_write`` rifiuta le settimane convalidate.
+        """
+        piano = self.get_piano_modello(lun_date)
+        if piano is None:
+            raise CalendarVersionError("Questa settimana non ha un piano del modello.")
+        mesi: dict[tuple[int, int], dict] = {}
+        for giorno, operazioni in operazioni_del_piano(piano).items():
+            chiave = (giorno.year, giorno.month)
+            if chiave not in mesi:
+                mesi[chiave] = self.load_mese(*chiave)
+            data = mesi[chiave]
+            data.setdefault("turni", {}).setdefault(giorno.isoformat(), {})["operazioni"] = (
+                deepcopy(operazioni)
+            )
+        try:
+            for (anno, mese), data in mesi.items():
+                self._validate_write(anno, mese, data)
+            self._write_updates({
+                Path(self._get_filepath(anno, mese)): data for (anno, mese), data in mesi.items()
+            })
+        finally:
+            self.invalidate_cache()
 
     def set_stato_settimana(self, lun_date, stato):
         week_days(lun_date)

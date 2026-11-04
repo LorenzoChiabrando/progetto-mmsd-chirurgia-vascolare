@@ -61,15 +61,17 @@ class CalendarPdfError(RuntimeError):
 
 @dataclass(frozen=True, slots=True)
 class CalendarPdfRow:
-    """Attività del calendario: una riga del PDF, con un valore per giorno.
+    """Una riga del PDF (un'attività o uno specializzando), con un valore per giorno.
 
-    ``value_colors`` colora valori specifici (es. il tipo di guardia).
+    ``value_colors`` colora il testo di valori specifici (es. il tipo di guardia);
+    ``value_backgrounds`` lo sfondo della cella (es. la sigla del ruolo, come a schermo).
     """
 
     label: str
     values: tuple[str, ...]
     background: str = "#ffffff"
     value_colors: Mapping[str, str] = field(default_factory=dict)
+    value_backgrounds: Mapping[str, str] = field(default_factory=dict)
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,7 +81,8 @@ class CalendarPdfDocument:
     ``column_headers`` sono i giorni (``"<numero> <giorno>"``, stampati su due righe);
     ``rest_columns`` gli indici dei giorni non lavorativi (colonne strette);
     ``stacked_names`` stampa i nomi ``Cognome N.`` su due righe (cognome, iniziale);
-    ``footnote`` e ``legend`` sono stampate sotto la tabella.
+    ``footnote`` e ``legend`` sono stampate sotto la tabella; ``label_header`` è il
+    titolo della colonna delle etichette.
     """
 
     title: str
@@ -90,6 +93,7 @@ class CalendarPdfDocument:
     footnote: str = ""
     rest_columns: frozenset[int] = frozenset()
     stacked_names: bool = False
+    label_header: str = "Attività"
 
     def __post_init__(self) -> None:
         if not self.title.strip() or not self.period.strip():
@@ -326,7 +330,9 @@ class _Renderer:
         height = _millimeters(_HEADER_HEIGHT_MM)
         label_rect = QRectF(0, top, self._label_width, height)
         painter.fillRect(label_rect, _HEADER_BACKGROUND)
-        self._draw_text(painter, label_rect, "Attività", _font(8, bold=True), _TEXT_COLOR)
+        self._draw_text(
+            painter, label_rect, self._document.label_header, _font(8, bold=True), _TEXT_COLOR
+        )
         left = self._label_width
         for index, header in enumerate(self._document.column_headers):
             width = self._column_widths[index]
@@ -375,8 +381,9 @@ class _Renderer:
             if index in self._document.rest_columns:
                 painter.fillRect(rect, _REST_DAY_BACKGROUND)
                 continue
-            painter.fillRect(rect, cell_background)
             text = value.strip()
+            background = row.value_backgrounds.get(text)
+            painter.fillRect(rect, QColor(background) if background else cell_background)
             if text in _EMPTY_VALUES:
                 continue
             color = row.value_colors.get(text)

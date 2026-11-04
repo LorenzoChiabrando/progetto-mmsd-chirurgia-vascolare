@@ -11,6 +11,9 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QColor, QPalette
 
+from src.views.components.person_list import crea_elemento_elenco
+from src.views.components.section_header import TONI_MODALITA, BandaSezione
+
 _COLORI_LIVELLO = {
     "Junior": ("#dbeafe", "#1d4ed8"),
     "Intermediate": ("#dcfce7", "#15803d"),
@@ -100,6 +103,7 @@ class ViewLibretto(QWidget):
     def __init__(self):
         super().__init__()
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        self._nome_corrente = ""  # specializzando aperto, per la banda della giornata
         self.setup_ui()
         self.load_styles()
 
@@ -140,6 +144,20 @@ class ViewLibretto(QWidget):
         titles.addWidget(lbl_sottotitolo)
         header_row.addLayout(titles)
         header_row.addStretch()
+
+        # Conteggi in alto a destra, come nella Lista Pazienti.
+        summary_col = QVBoxLayout()
+        summary_col.setSpacing(4)
+        summary_col.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
+        self.lbl_count_elenco = QLabel("")
+        self.lbl_count_elenco.setObjectName("CountAttesa")
+        self.lbl_count_elenco.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.lbl_count_total = QLabel("")
+        self.lbl_count_total.setObjectName("CountTotal")
+        self.lbl_count_total.setAlignment(Qt.AlignmentFlag.AlignRight)
+        summary_col.addWidget(self.lbl_count_elenco)
+        summary_col.addWidget(self.lbl_count_total)
+        header_row.addLayout(summary_col)
         card.addLayout(header_row)
 
         self.search_container = QFrame()
@@ -159,7 +177,7 @@ class ViewLibretto(QWidget):
 
         chips_row = QHBoxLayout()
         chips_row.setSpacing(10)
-        lbl_filtri = QLabel("Visualizza:")
+        lbl_filtri = QLabel("MOSTRA")
         lbl_filtri.setObjectName("LblFiltri")
         chips_row.addWidget(lbl_filtri)
 
@@ -225,33 +243,20 @@ class ViewLibretto(QWidget):
 
     def _build_page_dettaglio(self):
         self.page_dettaglio = QWidget()
-        layout = QVBoxLayout(self.page_dettaglio)
-        layout.setContentsMargins(40, 28, 40, 28)
+        pagina = QVBoxLayout(self.page_dettaglio)
+        pagina.setContentsMargins(0, 0, 0, 0)
+        pagina.setSpacing(0)
+        # Banda come nello Scadenzario: chi si sta guardando, a tutta larghezza.
+        self.banda_dettaglio = BandaSezione(
+            "Libretto Carriere", aiuto_indietro="Torna all'anagrafica"
+        )
+        self.btn_indietro = self.banda_dettaglio.btn_indietro
+        pagina.addWidget(self.banda_dettaglio)
+        corpo = QWidget()
+        pagina.addWidget(corpo, 1)
+        layout = QVBoxLayout(corpo)
+        layout.setContentsMargins(40, 24, 40, 28)
         layout.setSpacing(18)
-
-        nav = QHBoxLayout()
-        nav.setSpacing(12)
-
-        self.btn_indietro = QPushButton("← Indietro")
-        self.btn_indietro.setObjectName("BtnIndietro")
-        self.btn_indietro.setFixedSize(150, 42)
-        self.btn_indietro.setCursor(Qt.CursorShape.PointingHandCursor)
-        nav.addWidget(self.btn_indietro)
-        nav.addStretch()
-
-        name_block = QVBoxLayout()
-        name_block.setSpacing(1)
-        name_block.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        self.lbl_cognome_medico = QLabel("")
-        self.lbl_cognome_medico.setObjectName("LblCognomeMedico")
-        self.lbl_cognome_medico.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.lbl_nome_proprio_medico = QLabel("")
-        self.lbl_nome_proprio_medico.setObjectName("LblNomeProprioMedico")
-        self.lbl_nome_proprio_medico.setAlignment(Qt.AlignmentFlag.AlignRight)
-        name_block.addWidget(self.lbl_cognome_medico)
-        name_block.addWidget(self.lbl_nome_proprio_medico)
-        nav.addLayout(name_block)
-        nav.addSpacing(20)
 
         self.btn_modifica = QPushButton("✏  Modifica")
         self.btn_modifica.setObjectName("BtnModifica")
@@ -263,10 +268,6 @@ class ViewLibretto(QWidget):
         self.btn_elimina.setFixedHeight(42)
         self.btn_elimina.setCursor(Qt.CursorShape.PointingHandCursor)
 
-        nav.addWidget(self.btn_modifica)
-        nav.addWidget(self.btn_elimina)
-        layout.addLayout(nav)
-
         card_det = QFrame()
         card_det.setObjectName("CardDettaglio")
         shadow = QGraphicsDropShadowEffect()
@@ -276,8 +277,18 @@ class ViewLibretto(QWidget):
         card_det.setGraphicsEffect(shadow)
 
         cd = QVBoxLayout(card_det)
-        cd.setContentsMargins(40, 35, 40, 40)
+        cd.setContentsMargins(40, 30, 40, 40)
         cd.setSpacing(20)
+
+        azioni = QHBoxLayout()
+        azioni.setSpacing(12)
+        lbl_scheda = QLabel("Scheda dello specializzando")
+        lbl_scheda.setObjectName("TitoloScheda")
+        azioni.addWidget(lbl_scheda)
+        azioni.addStretch()
+        azioni.addWidget(self.btn_modifica)
+        azioni.addWidget(self.btn_elimina)
+        cd.addLayout(azioni)
 
         info_row = QHBoxLayout()
         info_row.setSpacing(16)
@@ -333,18 +344,21 @@ class ViewLibretto(QWidget):
     def _build_page_giorno(self):
         self.page_attivita = QWidget()
         self.page_attivita.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
-        layout = QVBoxLayout(self.page_attivita)
-        layout.setContentsMargins(40, 28, 40, 28)
+        pagina = QVBoxLayout(self.page_attivita)
+        pagina.setContentsMargins(0, 0, 0, 0)
+        pagina.setSpacing(0)
+        self.banda_giorno = BandaSezione(
+            "Libretto Carriere",
+            testo_indietro="← Torna al libretto",
+            aiuto_indietro="Torna al libretto dello specializzando",
+        )
+        self.btn_indietro_att = self.banda_giorno.btn_indietro
+        pagina.addWidget(self.banda_giorno)
+        corpo = QWidget()
+        pagina.addWidget(corpo, 1)
+        layout = QVBoxLayout(corpo)
+        layout.setContentsMargins(40, 24, 40, 28)
         layout.setSpacing(18)
-
-        nav = QHBoxLayout()
-        self.btn_indietro_att = QPushButton("← Torna al libretto")
-        self.btn_indietro_att.setObjectName("BtnIndietro")
-        self.btn_indietro_att.setFixedSize(200, 42)
-        self.btn_indietro_att.setCursor(Qt.CursorShape.PointingHandCursor)
-        nav.addWidget(self.btn_indietro_att)
-        nav.addStretch()
-        layout.addLayout(nav)
 
         card = QFrame()
         card.setObjectName("CardDettaglio")
@@ -358,15 +372,7 @@ class ViewLibretto(QWidget):
         cd.setContentsMargins(40, 30, 40, 36)
         cd.setSpacing(16)
 
-        self.lbl_giorno_titolo = QLabel("")
-        self.lbl_giorno_titolo.setObjectName("TitoloAttivita")
-        cd.addWidget(self.lbl_giorno_titolo)
-
-        sep = QFrame()
-        sep.setObjectName("Separatore")
-        sep.setFixedHeight(1)
-        cd.addWidget(sep)
-
+        # La data è nella banda; qui restano orario, sede e attività della giornata.
         lbl_meta_help = QLabel(
             "Orario e sede riepilogano le attività della giornata."
         )
@@ -580,7 +586,12 @@ class ViewLibretto(QWidget):
     def popola_dettaglio_giorno(self, data_str: str, attivita: list,
                                 extra_dict: dict, on_save,
                                 meta: dict = None):
-        self.lbl_giorno_titolo.setText(_fmt_data(data_str))
+        self.banda_giorno.imposta_intestazione(
+            _fmt_data(data_str),
+            f"{self._nome_corrente} · attività della giornata" if self._nome_corrente
+            else "Attività della giornata",
+            "LIBRETTO",
+        )
 
         m = meta or {}
         ora_inizio, ora_fine = _day_ora(attivita).split(" – ")
@@ -1078,54 +1089,24 @@ class ViewLibretto(QWidget):
         return box, val
 
     def crea_item_lista(self, cognome, nome, matricola, livello, stato):
-        widget = QFrame()
-        widget.setObjectName("ItemCard")
-        widget.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
-
-        row = QHBoxLayout(widget)
-        row.setContentsMargins(16, 10, 16, 10)
-        row.setSpacing(14)
-
-        bg_liv, fg_liv = _COLORI_LIVELLO.get(livello, ("#f1f5f9", "#475569"))
-        badge_liv = QLabel(livello if livello else "–")
-        badge_liv.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        badge_liv.setFixedWidth(66)
-        badge_liv.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
-        badge_liv.setStyleSheet(
-            f"background-color:{bg_liv}; color:{fg_liv}; font-weight:bold; "
-            f"font-size:11px; padding:3px 8px; border-radius:10px; "
-            f"border:1px solid {fg_liv}50;"
+        """Elemento dell'anagrafica, nello stesso stile dell'elenco dei pazienti."""
+        _inizio, _fine, accento, tinta = TONI_MODALITA["LIBRETTO"]
+        etichette = []
+        for testo, colori in ((livello, _COLORI_LIVELLO), (stato, _COLORI_STATO)):
+            sfondo, colore = colori.get(testo, ("#f1f5f9", "#475569"))
+            etichette.append((testo, sfondo, colore))
+        return crea_elemento_elenco(
+            cognome=cognome, nome=nome, sottotitolo=f"Matricola {matricola}",
+            etichette=etichette, accento=accento, tinta=tinta,
         )
 
-        txt_col = QVBoxLayout()
-        txt_col.setSpacing(2)
-        lbl_nome = QLabel(f"{cognome} {nome}")
-        lbl_nome.setObjectName("ItemNome")
-        lbl_nome.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
-        lbl_mat = QLabel(f"Matricola: {matricola}")
-        lbl_mat.setObjectName("ItemMatricola")
-        lbl_mat.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
-        txt_col.addWidget(lbl_nome)
-        txt_col.addWidget(lbl_mat)
-
-        bg_sta, fg_sta = _COLORI_STATO.get(stato, ("#f1f5f9", "#475569"))
-        badge_sta = QLabel(stato if stato else "–")
-        badge_sta.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        badge_sta.setFixedWidth(90)
-        badge_sta.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
-        badge_sta.setStyleSheet(
-            f"background-color:{bg_sta}; color:{fg_sta}; font-weight:bold; "
-            f"font-size:11px; padding:3px 8px; border-radius:10px; "
-            f"border:1px solid {fg_sta}50;"
+    def aggiorna_conteggi(self, n_mostrati: int, n_totale: int) -> None:
+        self.lbl_count_elenco.setText(
+            f"{n_mostrati} in elenco"
         )
-
-        row.addWidget(badge_liv)
-        row.addLayout(txt_col, stretch=1)
-        row.addWidget(badge_sta)
-
-        item = QListWidgetItem()
-        item.setSizeHint(QSize(0, 68))
-        return item, widget
+        self.lbl_count_total.setText(
+            f"{n_totale} specializzand{'o' if n_totale == 1 else 'i'} in anagrafica"
+        )
 
     def imposta_dettaglio(self, spec):
         cognome = spec.get("cognome", "").upper()
@@ -1133,8 +1114,12 @@ class ViewLibretto(QWidget):
         livello = spec.get("livello", "N/D")
         stato   = spec.get("stato", "N/D")
 
-        self.lbl_cognome_medico.setText(cognome)
-        self.lbl_nome_proprio_medico.setText(nome)
+        self._nome_corrente = f"{cognome} {nome}".strip()
+        self.banda_dettaglio.imposta_intestazione(
+            self._nome_corrente,
+            f"Matricola {spec.get('matricola', 'N/D')} · {livello} · {stato}",
+            "LIBRETTO",
+        )
         self.val_matricola.setText(spec.get("matricola", "N/D"))
 
         bg, fg = _COLORI_LIVELLO.get(livello, ("#f1f5f9", "#475569"))

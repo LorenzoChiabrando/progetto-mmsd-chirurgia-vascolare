@@ -1,0 +1,14 @@
+{
+  "_nota": "Parametri del risolutore proposti nella finestra «Pianifica settimana» delle Sale Operatorie. Gli slider vanno da minimo a massimo; «predefinito» è il valore del pulsante «Ripristina predefiniti». Se il file manca o non è valido l'app usa i valori di questo esempio.",
+  "limite_tempo_secondi": {
+    "minimo": 10,
+    "massimo": 1800,
+    "predefinito": 300,
+    "passo": 10
+  },
+  "gap_relativo_percento": {
+    "minimo": 0.01,
+    "massimo": 10,
+    "predefinito": 0.01
+  }
+}

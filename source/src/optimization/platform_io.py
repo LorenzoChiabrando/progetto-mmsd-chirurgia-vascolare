@@ -14,12 +14,13 @@ from typing import Any
 from uuid import uuid4
 
 from src.data_paths import resolve_data_directory
+from src.models.model_plans import crea_piano_modello, percorso_piano_modello
 from src.models.patient_plan_state import (
     draft_patient_ids_by_week,
     patient_status_updates,
     read_operational_plan_months,
 )
-from src.planning_schema import OPTIMIZATION_KEY, SCHEMA_VERSION
+from src.planning_schema import OPTIMIZATION_KEY, OPTIMIZATION_RUNS_KEY, SCHEMA_VERSION
 
 if os.name == "nt":
     import msvcrt
@@ -54,8 +55,11 @@ def load_platform_context(
     policy: PlatformPlanningPolicy | None = None,
     *,
     data_directory: str | Path | None = None,
+    evaluated_patient_ids: frozenset[str] = frozenset(),
 ) -> PlatformPlanningContext:
     """Map planned rosters, excluding reservations from the operational OR view.
+
+    ``evaluated_patient_ids``: vedi ``build_platform_context`` (solo per valutare piani).
 
     Initialized actual weeks supersede their planned copies for reservations;
     they never replace the planned roster used as solver input.
@@ -128,6 +132,7 @@ def load_platform_context(
         other_draft_patient_ids=frozenset(other_draft_patient_ids),
         current_draft_patient_ids=frozenset(current_draft_patient_ids),
         policy=active_policy,
+        evaluated_patient_ids=frozenset(evaluated_patient_ids),
     )
     if fingerprint != _planning_input_fingerprint(root):
         raise PlatformDataError(
@@ -234,6 +239,12 @@ def persist_platform_week_plan(
         updated[plan.monday.year, plan.monday.month].setdefault("metadata", {}).setdefault(
             "settimane", {}
         )[week_key] = "BOZZA"
+        if plan.optimization_summary is not None:
+            # Valore obiettivo e parametri usati, letti dalla schermata e dalla
+            # pianificazione successiva della stessa settimana.
+            updated[plan.monday.year, plan.monday.month]["metadata"].setdefault(
+                OPTIMIZATION_RUNS_KEY, {}
+            )[week_key] = deepcopy(dict(plan.optimization_summary))
 
         updates = {
             destination: updated[year, month]
@@ -251,6 +262,16 @@ def persist_platform_week_plan(
             ) from exc
         originals.update({path: path.read_bytes() for path in patient_updates})
         updates.update(patient_updates)
+        # Il piano come l'ha prodotto il modello, a parte: dopo le modifiche manuali
+        # si può sempre tornare a questo (vedi src/models/model_plans.py).
+        model_plan_path = percorso_piano_modello(sale_directory, plan.monday)
+        model_plan_path.parent.mkdir(parents=True, exist_ok=True)
+        originals[model_plan_path] = (
+            model_plan_path.read_bytes() if model_plan_path.exists() else None
+        )
+        updates[model_plan_path] = crea_piano_modello(
+            plan.monday, {day_plan.day: day_plan.operations for day_plan in plan.days}
+        )
         backup_paths = _write_private_backups(originals, backup_root)
         temporary_paths: dict[Path, Path] = {}
         try:

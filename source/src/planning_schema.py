@@ -6,6 +6,8 @@ from copy import deepcopy
 from typing import Any
 
 OPTIMIZATION_KEY = "modello_ottimizzazione"
+OPTIMIZATION_RUNS_KEY = "ottimizzazione_settimane"
+"""Nei metadati del mese del lunedì: esito dell'ultima pianificazione di ogni settimana."""
 SCHEMA_VERSION = 1
 
 PAPER_CATEGORIES = ("I'", "I''", "I'''")

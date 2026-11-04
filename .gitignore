@@ -4,3 +4,4 @@ source/**/*.pyc
 source/**/*.pyo
 source/logs/
 packaging/linux/dist/
+.superpowers/

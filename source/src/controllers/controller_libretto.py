@@ -402,6 +402,7 @@ class ControllerLibretto:
             self.view.lista_risultati.addItem(item)
             self.view.lista_risultati.setItemWidget(item, widget)
 
+        self.view.aggiorna_conteggi(self.view.lista_risultati.count(), len(tutti))
         self.view.btn_apri.setEnabled(False)
 
     def gestisci_selezione(self):

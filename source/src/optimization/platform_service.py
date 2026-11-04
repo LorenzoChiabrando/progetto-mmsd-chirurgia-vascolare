@@ -16,6 +16,7 @@ from .platform_mapping import (
     PlatformWeekPlan,
     map_result_to_platform_plan,
 )
+from .parametri import ParametriPianificazione, riepilogo_risultato
 from .results import SolveResult
 from .solver import HighsConfig, HighsSolver
 
@@ -61,6 +62,10 @@ def plan_platform_week(
     result = HighsSolver(solver_config).solve(built, cancel_requested=cancel_requested)
     _raise_if_cancelled(cancel_requested)
     plan = map_result_to_platform_plan(context, result, active_policy)
+    used = solver_config or HighsConfig()
+    plan = replace(plan, optimization_summary=riepilogo_risultato(
+        result, ParametriPianificazione(used.time_limit_seconds, used.mip_relative_gap)
+    ))
     _raise_if_cancelled(cancel_requested)
     receipt = None
     if persist:

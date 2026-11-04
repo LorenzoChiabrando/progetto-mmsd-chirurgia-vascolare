@@ -13,6 +13,7 @@ from PySide6.QtCore import QObject, QThread, Signal
 from src.data_paths import resolve_data_directory
 from src.optimization.exceptions import OptimizationError, PlanningCancelledError
 from src.optimization.platform_service import PlatformPlanningRun, plan_platform_week
+from src.optimization.solver import HighsConfig
 
 PlanningService = Callable[..., PlatformPlanningRun]
 
@@ -35,6 +36,7 @@ class PlatformPlanningWorker(QThread):
         cancel_event: Event,
         data_directory: str | Path | None = None,
         planning_service: PlanningService = plan_platform_week,
+        solver_config: HighsConfig | None = None,
         parent: QObject | None = None,
     ) -> None:
         super().__init__(parent)
@@ -46,6 +48,7 @@ class PlatformPlanningWorker(QThread):
         self._overwrite = overwrite
         self._cancel_event = cancel_event
         self._planning_service = planning_service
+        self._solver_config = solver_config  # limite di tempo e gap scelti dall'utente
 
     def run(self) -> None:
         """Execute the application service entirely outside the GUI thread."""
@@ -58,6 +61,7 @@ class PlatformPlanningWorker(QThread):
                 persist=True,
                 data_directory=self._data_directory,
                 cancel_requested=self._cancel_event.is_set,
+                solver_config=self._solver_config,
             )
         except PlanningCancelledError:
             self.cancelled.emit()

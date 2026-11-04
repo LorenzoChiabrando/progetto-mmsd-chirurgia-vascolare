@@ -83,22 +83,26 @@ def month_dates(year: int, month: int) -> tuple[date, ...]:
     return tuple(date(year, month, day) for day in range(1, number_of_days + 1))
 
 
-def month_weeks(year: int, month: int) -> tuple[tuple[date, ...], ...]:
-    """Raggruppa le date del mese per settimana."""
+def month_weeks(year: int, month: int, *, days: int = 7) -> tuple[tuple[date, ...], ...]:
+    """Settimane intere del mese, da lunedì, con i primi ``days`` giorni (7 o 5 feriali).
 
-    grouped: list[tuple[date, ...]] = []
+    Un mese comprende le settimane che hanno almeno un suo giorno feriale; quelle a
+    cavallo di due mesi restano intere, con i giorni del mese vicino, e compaiono in
+    entrambi i mesi. Così non nascono settimane di un giorno solo: domenica 1 novembre
+    2026 appartiene alla settimana di ottobre, non a una «settimana 1» di novembre.
+    """
+
+    if not 1 <= days <= 7:
+        raise ValueError("Una settimana ha da 1 a 7 giorni.")
     dates = month_dates(year, month)
-    current_start = dates[0] - timedelta(days=dates[0].weekday())
-    while current_start <= dates[-1]:
-        week = tuple(
-            day
-            for offset in range(7)
-            if (day := current_start + timedelta(days=offset)).month == month
-        )
-        if week:
-            grouped.append(week)
-        current_start += timedelta(days=7)
-    return tuple(grouped)
+    first_workday = next(day for day in dates if day.weekday() < 5)
+    last_workday = next(day for day in reversed(dates) if day.weekday() < 5)
+    monday = first_workday - timedelta(days=first_workday.weekday())
+    weeks: list[tuple[date, ...]] = []
+    while monday <= last_workday:
+        weeks.append(tuple(monday + timedelta(days=offset) for offset in range(days)))
+        monday += timedelta(weeks=1)
+    return tuple(weeks)
 
 
 def fit_resident_label(label: str, fits: Callable[[str], bool]) -> str:
@@ -139,5 +143,18 @@ ROLE_HEADER_COLORS: Mapping[str, str] = {
     "Day Surgery": "#e9d5ff",
 }
 """Colore più intenso del ruolo: intestazioni di riga e celle della vista per specializzando."""
+
+ROOM_COLORS: Mapping[str, Mapping[str, str]] = {
+    "OR-1": {
+        "intestazione": "#bae6fd", "etichetta": "#e0f2fe", "sfondo": "#f0f9ff",
+        "accento": "#0284c7",
+    },
+    "OR-2": {
+        "intestazione": "#99f6e4", "etichetta": "#ccfbf1", "sfondo": "#f0fdfa",
+        "accento": "#0d9488",
+    },
+}
+"""Colori delle sale operatorie nel calendario a blocchi e nel PDF: intestazione del
+blocco, etichette delle sue righe, sfondo delle celle libere, accento delle schede."""
 
 GUARD_TEXT_COLORS: Mapping[str, str] = {"118": "#b91c1c", "PI": "#c2410c", "L": "#15803d"}

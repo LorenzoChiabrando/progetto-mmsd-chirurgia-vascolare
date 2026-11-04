@@ -9,12 +9,18 @@ class ColoredHeaderView(QHeaderView):
     senza interferenze dal QSS del tema Fusion.
     """
 
-    def __init__(self, orientation, color_map: dict, parent=None):
+    def __init__(self, orientation, color_map: dict, parent=None, *, font_size: int = 12):
         """
-        color_map: {section_index: hex_color_string}
+        color_map: {section_index: hex_color_string}; font_size in punti.
         """
         super().__init__(orientation, parent)
         self._color_map = color_map
+        self._font_size = font_size
+
+    def set_color_map(self, color_map: dict) -> None:
+        """Sostituisce i colori, per le tabelle che cambiano righe (es. blocchi per sala)."""
+        self._color_map = dict(color_map)
+        self.viewport().update()
 
     def paintSection(self, painter, rect, logical_index):
         painter.save()
@@ -34,7 +40,7 @@ class ColoredHeaderView(QHeaderView):
         )
         if text:
             painter.setPen(QColor("#334155"))
-            painter.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+            painter.setFont(QFont("Segoe UI", self._font_size, QFont.Weight.Bold))
             painter.drawText(
                 rect.adjusted(14, 0, -6, 0),
                 Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft,

@@ -131,6 +131,10 @@ class PlatformWeekPlan:
     monday: date
     days: tuple[PlatformDayPlan, ...]
     source_fingerprint: str | None = field(default=None, repr=False, compare=False)
+    # Esito dell'ottimizzazione (parametri, valore obiettivo…) salvato con la settimana.
+    optimization_summary: Mapping[str, Any] | None = field(
+        default=None, repr=False, compare=False
+    )
 
 
 def build_platform_context(
@@ -142,8 +146,14 @@ def build_platform_context(
     other_draft_patient_ids: frozenset[str] = frozenset(),
     current_draft_patient_ids: frozenset[str] = frozenset(),
     policy: PlatformPlanningPolicy | None = None,
+    evaluated_patient_ids: frozenset[str] = frozenset(),
 ) -> PlatformPlanningContext:
-    """Map one platform week to ``SchedulingInput``."""
+    """Map one platform week to ``SchedulingInput``.
+
+    ``evaluated_patient_ids`` serve solo a valutare un piano esistente: quei pazienti
+    entrano nei dati qualunque sia il loro stato (anche in una settimana convalidata).
+    La pianificazione lo lascia vuoto.
+    """
     active_policy = policy or PlatformPlanningPolicy()
     if monday.weekday() != 0:
         raise PlatformDataError("La settimana da pianificare deve iniziare di lunedì.")
@@ -223,13 +233,14 @@ def build_platform_context(
     for patient_id in sorted(patient_record_by_id):
         record = patient_record_by_id[patient_id]
         state = record.get("stato")
-        if state not in {"In Attesa", "Pianificato"}:
-            continue
-        if patient_id in other_draft_patient_ids:
-            excluded_count += 1
-            continue
-        if state == "Pianificato" and patient_id not in current_draft_patient_ids:
-            continue
+        if patient_id not in evaluated_patient_ids:
+            if state not in {"In Attesa", "Pianificato"}:
+                continue
+            if patient_id in other_draft_patient_ids:
+                excluded_count += 1
+                continue
+            if state == "Pianificato" and patient_id not in current_draft_patient_ids:
+                continue
 
         configuration = _optimization_configuration(record, "paziente", patient_id)
         category_label = configuration.get("categoria_paper")

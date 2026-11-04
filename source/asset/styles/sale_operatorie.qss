@@ -5,7 +5,8 @@ ViewSaleOperatorie {
     background-color: #f1f5f9;
 }
 
-QComboBox#ComboVersioneSale {
+QComboBox#ComboVersioneSale,
+QComboBox#ComboSalaSale {
     combobox-popup: 0;
     background-color: #ffffff;
     color: #334155;
@@ -15,33 +16,40 @@ QComboBox#ComboVersioneSale {
     font-size: 13px;
     font-weight: bold;
 }
-QComboBox#ComboVersioneSale:disabled {
+QComboBox#ComboVersioneSale:disabled,
+QComboBox#ComboSalaSale:disabled {
     color: #64748b;
     background-color: #e2e8f0;
 }
 /* Senza queste due regole Qt disegna la tendina di sistema, con un bordo scuro. */
-QComboBox#ComboVersioneSale::drop-down {
+QComboBox#ComboVersioneSale::drop-down,
+QComboBox#ComboSalaSale::drop-down {
     border: none;
     width: 26px;
 }
-QComboBox#ComboVersioneSale::down-arrow {
+QComboBox#ComboVersioneSale::down-arrow,
+QComboBox#ComboSalaSale::down-arrow {
     image: url(icons:chevron-down.svg);
 }
-/* Tendina aperta: la stessa del menu Calendario dello Scadenzario. */
-QComboBox#ComboVersioneSale QAbstractItemView {
+/* Tendina aperta: la stessa del menu Calendario dello Scadenzario, anche per Sala. */
+QComboBox#ComboVersioneSale QAbstractItemView,
+QComboBox#ComboSalaSale QAbstractItemView {
     border: 1px solid #c7d2fe;
     border-radius: 8px;
     background-color: #ffffff;
     outline: 0;
     padding: 4px;
 }
-QComboBox#ComboVersioneSale QAbstractItemView::item {
+QComboBox#ComboVersioneSale QAbstractItemView::item,
+QComboBox#ComboSalaSale QAbstractItemView::item {
     min-height: 32px;
     border-radius: 4px;
     color: #1e293b;
 }
-QComboBox#ComboVersioneSale QAbstractItemView::item:hover { background-color: #e0e7ff; color: #3730a3; }
-QComboBox#ComboVersioneSale QAbstractItemView::item:selected { background-color: #4338ca; color: white; }
+QComboBox#ComboVersioneSale QAbstractItemView::item:hover,
+QComboBox#ComboSalaSale QAbstractItemView::item:hover { background-color: #e0e7ff; color: #3730a3; }
+QComboBox#ComboVersioneSale QAbstractItemView::item:selected,
+QComboBox#ComboSalaSale QAbstractItemView::item:selected { background-color: #4338ca; color: white; }
 
 /* =========================================
    PAGINA SELEZIONE

@@ -43,6 +43,8 @@ MESI_ITA_COMPLETI = [
 GIORNI_ITA = ["LUN", "MAR", "MER", "GIO", "VEN"]
 CHANGEOVER_MINUTES = 11
 ROOM_IDS = ("OR-1", "OR-2")
+ROOM_ROLES = {"OR-1": "OR I", "OR-2": "OR II"}
+"""Ruolo dello specializzando di ciascuna sala, chiave di ``specializzandi`` nel giorno."""
 _SEZIONE = "sale_operatorie"
 MAX_OPERATIONS_PER_ROOM = 12
 
@@ -223,12 +225,19 @@ class ControllerSaleOperatorie(QObject):
         self._settimane_convalidate: list[datetime.date] = []
         self._idx_storico: int = 0
         self._stato_corrente: str = "BOZZA"
+        # None mostra tutte le sale. Con una sala sola le righe Op. non corrispondono più
+        # alla posizione nel giorno: _indici_visibili[col][riga - 2] è l'indice reale.
+        self.filtro_sala: str | None = None
+        self._indici_visibili: dict[int, list[int]] = {}
 
         self._connect_signals()
 
     def _connect_signals(self):
         self.view.combo_versione.currentIndexChanged.connect(
             lambda _index: self.imposta_versione(self.view.combo_versione.currentData())
+        )
+        self.view.combo_sala.currentIndexChanged.connect(
+            lambda _index: self.imposta_filtro_sala(self.view.combo_sala.currentData())
         )
         self.view.btn_crea_effettivo.clicked.connect(self.crea_effettivo_settimana)
         self.view.btn_storico.clicked.connect(
@@ -323,6 +332,33 @@ class ControllerSaleOperatorie(QObject):
             self._refresh_history()
         if self.modalita_corrente is not None:
             self.aggiorna_tabella()
+
+    def imposta_filtro_sala(self, room_id: str | None) -> None:
+        """Mostra una sola sala (con il suo specializzando di turno) o, con None, tutte.
+
+        Il filtro resta cambiando settimana, vista o versione. Spostamenti, scambi e
+        inserimenti si fanno con tutte le sale visibili: vedi ``_modifica_per_posizione``.
+        """
+        self.filtro_sala = room_id if room_id in ROOM_IDS else None
+        self.view.set_una_sala(self.filtro_sala is not None)
+        if self.modalita_corrente is not None:
+            self.aggiorna_tabella()
+
+    def _modifica_per_posizione(self) -> bool:
+        """Le modifiche che indicano un intervento con la sua riga richiedono tutte le sale."""
+        return self._can_edit_week() and getattr(self, "filtro_sala", None) is None
+
+    def _indice_operazione(self, col: int, riga: int) -> int | None:
+        """Indice nella lista del giorno dell'intervento mostrato nella riga ``riga``."""
+        visibili = self._indici_visibili.get(col, [])
+        posizione = riga - 2
+        return visibili[posizione] if 0 <= posizione < len(visibili) else None
+
+    def _specializzando_di_turno(self, data_str: str, room_id: str) -> str:
+        """Specializzando assegnato alla sala nel giorno, nella versione mostrata."""
+        day = datetime.date.fromisoformat(data_str)
+        turno = self.model.load_mese(day.year, day.month).get("turni", {}).get(data_str, {})
+        return (turno.get("specializzandi") or {}).get(ROOM_ROLES[room_id], "").strip()
 
     def crea_effettivo_settimana(self) -> None:
         """Explicitly initialize a missing actual week from its confirmed forecast."""
@@ -681,16 +717,17 @@ class ControllerSaleOperatorie(QObject):
                 ["Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì"]
             )
 
-        can_edit = self._can_edit_week()
+        can_edit = self._modifica_per_posizione()
 
         max_operations = max(
-            (len(self.model.get_operazioni(day.isoformat())) for day in dates
+            (len(self._operazioni_visibili(day.isoformat())) for day in dates
              if self._week_exists(_get_lunedi(day))),
             default=0,
         )
         self.view.adatta_righe_operazioni(max_operations)
 
         drop_targets: dict = {}
+        self._indici_visibili = {}
         for col, data_col in enumerate(dates):
             data_str = data_col.strftime("%Y-%m-%d")
             is_oggi = (data_col == self.oggi)
@@ -707,7 +744,12 @@ class ControllerSaleOperatorie(QObject):
             )
 
             available = not is_weekend and self._week_exists(_get_lunedi(data_col))
-            spec_val = self.model.get_specializzandi(data_str) if available else ""
+            if not available:
+                spec_val = ""
+            elif self.filtro_sala is not None:
+                spec_val = self._specializzando_di_turno(data_str, self.filtro_sala)
+            else:
+                spec_val = self.model.get_specializzandi(data_str)
             item_spec = self.view.crea_item_cella(
                 spec_val,
                 is_weekend,
@@ -718,11 +760,13 @@ class ControllerSaleOperatorie(QObject):
             self.view.tabella.setItem(1, col, item_spec)
 
             operazioni = self.model.get_operazioni(data_str) if available else []
+            visibili = self._operazioni_visibili(data_str) if available else []
+            self._indici_visibili[col] = [op_idx for op_idx, _ in visibili]
             drop_targets[col] = 2 + len(operazioni)
-            for op_idx in range(self.view.current_max_ops):
-                row = op_idx + 2
-                if op_idx < len(operazioni):
-                    op = operazioni[op_idx]
+            for posizione in range(self.view.current_max_ops):
+                row = posizione + 2
+                if posizione < len(visibili):
+                    op_idx, op = visibili[posizione]
                     ha_paziente = bool(op.get("nome_paziente"))
                     on_click = (lambda r=row, c=col: self._on_cella_cliccata(r, c)) if ha_paziente else None
                     widget = self.view.crea_widget_operazione(
@@ -734,12 +778,20 @@ class ControllerSaleOperatorie(QObject):
                     self.view.tabella.setCellWidget(row, col, widget)
                 else:
                     on_click_vuoto = None
-                    if can_edit and op_idx == len(operazioni):
+                    if can_edit and posizione == len(visibili):
                         on_click_vuoto = (lambda r=row, c=col: self._on_slot_vuoto_cliccato(r, c))
                     self.view.tabella.setCellWidget(row, col, self.view.crea_widget_vuoto(is_oggi, on_click_vuoto))
 
         self.view.tabella.set_drop_targets(drop_targets if can_edit else {})
         self.view.tabella.blockSignals(False)
+
+    def _operazioni_visibili(self, data_str: str) -> list[tuple[int, dict]]:
+        """Interventi del giorno da mostrare, con il loro indice nella lista completa."""
+        return [
+            (op_idx, op)
+            for op_idx, op in enumerate(self.model.get_operazioni(data_str))
+            if self.filtro_sala is None or self._room_id(op) == self.filtro_sala
+        ]
 
     def _ha_piano_esistente(self) -> bool:
         for col in range(5):
@@ -1100,7 +1152,7 @@ class ControllerSaleOperatorie(QObject):
 
     def _scambia_operazioni(self, col: int, src_idx: int, dst_idx: int):
         """Swap di due operazioni nello stesso giorno, con conferma modal."""
-        if not self._can_edit_week():
+        if not self._modifica_per_posizione():
             return
         if not (0 <= col < len(GIORNI_ITA) and src_idx >= 0 and dst_idx >= 0):
             return
@@ -1136,7 +1188,7 @@ class ControllerSaleOperatorie(QObject):
 
     def _sposta_operazione(self, src_col: int, src_op_idx: int, dst_col: int):
         """Sposta un'operazione da un giorno a un altro (in coda) e salva il JSON."""
-        if not self._can_edit_week():
+        if not self._modifica_per_posizione():
             return
         if not (0 <= src_col < len(GIORNI_ITA)
                 and 0 <= dst_col < len(GIORNI_ITA)
@@ -1221,9 +1273,15 @@ class ControllerSaleOperatorie(QObject):
             key in op
             for key in ("id_specializzando", "specializzando", "ruolo_specializzando")
         ):
-            op["id_specializzando"] = ""
-            op["specializzando"] = ""
-            op["ruolo_specializzando"] = ""
+            # Nel giorno di arrivo l'intervento va a chi è di turno nella stessa sala, come
+            # farebbe il planner; senza nessuno di turno resta senza specializzando.
+            nome = self._specializzando_di_turno(dst_str, moved_room)
+            op["specializzando"] = nome
+            op["ruolo_specializzando"] = ROOM_ROLES[moved_room] if nome else ""
+            op["id_specializzando"] = (
+                self.model_lib.trova_id_specializzando(nome)
+                if nome and self.model_lib is not None else ""
+            )
         dst_ops.append(op)
 
         self._ricalcola_orari(src_ops)
@@ -1579,12 +1637,10 @@ class ControllerSaleOperatorie(QObject):
                 + (" / ".join(full_names) if full_names else "—")
             )
             return
-        if riga < 2:
-            return
-        op_idx = riga - 2
+        op_idx = self._indice_operazione(colonna, riga)
         data_str = data_col.strftime("%Y-%m-%d")
         operazioni = self.model.get_operazioni(data_str)
-        if op_idx >= len(operazioni):
+        if op_idx is None or op_idx >= len(operazioni):
             return
         op = operazioni[op_idx]
         if not op.get("nome_paziente"):
@@ -1596,7 +1652,7 @@ class ControllerSaleOperatorie(QObject):
 
     def _on_slot_vuoto_cliccato(self, riga, colonna):
         """Apre il dialog di inserimento manuale per il primo slot libero del giorno."""
-        if not self._can_edit_week():
+        if not self._modifica_per_posizione():
             return
         data_col = self._date_for_column(colonna)
         data_str = data_col.strftime("%Y-%m-%d")

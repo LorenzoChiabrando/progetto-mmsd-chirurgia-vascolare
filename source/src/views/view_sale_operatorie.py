@@ -57,6 +57,18 @@ def varianti_codici(codici: list[str]) -> list[str]:
     return varianti
 
 
+def etichetta_durata(durata) -> str:
+    """Durata per il badge della scheda: «45 min» sotto l'ora, poi «1h», «1h30», «2h05».
+
+    Da un'ora in su il testo non è mai più largo di «90 min»: il badge compare in ogni
+    colonna dove compariva già la durata di un intervento di un'ora e mezza.
+    """
+    if isinstance(durata, bool) or not isinstance(durata, int) or durata < 60:
+        return f"{durata} min"
+    ore, minuti = divmod(durata, 60)
+    return f"{ore}h{minuti:02d}" if minuti else f"{ore}h"
+
+
 class DraggableOperationFrame(QFrame):
     """Frame per un'operazione pianificata: supporta click (popup) e drag (sposta giorno)."""
 
@@ -327,6 +339,7 @@ class ViewSaleOperatorie(QWidget):
         super().__init__()
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         self._month_mode = False
+        self._una_sala = False  # con il filtro per sala la riga mostra un solo specializzando
 
         self.current_max_ops = self.DEFAULT_OPS
         self.row_labels = (
@@ -482,6 +495,18 @@ class ViewSaleOperatorie(QWidget):
         self.combo_versione.addItem("Effettivo", CalendarVersion.EFFETTIVO)
         self.combo_versione.setAccessibleName("Versione del calendario sale operatorie")
         version_row.addWidget(self.combo_versione)
+        version_row.addSpacing(12)
+        room_label = QLabel("Sala:")
+        room_label.setObjectName("LblCalendarTools")
+        version_row.addWidget(room_label)
+        self.combo_sala = QComboBox()
+        self.combo_sala.setObjectName("ComboSalaSale")
+        self.combo_sala.setMinimumWidth(145)
+        self.combo_sala.addItem("Tutte le sale", None)
+        self.combo_sala.addItem("OR-1", "OR-1")
+        self.combo_sala.addItem("OR-2", "OR-2")
+        self.combo_sala.setAccessibleName("Sala operatoria da visualizzare")
+        version_row.addWidget(self.combo_sala)
         self.lbl_versione_status = QLabel()
         self.lbl_versione_status.setObjectName("LblCellDetail")
         self.lbl_versione_status.setWordWrap(True)
@@ -651,8 +676,10 @@ class ViewSaleOperatorie(QWidget):
         if n_display != self.current_max_ops:
             self.current_max_ops = n_display
             self.tabella.setRowCount(n_display + 2)
-            specialist_label = "Spec." if self._month_mode else "Specializzandi"
-            labels = ["Giorno", specialist_label] + [f"Op. {i+1}" for i in range(n_display)]
+            labels = (
+                ["Giorno", self._etichetta_specializzandi()]
+                + [f"Op. {i+1}" for i in range(n_display)]
+            )
             self.tabella.setVerticalHeaderLabels(labels)
         operation_height = 38 if self._month_mode else 82
         self.tabella.setRowHeight(0, 34 if self._month_mode else 46)
@@ -661,6 +688,16 @@ class ViewSaleOperatorie(QWidget):
             self.tabella.setRowHeight(i, operation_height)
 
         self._adatta_altezza_tabella()
+
+    def _etichetta_specializzandi(self) -> str:
+        if self._month_mode:
+            return "Spec."
+        return "Specializzando" if self._una_sala else "Specializzandi"
+
+    def set_una_sala(self, una_sala: bool) -> None:
+        """Intestazione della riga specializzandi: al singolare se è filtrata una sala."""
+        self._una_sala = una_sala
+        self.tabella.setVerticalHeaderItem(1, QTableWidgetItem(self._etichetta_specializzandi()))
 
     def _adatta_altezza_tabella(self):
         """Tutte le righe se c'è spazio, almeno MIN_VISIBLE_OPS interventi se lo schermo è basso.
@@ -767,7 +804,7 @@ class ViewSaleOperatorie(QWidget):
             badge_room.setObjectName("BadgeSalaOp")
             badge_room.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
             ora_row.addWidget(badge_room)
-        badge_dur = QLabel(f"{op.get('durata', '?')} min")
+        badge_dur = QLabel(etichetta_durata(op.get("durata", "?")))
         badge_dur.setObjectName("BadgeDurataOp")
         badge_dur.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         ora_row.addWidget(lbl_ora)
@@ -825,16 +862,13 @@ class ViewSaleOperatorie(QWidget):
             header.setMinimumSectionSize(20)
             header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
             self.tabella.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-            labels = ["Giorno", "Spec."] + [
-                f"Op. {index + 1}" for index in range(self.current_max_ops)
-            ]
         else:
             header.setMinimumSectionSize(80)
             header.setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
             self.tabella.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
-            labels = ["Giorno", "Specializzandi"] + [
-                f"Op. {index + 1}" for index in range(self.current_max_ops)
-            ]
+        labels = ["Giorno", self._etichetta_specializzandi()] + [
+            f"Op. {index + 1}" for index in range(self.current_max_ops)
+        ]
         self.tabella.setVerticalHeaderLabels(labels)
         self.adatta_righe_operazioni(self.current_max_ops)
         self.tabella.viewport().update()

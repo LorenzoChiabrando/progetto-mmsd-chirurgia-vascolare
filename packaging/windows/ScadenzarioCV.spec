@@ -1,9 +1,16 @@
 # PyInstaller: ScadenzarioCV.exe in un unico file. Si compila con packaging\windows\build.bat.
+import importlib.util
 from pathlib import Path
 
 from PyInstaller.utils.hooks import collect_submodules
 
-SOURCE = Path(SPECPATH).resolve().parents[1] / "source"
+QUI = Path(SPECPATH).resolve()
+SOURCE = QUI.parents[1] / "source"
+
+# highspy (come numpy) porta msvcp140-<hash>.dll in highspy.libs e all'import aggiunge solo
+# quella cartella alla ricerca delle DLL. PyInstaller tiene una sola copia della DLL, in
+# numpy.libs: senza questa riga _core.pyd non si carica e il solver risulta non disponibile.
+HIGHSPY_LIBS = Path(importlib.util.find_spec("highspy").origin).parents[1] / "highspy.libs"
 
 # Plugin Qt che l'app non usa e le librerie che si portano dietro: tastiera virtuale QML
 # (QtQuick e QtQml), anteprima PDF fra i formati immagine (QtPdf; l'export usa QPdfWriter
@@ -19,6 +26,9 @@ CARTELLE_NON_USATE = (
 a = Analysis(
     [str(SOURCE / "main.py")],
     pathex=[str(SOURCE)],
+    binaries=[(str(dll), "highspy.libs") for dll in HIGHSPY_LIBS.glob("*.dll")],
+    # Senza console stdout e stderr non esistono e Pyomo non può avviare HiGHS.
+    runtime_hooks=[str(QUI / "flussi_standard.py")],
     datas=[(str(SOURCE / "asset"), "asset"), (str(SOURCE / "mock_data"), "mock_data")],
     # APPSI importa highspy solo quando serve: l'analisi statica non lo vede.
     hiddenimports=[

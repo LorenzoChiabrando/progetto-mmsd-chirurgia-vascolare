@@ -60,8 +60,10 @@ if errorlevel 1 call :errore "installazione delle dipendenze non riuscita. Serve
 >"%TIMBRO%" echo %ATTESO%
 
 :avvio
+rem Senza console stdout e stderr non esistono e il solver HiGHS fallirebbe: avvio.py li
+rem collega a os.devnull e poi esegue main.py.
 cd /d "%SOURCE%"
-start "" "%VENV%\Scripts\pythonw.exe" main.py %*
+start "" "%VENV%\Scripts\pythonw.exe" "%QUI%packaging\windows\avvio.py" %*
 exit /b 0
 
 :errore

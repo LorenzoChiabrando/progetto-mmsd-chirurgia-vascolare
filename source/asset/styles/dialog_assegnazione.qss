@@ -1,0 +1,128 @@
+/* =========================================
+   DIALOG ASSEGNAZIONE TURNI (SCADENZARIO)
+   Solo i widget specifici: la cornice comune
+   (barra, titolo, campi, pulsanti) è in dialog.qss.
+========================================= */
+QLabel#LblAttuale {
+    font-size: 13px;
+    color: #64748b;
+}
+
+QLabel#LblVuoto {
+    font-size: 13px;
+    color: #94a3b8;
+    padding: 8px;
+}
+
+/* ── Lista specializzandi ── */
+QListWidget#ListaSpecializzandi {
+    background-color: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 6px;
+    outline: 0;
+}
+QListWidget#ListaSpecializzandi::item {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin: 3px 2px;
+}
+QListWidget#ListaSpecializzandi::item:hover {
+    border: 1px solid #a5b4fc;
+    background-color: #f5f7ff;
+}
+QListWidget#ListaSpecializzandi::item:selected {
+    border: 2px solid #4338ca;
+    background-color: #e0e7ff;
+}
+QListWidget#ListaSpecializzandi::item:disabled {
+    background-color: #f1f5f9;
+    border: 1px dashed #cbd5e1;
+}
+
+QFrame#RigaSpecializzando {
+    background: transparent;
+    border: none;
+}
+QLabel#LblNomeSpec {
+    font-size: 15px;
+    font-weight: bold;
+    color: #1e293b;
+    background: transparent;
+}
+QFrame#RigaSpecializzando[disponibile="false"] QLabel#LblNomeSpec {
+    color: #94a3b8;
+}
+QLabel#LblMotivoSpec {
+    font-size: 12px;
+    color: #b45309;
+    background: transparent;
+}
+
+QLabel#BadgeLivello {
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 8px;
+    padding: 3px 10px;
+    color: #334155;
+    background-color: #e2e8f0;
+}
+QLabel#BadgeLivello[livello="Junior"] {
+    color: #0369a1;
+    background-color: #e0f2fe;
+}
+QLabel#BadgeLivello[livello="Intermediate"] {
+    color: #3730a3;
+    background-color: #e0e7ff;
+}
+QLabel#BadgeLivello[livello="Senior"] {
+    color: #15803d;
+    background-color: #dcfce7;
+}
+QFrame#RigaSpecializzando[disponibile="false"] QLabel#BadgeLivello {
+    color: #94a3b8;
+    background-color: #e2e8f0;
+}
+
+QListWidget#ListaSpecializzandi QScrollBar:vertical {
+    border: none;
+    background: transparent;
+    width: 8px;
+    margin: 2px;
+}
+QListWidget#ListaSpecializzandi QScrollBar::handle:vertical {
+    background: #cbd5e1;
+    min-height: 30px;
+    border-radius: 4px;
+}
+QListWidget#ListaSpecializzandi QScrollBar::handle:vertical:hover {
+    background: #4338ca;
+}
+QListWidget#ListaSpecializzandi QScrollBar::add-line:vertical,
+QListWidget#ListaSpecializzandi QScrollBar::sub-line:vertical {
+    height: 0;
+    background: none;
+}
+
+/* ── Tipo guardia: colori della legenda ── */
+QPushButton#BtnGuardia {
+    text-align: left;
+    padding: 0 18px;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 10px;
+    border: 1.5px solid #e2e8f0;
+    background-color: #ffffff;
+    color: #1e293b;
+}
+QPushButton#BtnGuardia[codice="118"] { border-color: #fecaca; color: #991b1b; }
+QPushButton#BtnGuardia[codice="PI"]  { border-color: #fed7aa; color: #9a3412; }
+QPushButton#BtnGuardia[codice="L"]   { border-color: #bbf7d0; color: #14532d; }
+
+QPushButton#BtnGuardia[codice="118"]:hover,
+QPushButton#BtnGuardia[codice="118"]:checked { background-color: #fee2e2; border-color: #b91c1c; }
+QPushButton#BtnGuardia[codice="PI"]:hover,
+QPushButton#BtnGuardia[codice="PI"]:checked  { background-color: #ffedd5; border-color: #c2410c; }
+QPushButton#BtnGuardia[codice="L"]:hover,
+QPushButton#BtnGuardia[codice="L"]:checked   { background-color: #dcfce7; border-color: #15803d; }

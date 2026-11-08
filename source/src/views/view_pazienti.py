@@ -1,12 +1,15 @@
 import os
-from src.app_paths import get_asset_dir
+from src.data_paths import PROJECT_ROOT
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame,
     QLineEdit, QPushButton, QGraphicsDropShadowEffect,
-    QStackedWidget, QListWidget, QListWidgetItem, QTextEdit
+    QStackedWidget, QListWidget, QTextEdit
 )
-from PySide6.QtCore import Qt, QSize
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
+
+from src.views.components.person_list import crea_elemento_elenco
+from src.views.components.section_header import TONI_MODALITA, BandaSezione
 
 _COLORI_URGENZA = {
     "Alta":  ("#fee2e2", "#dc2626"),
@@ -97,7 +100,7 @@ class ViewPazienti(QWidget):
 
         chips_row = QHBoxLayout()
         chips_row.setSpacing(10)
-        lbl_filtri = QLabel("Urgenza:")
+        lbl_filtri = QLabel("URGENZA")
         lbl_filtri.setObjectName("LblFiltri")
         chips_row.addWidget(lbl_filtri)
 
@@ -129,7 +132,7 @@ class ViewPazienti(QWidget):
         chips_row.addWidget(sep_chips)
         chips_row.addSpacing(6)
 
-        lbl_stato = QLabel("Stato:")
+        lbl_stato = QLabel("STATO")
         lbl_stato.setObjectName("LblFiltri")
         chips_row.addWidget(lbl_stato)
 
@@ -204,34 +207,20 @@ class ViewPazienti(QWidget):
 
     def _build_page_dettaglio(self):
         self.page_dettaglio = QWidget()
-        layout = QVBoxLayout(self.page_dettaglio)
-        layout.setContentsMargins(40, 28, 40, 28)
+        pagina = QVBoxLayout(self.page_dettaglio)
+        pagina.setContentsMargins(0, 0, 0, 0)
+        pagina.setSpacing(0)
+        # Banda come nello Scadenzario e nel Libretto: chi si sta guardando.
+        self.banda_dettaglio = BandaSezione(
+            "Lista Pazienti", aiuto_indietro="Torna alla lista dei pazienti"
+        )
+        self.btn_indietro = self.banda_dettaglio.btn_indietro
+        pagina.addWidget(self.banda_dettaglio)
+        corpo = QWidget()
+        pagina.addWidget(corpo, 1)
+        layout = QVBoxLayout(corpo)
+        layout.setContentsMargins(40, 24, 40, 28)
         layout.setSpacing(18)
-
-        nav = QHBoxLayout()
-        nav.setSpacing(12)
-
-        self.btn_indietro = QPushButton("← Indietro")
-        self.btn_indietro.setObjectName("BtnIndietro")
-        self.btn_indietro.setFixedSize(150, 42)
-        self.btn_indietro.setCursor(Qt.CursorShape.PointingHandCursor)
-        nav.addWidget(self.btn_indietro)
-        nav.addStretch()
-
-        name_block = QVBoxLayout()
-        name_block.setSpacing(1)
-        name_block.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
-        self.lbl_cognome_paziente = QLabel("")
-        self.lbl_cognome_paziente.setObjectName("LblCognomePaziente")
-        self.lbl_cognome_paziente.setAlignment(Qt.AlignmentFlag.AlignRight)
-        self.lbl_nome_proprio_paziente = QLabel("")
-        self.lbl_nome_proprio_paziente.setObjectName("LblNomeProprioP")
-        self.lbl_nome_proprio_paziente.setAlignment(Qt.AlignmentFlag.AlignRight)
-        name_block.addWidget(self.lbl_cognome_paziente)
-        name_block.addWidget(self.lbl_nome_proprio_paziente)
-        nav.addLayout(name_block)
-
-        nav.addSpacing(20)
 
         self.btn_modifica = QPushButton("✏  Modifica")
         self.btn_modifica.setObjectName("BtnModifica")
@@ -243,11 +232,6 @@ class ViewPazienti(QWidget):
         self.btn_elimina.setFixedHeight(42)
         self.btn_elimina.setCursor(Qt.CursorShape.PointingHandCursor)
 
-        nav.addWidget(self.btn_modifica)
-        nav.addWidget(self.btn_elimina)
-
-        layout.addLayout(nav)
-
         card_det = QFrame()
         card_det.setObjectName("CardDettaglio")
         shadow = QGraphicsDropShadowEffect()
@@ -257,16 +241,27 @@ class ViewPazienti(QWidget):
         card_det.setGraphicsEffect(shadow)
 
         cd = QVBoxLayout(card_det)
-        cd.setContentsMargins(40, 35, 40, 40)
+        cd.setContentsMargins(40, 30, 40, 40)
         cd.setSpacing(24)
+
+        azioni = QHBoxLayout()
+        azioni.setSpacing(12)
+        lbl_scheda = QLabel("Scheda del paziente")
+        lbl_scheda.setObjectName("TitoloScheda")
+        azioni.addWidget(lbl_scheda)
+        azioni.addStretch()
+        azioni.addWidget(self.btn_modifica)
+        azioni.addWidget(self.btn_elimina)
+        cd.addLayout(azioni)
 
         info_row = QHBoxLayout()
         info_row.setSpacing(16)
         box_urg, self.val_urgenza   = self._crea_info_box("Classe di Urgenza", "-", accent=True)
         box_cpx, self.val_complessita = self._crea_info_box("Complessità", "-")
         box_dat, self.val_data      = self._crea_info_box("Data Inserimento", "-")
+        box_op, self.val_data_intervento = self._crea_info_box("Data Intervento", "-")
         box_sta, self.val_stato     = self._crea_info_box("Stato", "-")
-        for box in [box_urg, box_cpx, box_dat, box_sta]:
+        for box in [box_urg, box_cpx, box_dat, box_op, box_sta]:
             info_row.addWidget(box)
         cd.addLayout(info_row)
 
@@ -293,7 +288,8 @@ class ViewPazienti(QWidget):
             cd.addLayout(row)
             return lbl_v
 
-        self.val_diagnosi   = _riga_clinica("Diagnosi")
+        self.val_codice_diagnosi = _riga_clinica("Codice ICD-9-CM")
+        self.val_diagnosi   = _riga_clinica("Descrizione Diagnosi")
         self.val_intervento = _riga_clinica("Intervento")
         self.val_tipo       = _riga_clinica("Tipo Chirurgia")
 
@@ -330,58 +326,36 @@ class ViewPazienti(QWidget):
         return box, val
 
     def crea_item_lista(self, cognome, nome, codice, urgenza, stato):
-        widget = QFrame()
-        widget.setObjectName("ItemCard")
-        widget.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
-
-        row = QHBoxLayout(widget)
-        row.setContentsMargins(16, 10, 16, 10)
-        row.setSpacing(14)
-
-        bg_urg, fg_urg = _COLORI_URGENZA.get(urgenza, ("#f1f5f9", "#475569"))
-        badge_urg = QLabel(urgenza if urgenza else "–")
-        badge_urg.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        badge_urg.setFixedWidth(66)
-        badge_urg.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
-        badge_urg.setStyleSheet(
-            f"background-color:{bg_urg}; color:{fg_urg}; font-weight:bold; "
-            f"font-size:11px; padding:3px 8px; border-radius:10px; "
-            f"border:1px solid {fg_urg}50;"
+        """Elemento della lista d'attesa, nello stesso stile dell'anagrafica del Libretto."""
+        _inizio, _fine, accento, tinta = TONI_MODALITA["PAZIENTI"]
+        etichette = []
+        for testo, colori in ((urgenza, _COLORI_URGENZA), (stato, _COLORI_STATO)):
+            sfondo, colore = colori.get(testo, ("#f1f5f9", "#475569"))
+            etichette.append((testo, sfondo, colore))
+        return crea_elemento_elenco(
+            cognome=cognome, nome=nome, sottotitolo=f"Codice {codice}",
+            etichette=etichette, accento=accento, tinta=tinta,
         )
 
-        txt_col = QVBoxLayout()
-        txt_col.setSpacing(2)
-        lbl_nome = QLabel(f"{cognome} {nome}")
-        lbl_nome.setObjectName("ItemNome")
-        lbl_nome.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
-        lbl_cod = QLabel(f"Codice: {codice}")
-        lbl_cod.setObjectName("ItemMatricola")
-        lbl_cod.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
-        txt_col.addWidget(lbl_nome)
-        txt_col.addWidget(lbl_cod)
-
-        bg_sta, fg_sta = _COLORI_STATO.get(stato, ("#f1f5f9", "#475569"))
-        badge_sta = QLabel(stato if stato else "–")
-        badge_sta.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        badge_sta.setFixedWidth(90)
-        badge_sta.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
-        badge_sta.setStyleSheet(
-            f"background-color:{bg_sta}; color:{fg_sta}; font-weight:bold; "
-            f"font-size:11px; padding:3px 8px; border-radius:10px; border: none;"
+    def imposta_dettaglio(
+        self,
+        paz,
+        *,
+        stato_effettivo: str | None = None,
+        data_intervento: str | None = None,
+    ):
+        stato_banda = stato_effettivo or paz.get("stato", "In Attesa")
+        self.banda_dettaglio.imposta_intestazione(
+            f"{paz.get('cognome', '').upper()} {paz.get('nome', '')}".strip(),
+            " · ".join(filter(None, (
+                f"Urgenza {paz['urgenza']}" if paz.get("urgenza") else "",
+                stato_banda,
+                f"Intervento {data_intervento}" if data_intervento else "",
+            ))),
+            "PAZIENTI",
         )
-
-        row.addWidget(badge_urg)
-        row.addLayout(txt_col, stretch=1)
-        row.addWidget(badge_sta)
-
-        item = QListWidgetItem()
-        item.setSizeHint(QSize(0, 68))
-        return item, widget
-
-    def imposta_dettaglio(self, paz):
-        self.lbl_cognome_paziente.setText(paz.get("cognome", "").upper())
-        self.lbl_nome_proprio_paziente.setText(paz.get("nome", ""))
         self.val_data.setText(paz.get("data_inserimento", "N/D"))
+        self.val_data_intervento.setText(data_intervento or "Non pianificata")
 
         cpx = paz.get("complessita", "")
         _COLORI_CPX = {
@@ -406,7 +380,7 @@ class ViewPazienti(QWidget):
             f"border:1.5px solid {fg}60;"
         )
 
-        stato = paz.get("stato", "In Attesa")
+        stato = stato_effettivo or paz.get("stato", "In Attesa")
         self.val_stato.setText(stato if stato else "–")
         bg2, fg2 = _COLORI_STATO.get(stato, ("#f1f5f9", "#475569"))
         self.val_stato.setStyleSheet(
@@ -415,7 +389,10 @@ class ViewPazienti(QWidget):
             f"border:1.5px solid {fg2}60;"
         )
 
-        self.val_diagnosi.setText(paz.get("diagnosi", "") or "—")
+        self.val_codice_diagnosi.setText(paz.get("codice_diagnosi", "") or "—")
+        self.val_diagnosi.setText(
+            paz.get("descrizione_diagnosi", "") or paz.get("diagnosi", "") or "—"
+        )
 
         interventi_list = paz.get("interventi", [])
         if interventi_list:
@@ -454,7 +431,7 @@ class ViewPazienti(QWidget):
         self.lbl_count_total.setText(f"{n_totale} pazienti totali")
 
     def load_styles(self):
-        style_path = str(get_asset_dir() / "styles" / "pazienti.qss")
+        style_path = os.path.join(PROJECT_ROOT, "asset", "styles", "pazienti.qss")
         if os.path.exists(style_path):
             with open(style_path, "r", encoding="utf-8") as f:
                 self.setStyleSheet(self.styleSheet() + "\n" + f.read())

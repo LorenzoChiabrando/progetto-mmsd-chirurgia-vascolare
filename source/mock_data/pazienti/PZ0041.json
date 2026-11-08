@@ -1,15 +1,30 @@
 {
     "id": "PZ0041",
-    "nome": "Tomaso",
-    "cognome": "Napoli",
-    "diagnosi": "Arterite di Takayasu con stenosi succlavia",
-    "codice_intervento": "38.12",
-    "descrizione_intervento": "Bypass carotido-succlavio",
+    "nome": "Paziente",
+    "cognome": "Demo 0041",
+    "codice_diagnosi": "D0041",
+    "descrizione_diagnosi": "Diagnosi sintetica 0041",
+    "diagnosi": "[D0041] Diagnosi sintetica 0041",
+    "interventi": [
+        {
+            "codice": "DEMO-0041-1",
+            "descrizione": "Procedura sintetica 0041, parte 1",
+            "durata": 150
+        }
+    ],
+    "codice_intervento": "DEMO-0041-1",
+    "descrizione_intervento": "Procedura sintetica 0041, parte 1",
+    "durata_intervento": 150,
     "tipo_chirurgia": "Aperta",
-    "complessita": "Alta",
-    "urgenza": "Alta",
-    "stato": "In Attesa",
-    "data_inserimento": "26/04/2026",
-    "note": "",
-    "durata_intervento": 120
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "Pianificato",
+    "data_inserimento": "24/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
 }

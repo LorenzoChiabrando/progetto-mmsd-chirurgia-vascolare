@@ -1,0 +1,78 @@
+/* =========================================
+   DIALOG PIANIFICA SETTIMANA (dialog_pianificazione.py)
+   Cornice e pulsanti vengono da dialog.qss; accento delle Sale #6f42c1.
+========================================= */
+QDialog[sezione] QLabel#ValoreParametro {
+    font-size: 17px;
+    font-weight: bold;
+    color: #6f42c1;
+}
+QDialog[sezione] QLabel#EstremoParametro {
+    font-size: 11px;
+    color: #94a3b8;
+}
+QDialog[sezione] QLabel#AiutoParametro {
+    font-size: 12px;
+    color: #64748b;
+}
+QDialog[sezione] QLabel#NotaParametri {
+    font-size: 13px;
+    color: #475569;
+    background-color: #f5f3ff;
+    border: 1px solid #ddd6fe;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+QDialog[sezione] QLabel#AvvisoSovrascrittura {
+    font-size: 13px;
+    font-weight: bold;
+    color: #92400e;
+    background-color: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+QDialog[sezione] QSlider#SliderParametro {
+    min-height: 26px;
+}
+QDialog[sezione] QSlider#SliderParametro::groove:horizontal {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+}
+QDialog[sezione] QSlider#SliderParametro::sub-page:horizontal {
+    background: #6f42c1;
+    border-radius: 3px;
+}
+QDialog[sezione] QSlider#SliderParametro::handle:horizontal {
+    background: #ffffff;
+    border: 2px solid #6f42c1;
+    width: 18px;
+    height: 18px;
+    margin: -8px 0;
+    border-radius: 11px;
+}
+QDialog[sezione] QSlider#SliderParametro::handle:horizontal:hover {
+    background: #f5f3ff;
+}
+
+/* Finestra di attesa (dialog_attesa_pianificazione.py) */
+QDialog[sezione] QLabel#MessaggioAttesa {
+    font-size: 15px;
+    font-weight: bold;
+    color: #1e293b;
+}
+QDialog[sezione] QLabel#TempoAttesa {
+    font-size: 13px;
+    color: #64748b;
+}
+QDialog[sezione] QProgressBar#BarraTempoAttesa {
+    background: #ede9fe;
+    border: none;
+    border-radius: 3px;
+}
+QDialog[sezione] QProgressBar#BarraTempoAttesa::chunk {
+    background: #6f42c1;
+    border-radius: 3px;
+}

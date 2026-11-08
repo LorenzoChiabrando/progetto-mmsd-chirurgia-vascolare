@@ -1,15 +1,30 @@
 {
     "id": "PZ0034",
-    "nome": "Laura",
-    "cognome": "Neri",
-    "diagnosi": "Aneurisma popliteo destro 3 cm",
-    "codice_intervento": "38.59",
-    "descrizione_intervento": "Resezione aneurisma popliteo con bypass vena",
-    "tipo_chirurgia": "Aperta",
-    "complessita": "Media",
+    "nome": "Paziente",
+    "cognome": "Demo 0034",
+    "codice_diagnosi": "D0034",
+    "descrizione_diagnosi": "Diagnosi sintetica 0034",
+    "diagnosi": "[D0034] Diagnosi sintetica 0034",
+    "interventi": [
+        {
+            "codice": "DEMO-0034-1",
+            "descrizione": "Procedura sintetica 0034, parte 1",
+            "durata": 120
+        }
+    ],
+    "codice_intervento": "DEMO-0034-1",
+    "descrizione_intervento": "Procedura sintetica 0034, parte 1",
+    "durata_intervento": 120,
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Alta",
     "urgenza": "Alta",
     "stato": "Completato",
-    "data_inserimento": "26/04/2026",
-    "note": "",
-    "durata_intervento": 120
+    "data_inserimento": "06/10/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 30
+    }
 }

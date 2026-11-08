@@ -1,15 +1,30 @@
 {
     "id": "PZ0042",
-    "nome": "Maria",
-    "cognome": "Sorrentino",
-    "diagnosi": "Trombosi arteria renale acuta destra",
-    "codice_intervento": "38.06",
-    "descrizione_intervento": "Embolectomia arteria renale",
-    "tipo_chirurgia": "Aperta",
+    "nome": "Paziente",
+    "cognome": "Demo 0042",
+    "codice_diagnosi": "D0042",
+    "descrizione_diagnosi": "Diagnosi sintetica 0042",
+    "diagnosi": "[D0042] Diagnosi sintetica 0042",
+    "interventi": [
+        {
+            "codice": "DEMO-0042-1",
+            "descrizione": "Procedura sintetica 0042, parte 1",
+            "durata": 180
+        }
+    ],
+    "codice_intervento": "DEMO-0042-1",
+    "descrizione_intervento": "Procedura sintetica 0042, parte 1",
+    "durata_intervento": 180,
+    "tipo_chirurgia": "Endovascolare",
     "complessita": "Alta",
-    "urgenza": "Alta",
-    "stato": "In Attesa",
-    "data_inserimento": "26/04/2026",
-    "note": "",
-    "durata_intervento": 120
+    "urgenza": "Bassa",
+    "stato": "Pianificato",
+    "data_inserimento": "23/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 180
+    }
 }

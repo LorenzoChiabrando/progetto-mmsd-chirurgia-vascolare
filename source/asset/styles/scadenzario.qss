@@ -30,77 +30,8 @@ QLabel#SottoTitoloSelezione {
 }
 
 /* =========================================
-   CARD — BASE COMUNE
-========================================= */
-QPushButton#CardStorico,
-QPushButton#CardCorrente,
-QPushButton#CardPianificazione {
-    background-color: white;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 20px;
-}
-
-/* ── Storico ── */
-QPushButton#CardStorico            { border-top: 6px solid #94a3b8; }
-QPushButton#CardStorico:hover      { border: 1.5px solid #64748b; border-top: 6px solid #475569;
-                                     background-color: #f8fafc; }
-QPushButton#CardStorico QLabel#CardTitolo  { color: #475569; }
-QPushButton#CardStorico QLabel#CardAzione  { color: #64748b; }
-QPushButton#CardStorico:hover QLabel#CardAzione { color: #334155; }
-QPushButton#CardStorico QFrame#CardSeparatore  { background-color: #e2e8f0; }
-
-/* ── Mese Corrente ── */
-QPushButton#CardCorrente           { border-top: 6px solid #22c55e; }
-QPushButton#CardCorrente:hover     { border: 1.5px solid #16a34a; border-top: 6px solid #15803d;
-                                     background-color: #f0fdf4; }
-QPushButton#CardCorrente QLabel#CardTitolo { color: #15803d; }
-QPushButton#CardCorrente QLabel#CardAzione  { color: #16a34a; }
-QPushButton#CardCorrente:hover QLabel#CardAzione { color: #14532d; }
-QPushButton#CardCorrente QFrame#CardSeparatore  { background-color: #bbf7d0; }
-
-/* ── Pianificazione ── */
-QPushButton#CardPianificazione     { border-top: 6px solid #818cf8; }
-QPushButton#CardPianificazione:hover { border: 1.5px solid #4f46e5; border-top: 6px solid #3730a3;
-                                       background-color: #eef2ff; }
-QPushButton#CardPianificazione QLabel#CardTitolo { color: #3730a3; }
-QPushButton#CardPianificazione QLabel#CardAzione  { color: #6366f1; }
-QPushButton#CardPianificazione:hover QLabel#CardAzione { color: #3730a3; }
-QPushButton#CardPianificazione QFrame#CardSeparatore  { background-color: #c7d2fe; }
-
-QLabel#CardTitolo {
-    font-family: "Segoe UI";
-    font-size: 21px;
-    font-weight: bold;
-}
-QLabel#CardDescrizione {
-    color: #64748b;
-    font-size: 13px;
-    line-height: 1.5;
-}
-QLabel#CardAzione {
-    font-family: "Segoe UI";
-    font-size: 12px;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-}
-
-/* =========================================
    BARRA NAVIGAZIONE
 ========================================= */
-QPushButton#BtnIndietroScadenzario {
-    background-color: #ffffff;
-    color: #475057;
-    font-weight: bold;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 8px;
-    font-size: 13px;
-}
-QPushButton#BtnIndietroScadenzario:hover {
-    background-color: #f1f5f9;
-    color: #4338ca;
-    border-color: #818cf8;
-}
-
 QPushButton#btnNav {
     background-color: #e2e8f0;
     color: #334155;
@@ -127,6 +58,118 @@ QPushButton#btnMeseAnno {
 QPushButton#btnMeseAnno:hover {
     color: #4338ca;
     background-color: #e0e7ff;
+}
+
+
+/* =========================================
+   BARRA DEI FILTRI (struttura in calendar_toolbar.py)
+========================================= */
+QFrame#BarraStrumenti {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+QFrame#BarraStrumentiDivisore {
+    background-color: #e2e8f0;
+    border: none;
+}
+QLabel#LblGruppoBarra {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: bold;
+}
+QLabel#LblInfoBarra {
+    color: #64748b;
+    font-size: 12px;
+}
+
+/* Alternative a segmenti: i pulsanti di un gruppo si toccano e solo i bordi esterni
+   sono arrotondati, così si legge che se ne sceglie uno. */
+QFrame#Segmentato {
+    background: transparent;
+    border: none;
+}
+QPushButton#BtnSegmento {
+    min-height: 30px;
+    padding: 0 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 0;
+    background: #ffffff;
+    color: #475569;
+    font-weight: bold;
+}
+QPushButton#BtnSegmento[posizione="primo"] {
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+}
+QPushButton#BtnSegmento[posizione="mezzo"] {
+    border-left: none;
+}
+QPushButton#BtnSegmento[posizione="ultimo"] {
+    border-left: none;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+}
+QPushButton#BtnSegmento[posizione="unico"] {
+    border-radius: 7px;
+}
+/* La Versione è la scelta più importante: pulsanti più grandi degli altri filtri. */
+QFrame#Segmentato[evidenza="true"] QPushButton#BtnSegmento {
+    min-height: 36px;
+    padding: 0 22px;
+    font-size: 14px;
+}
+QPushButton#BtnSegmento:hover {
+    background: #eef2ff;
+    color: #3730a3;
+}
+QPushButton#BtnSegmento:checked {
+    background: #4338ca;
+    color: #ffffff;
+    border-color: #4338ca;
+}
+QPushButton#BtnSegmento:disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+}
+QPushButton#BtnSegmento:checked:disabled {
+    background: #94a3b8;
+    color: #ffffff;
+    border-color: #94a3b8;
+}
+
+/* Esporta PDF: bordo e testo nel colore della sezione, icona del documento. */
+QPushButton#BtnEsportaPdf {
+    min-height: 36px;
+    padding: 0 18px 0 14px;
+    border-radius: 8px;
+    border: 1.5px solid #4338ca;
+    background: #ffffff;
+    color: #4338ca;
+    font-size: 13px;
+    font-weight: bold;
+}
+QPushButton#BtnEsportaPdf:hover {
+    background: #eef2ff;
+}
+QPushButton#BtnEsportaPdf:pressed {
+    background: #e0e7ff;
+}
+QPushButton#BtnEsportaPdf:disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+}
+
+/* =========================================
+   PAGINA SCORREVOLE (banda + calendario scorrono insieme)
+========================================= */
+QScrollArea#ScrollPagina {
+    background: transparent;
+    border: none;
+}
+QWidget#ContenutoPagina {
+    background: transparent;
 }
 
 /* =========================================
@@ -173,7 +216,7 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical
 /* =========================================
    TABELLA CALENDARIO
 ========================================= */
-QTableWidget {
+QTableView {
     background-color: #ffffff;
     gridline-color: #e2e8f0;
     border: 1px solid #cbd5e1;
@@ -182,8 +225,9 @@ QTableWidget {
     color: #1e293b;
     outline: 0;
 }
-QTableWidget::item { padding: 3px; }
-QTableWidget::item:selected {
+QTableView::item { padding: 3px; }
+QTableView[compact="true"]::item { padding: 0px; }
+QTableView::item:selected {
     background-color: #e0e7ff;
     color: #3730a3;
 }
@@ -237,7 +281,8 @@ QComboBox {
 QComboBox:hover, QComboBox:focus { border: 2px solid #818cf8; }
 QComboBox::drop-down { border: none; width: 20px; }
 QComboBox::down-arrow {
-    image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM2NDc0OGIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSI+PC9wb2x5bGluZT48L3N2Zz4=);
+    /* Qt non legge gli URI data: nei fogli di stile, quindi la freccia non compariva. */
+    image: url(icons:chevron-down.svg);
 }
 
 QComboBox QAbstractItemView {

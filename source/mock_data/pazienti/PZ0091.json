@@ -1,0 +1,30 @@
+{
+    "id": "PZ0091",
+    "nome": "Paziente",
+    "cognome": "Demo 0091",
+    "codice_diagnosi": "D0091",
+    "descrizione_diagnosi": "Diagnosi sintetica 0091",
+    "diagnosi": "[D0091] Diagnosi sintetica 0091",
+    "interventi": [
+        {
+            "codice": "DEMO-0091-1",
+            "descrizione": "Procedura sintetica 0091, parte 1",
+            "durata": 45
+        }
+    ],
+    "codice_intervento": "DEMO-0091-1",
+    "descrizione_intervento": "Procedura sintetica 0091, parte 1",
+    "durata_intervento": 45,
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Alta",
+    "urgenza": "Media",
+    "stato": "Pianificato",
+    "data_inserimento": "27/10/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
+}

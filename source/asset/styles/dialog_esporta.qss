@@ -1,0 +1,47 @@
+/* =========================================
+   DIALOG ESPORTA PDF (dialog_esporta_pdf.py)
+   Cornice e pulsanti vengono da dialog.qss.
+========================================= */
+QDialog[sezione] QPushButton#OpzioneEsporta {
+    background-color: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    text-align: left;
+}
+QDialog[sezione] QPushButton#OpzioneEsporta:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+QDialog[sezione] QLabel#OpzioneTitolo {
+    font-size: 15px;
+    font-weight: bold;
+    color: #1e293b;
+    background: transparent;
+}
+QDialog[sezione] QLabel#OpzioneDettaglio {
+    font-size: 12px;
+    color: #64748b;
+    background: transparent;
+}
+QDialog[sezione] QLabel#OpzioneSpunta {
+    font-size: 18px;
+    font-weight: bold;
+    background: transparent;
+}
+QDialog[sezione] QLabel#LblErroreEsporta {
+    color: #b91c1c;
+    font-size: 13px;
+}
+
+/* Opzione scelta: bordo e sfondo nel colore della sezione. */
+QDialog[sezione="scadenzario"] QPushButton#OpzioneEsporta:checked {
+    background-color: #eef2ff;
+    border: 2px solid #4338ca;
+}
+QDialog[sezione="scadenzario"] QLabel#OpzioneSpunta { color: #4338ca; }
+
+QDialog[sezione="sale_operatorie"] QPushButton#OpzioneEsporta:checked {
+    background-color: #f5f3ff;
+    border: 2px solid #6f42c1;
+}
+QDialog[sezione="sale_operatorie"] QLabel#OpzioneSpunta { color: #6f42c1; }

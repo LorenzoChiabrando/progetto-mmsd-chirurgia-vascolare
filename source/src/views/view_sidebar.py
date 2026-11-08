@@ -1,5 +1,5 @@
 import os
-from src.app_paths import get_asset_dir
+from src.data_paths import PROJECT_ROOT
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QFrame, QHBoxLayout, QSizePolicy
 )
@@ -58,7 +58,7 @@ class Sidebar(QWidget):
         hl.setSpacing(8)
 
         self.logo_label = QLabel()
-        logo_path = str(get_asset_dir() / "images" / "logo_sigillo.svg")
+        logo_path = os.path.join(PROJECT_ROOT, "asset", "images", "logo_sigillo.svg")
         logo_pixmap = QPixmap(logo_path)
         if not logo_pixmap.isNull():
             scaled = logo_pixmap.scaled(
@@ -254,7 +254,7 @@ class Sidebar(QWidget):
         self._seleziona(row)
 
     def load_styles(self):
-        style_path = str(get_asset_dir() / "styles" / "sidebar.qss")
+        style_path = os.path.join(PROJECT_ROOT, "asset", "styles", "sidebar.qss")
         if os.path.exists(style_path):
             with open(style_path, "r", encoding="utf-8") as f:
                 self.setStyleSheet(self.styleSheet() + "\n" + f.read())

@@ -1,63 +1,48 @@
-import os
-from src.app_paths import get_asset_dir
-from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
-    QLineEdit, QComboBox, QPushButton, QMessageBox, QFrame
-)
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QComboBox, QLabel, QLineEdit
+
+from src.views.components import messages
+from src.views.components.modal_dialog import ModalDialog
 
 
-class DialogNuovoSpecializzando(QDialog):
+class DialogNuovoSpecializzando(ModalDialog):
     """
     Dialog per aggiungere o modificare uno specializzando.
     Se spec_dati è fornito, si apre in modalità modifica con i campi pre-compilati.
     """
     def __init__(self, parent=None, spec_dati=None):
-        super().__init__(parent)
         self._spec_dati  = spec_dati
         self._edit_mode  = spec_dati is not None
-
-        self.setWindowTitle("Modifica Specializzando" if self._edit_mode else "Nuovo Specializzando")
-        self.setMinimumWidth(500)
+        super().__init__(
+            "Modifica Specializzando" if self._edit_mode else "Nuovo Specializzando",
+            (
+                "Modifica i dati anagrafici dello specializzando."
+                if self._edit_mode else
+                "Compila i dati anagrafici per aggiungere uno specializzando al sistema."
+            ),
+            section="libretto",
+            parent=parent,
+        )
+        self.resize(520, 0)
         self.setSizeGripEnabled(False)
         self.setup_ui()
         if self._edit_mode:
             self._precompila()
-        self.load_styles()
 
     def setup_ui(self):
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(35, 35, 35, 35)
+        layout = self.body
         layout.setSpacing(0)
 
-        titolo_text = "Modifica Specializzando" if self._edit_mode else "Nuovo Specializzando"
-        lbl_titolo = QLabel(titolo_text)
-        lbl_titolo.setObjectName("TitoloDialog")
-        layout.addWidget(lbl_titolo)
-
-        sub_text = (
-            "Modifica i dati anagrafici dello specializzando."
-            if self._edit_mode else
-            "Compila i dati anagrafici per aggiungere uno specializzando al sistema."
-        )
-        lbl_sub = QLabel(sub_text)
-        lbl_sub.setObjectName("SottoTitoloDialog")
-        lbl_sub.setWordWrap(True)
-        layout.addWidget(lbl_sub)
-
-        sep = QFrame()
-        sep.setObjectName("SeparatoreDialog")
-        sep.setFixedHeight(1)
-        layout.addSpacing(18)
-        layout.addWidget(sep)
-        layout.addSpacing(18)
-
         _campi = [
-            ("Matricola *",       "input_matricola", False, None),
-            ("Nome *",            "input_nome",      False, None),
-            ("Cognome *",         "input_cognome",   False, None),
-            ("Livello Formativo", "combo_livello",   True,  ["Junior", "Senior"]),
-            ("Sede Attuale",      "combo_stato",     True,  ["Molinette", "Altra Sede", "Storico"]),
+            ("MATRICOLA *",       "input_matricola", False, None),
+            ("NOME *",            "input_nome",      False, None),
+            ("COGNOME *",         "input_cognome",   False, None),
+            (
+                "LIVELLO FORMATIVO",
+                "combo_livello",
+                True,
+                ["Junior", "Intermediate", "Senior"],
+            ),
+            ("SEDE ATTUALE",      "combo_stato",     True,  ["Molinette", "Altra Sede", "Storico"]),
         ]
 
         for label_text, attr_name, is_combo, items in _campi:
@@ -73,34 +58,22 @@ class DialogNuovoSpecializzando(QDialog):
             else:
                 widget = QLineEdit()
                 widget.setObjectName("InputDialog")
-                widget.setPlaceholderText(label_text.replace(" *", ""))
+                widget.setPlaceholderText(label_text.replace(" *", "").capitalize())
 
             widget.setFixedHeight(44)
             layout.addWidget(widget)
             layout.addSpacing(12)
             setattr(self, attr_name, widget)
 
-        layout.addSpacing(8)
-
-        btn_row = QHBoxLayout()
-        btn_row.setSpacing(14)
-
-        self.btn_annulla = QPushButton("Annulla")
-        self.btn_annulla.setObjectName("BtnAnnullaDialog")
-        self.btn_annulla.setFixedHeight(46)
-        self.btn_annulla.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_annulla = self.make_button("Annulla", "secondary")
         self.btn_annulla.clicked.connect(self.reject)
 
         salva_text = "Salva Modifiche" if self._edit_mode else "Salva Specializzando"
-        self.btn_salva = QPushButton(salva_text)
-        self.btn_salva.setObjectName("BtnSalvaDialog")
-        self.btn_salva.setFixedHeight(46)
-        self.btn_salva.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_salva = self.make_button(salva_text, "primary")
+        self.btn_salva.setDefault(True)
         self.btn_salva.clicked.connect(self.valida_e_salva)
 
-        btn_row.addWidget(self.btn_annulla)
-        btn_row.addWidget(self.btn_salva, stretch=2)
-        layout.addLayout(btn_row)
+        self.add_footer(self.btn_annulla, self.btn_salva)
 
     def _precompila(self):
         """Pre-compila i campi con i dati dello specializzando esistente."""
@@ -119,9 +92,12 @@ class DialogNuovoSpecializzando(QDialog):
         cognome   = self.input_cognome.text().strip()
 
         if not matricola or not nome or not cognome:
-            QMessageBox.warning(
-                self, "Campi Incompleti",
-                "Attenzione: Nome, Cognome e Matricola sono campi obbligatori."
+            messages.show_message(
+                self,
+                "Campi Incompleti",
+                "Attenzione: Nome, Cognome e Matricola sono campi obbligatori.",
+                section="libretto",
+                kind="warning",
             )
             return
         self.accept()
@@ -134,9 +110,3 @@ class DialogNuovoSpecializzando(QDialog):
             "livello":   self.combo_livello.currentText(),
             "stato":     self.combo_stato.currentText(),
         }
-
-    def load_styles(self):
-        style_path = str(get_asset_dir() / "styles" / "libretto.qss")
-        if os.path.exists(style_path):
-            with open(style_path, "r", encoding="utf-8") as f:
-                self.setStyleSheet(f.read())

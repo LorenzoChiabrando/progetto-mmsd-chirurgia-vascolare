@@ -1,15 +1,30 @@
 {
     "id": "PZ0025",
-    "nome": "Luigi",
-    "cognome": "Palumbo",
-    "diagnosi": "Stenosi arteria renale destra ipertensiva",
-    "codice_intervento": "39.01",
-    "descrizione_intervento": "Angioplastica transluminale arteria renale",
-    "tipo_chirurgia": "Endovascolare",
+    "nome": "Paziente",
+    "cognome": "Demo 0025",
+    "codice_diagnosi": "D0025",
+    "descrizione_diagnosi": "Diagnosi sintetica 0025",
+    "diagnosi": "[D0025] Diagnosi sintetica 0025",
+    "interventi": [
+        {
+            "codice": "DEMO-0025-1",
+            "descrizione": "Procedura sintetica 0025, parte 1",
+            "durata": 45
+        }
+    ],
+    "codice_intervento": "DEMO-0025-1",
+    "descrizione_intervento": "Procedura sintetica 0025, parte 1",
+    "durata_intervento": 45,
+    "tipo_chirurgia": "Aperta",
     "complessita": "Media",
-    "urgenza": "Media",
+    "urgenza": "Alta",
     "stato": "Completato",
-    "data_inserimento": "26/04/2026",
-    "note": "",
-    "durata_intervento": 90
+    "data_inserimento": "18/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 30
+    }
 }

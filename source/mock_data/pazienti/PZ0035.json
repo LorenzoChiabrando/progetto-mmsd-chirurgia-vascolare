@@ -1,15 +1,30 @@
 {
     "id": "PZ0035",
-    "nome": "Sergio",
-    "cognome": "Colombo",
-    "diagnosi": "Occlusione femoro-poplitea bilaterale",
-    "codice_intervento": "39.29",
-    "descrizione_intervento": "Bypass femoro-popliteo sopragenuale",
+    "nome": "Paziente",
+    "cognome": "Demo 0035",
+    "codice_diagnosi": "D0035",
+    "descrizione_diagnosi": "Diagnosi sintetica 0035",
+    "diagnosi": "[D0035] Diagnosi sintetica 0035",
+    "interventi": [
+        {
+            "codice": "DEMO-0035-1",
+            "descrizione": "Procedura sintetica 0035, parte 1",
+            "durata": 150
+        }
+    ],
+    "codice_intervento": "DEMO-0035-1",
+    "descrizione_intervento": "Procedura sintetica 0035, parte 1",
+    "durata_intervento": 150,
     "tipo_chirurgia": "Aperta",
     "complessita": "Alta",
-    "urgenza": "Alta",
+    "urgenza": "Media",
     "stato": "Completato",
-    "data_inserimento": "26/04/2026",
-    "note": "",
-    "durata_intervento": 120
+    "data_inserimento": "23/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
 }

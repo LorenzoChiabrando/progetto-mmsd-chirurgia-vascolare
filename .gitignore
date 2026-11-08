@@ -2,5 +2,10 @@ source/venv/
 source/**/__pycache__/
 source/**/*.pyc
 source/**/*.pyo
+source/logs/
 source/build/
+packaging/windows/venv/
+packaging/windows/build/
+packaging/windows/dist/
 .claude/
+.superpowers/

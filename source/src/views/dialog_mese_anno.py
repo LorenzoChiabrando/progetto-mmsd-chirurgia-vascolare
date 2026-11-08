@@ -1,52 +1,57 @@
-from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QComboBox, QSpinBox, QPushButton
-)
+from PySide6.QtWidgets import QComboBox, QHBoxLayout, QLabel, QSpinBox, QVBoxLayout
+
+from src.views.components.modal_dialog import ModalDialog
 
 
-class DialogMeseAnno(QDialog):
-    """Dialog per la selezione di mese e anno. Usato da Scadenzario e Sale Operatorie."""
+class DialogMeseAnno(ModalDialog):
+    """Dialog per la selezione di mese e anno del calendario."""
 
-    def __init__(self, mesi_ita, mese_corrente, anno_corrente, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Vai a...")
-        self.setFixedSize(300, 120)
-        self.setStyleSheet("""
-            QComboBox, QSpinBox { font-size: 16px; padding: 5px; }
-            QPushButton {
-                background-color: #0d6efd; color: white; font-weight: bold;
-                border-radius: 5px; padding: 8px; font-size: 14px;
-            }
-            QPushButton:hover { background-color: #0b5ed7; }
-        """)
+    def __init__(self, mesi_ita, mese_corrente, anno_corrente, parent=None, section="scadenzario"):
+        super().__init__(
+            "Vai al mese",
+            "Scegli il mese e l'anno da visualizzare.",
+            section=section,
+            parent=parent,
+        )
+        self.resize(460, 0)
         self._setup_ui(mesi_ita, mese_corrente, anno_corrente)
 
     def _setup_ui(self, mesi_ita, mese_corrente, anno_corrente):
-        layout = QVBoxLayout(self)
+        row = QHBoxLayout()
+        row.setSpacing(12)
 
-        h_layout = QHBoxLayout()
         self.combo_mesi = QComboBox()
+        self.combo_mesi.setObjectName("ComboDialog")
         self.combo_mesi.addItems(mesi_ita)
         self.combo_mesi.setCurrentIndex(mese_corrente - 1)
+        self.combo_mesi.setFixedHeight(44)
 
         self.spin_anno = QSpinBox()
+        self.spin_anno.setObjectName("InputDialog")
         self.spin_anno.setRange(2020, 2050)
         self.spin_anno.setValue(anno_corrente)
+        self.spin_anno.setFixedHeight(44)
 
-        h_layout.addWidget(self.combo_mesi)
-        h_layout.addWidget(self.spin_anno)
-        layout.addLayout(h_layout)
+        row.addLayout(self._campo("MESE", self.combo_mesi), 2)
+        row.addLayout(self._campo("ANNO", self.spin_anno), 1)
+        self.body.addLayout(row)
 
-        btn_layout = QHBoxLayout()
-        btn_cancel = QPushButton("Annulla")
-        btn_cancel.setStyleSheet("background-color: #6c757d;")
+        btn_cancel = self.make_button("Annulla", "secondary")
         btn_cancel.clicked.connect(self.reject)
-
-        btn_ok = QPushButton("Conferma")
+        btn_ok = self.make_button("Vai", "primary")
+        btn_ok.setDefault(True)
         btn_ok.clicked.connect(self.accept)
+        self.add_footer(btn_cancel, btn_ok)
 
-        btn_layout.addWidget(btn_cancel)
-        btn_layout.addWidget(btn_ok)
-        layout.addLayout(btn_layout)
+    @staticmethod
+    def _campo(etichetta, widget):
+        group = QVBoxLayout()
+        group.setSpacing(4)
+        label = QLabel(etichetta)
+        label.setObjectName("LblCampo")
+        group.addWidget(label)
+        group.addWidget(widget)
+        return group
 
     def get_selezione(self):
         """Restituisce (mese, anno) selezionati dall'utente."""

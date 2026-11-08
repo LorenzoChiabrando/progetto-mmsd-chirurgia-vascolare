@@ -1,15 +1,30 @@
 {
     "id": "PZ0054",
-    "nome": "Silvia",
-    "cognome": "Bruno",
-    "diagnosi": "Aneurisma dell'arteria mesenterica superiore",
-    "codice_intervento": "38.59",
-    "descrizione_intervento": "Escissione e ricostruzione con interposizione",
-    "tipo_chirurgia": "Aperta",
+    "nome": "Paziente",
+    "cognome": "Demo 0054",
+    "codice_diagnosi": "D0054",
+    "descrizione_diagnosi": "Diagnosi sintetica 0054",
+    "diagnosi": "[D0054] Diagnosi sintetica 0054",
+    "interventi": [
+        {
+            "codice": "DEMO-0054-1",
+            "descrizione": "Procedura sintetica 0054, parte 1",
+            "durata": 180
+        }
+    ],
+    "codice_intervento": "DEMO-0054-1",
+    "descrizione_intervento": "Procedura sintetica 0054, parte 1",
+    "durata_intervento": 180,
+    "tipo_chirurgia": "Endovascolare",
     "complessita": "Alta",
-    "urgenza": "Alta",
-    "stato": "In Attesa",
-    "data_inserimento": "26/04/2026",
-    "note": "",
-    "durata_intervento": 120
+    "urgenza": "Bassa",
+    "stato": "Pianificato",
+    "data_inserimento": "24/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 180
+    }
 }

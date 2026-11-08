@@ -1,0 +1,30 @@
+{
+    "id": "PZ0097",
+    "nome": "Paziente",
+    "cognome": "Demo 0097",
+    "codice_diagnosi": "D0097",
+    "descrizione_diagnosi": "Diagnosi sintetica 0097",
+    "diagnosi": "[D0097] Diagnosi sintetica 0097",
+    "interventi": [
+        {
+            "codice": "DEMO-0097-1",
+            "descrizione": "Procedura sintetica 0097, parte 1",
+            "durata": 45
+        }
+    ],
+    "codice_intervento": "DEMO-0097-1",
+    "descrizione_intervento": "Procedura sintetica 0097, parte 1",
+    "durata_intervento": 45,
+    "tipo_chirurgia": "Aperta",
+    "complessita": "Media",
+    "urgenza": "Media",
+    "stato": "Pianificato",
+    "data_inserimento": "27/10/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
+}

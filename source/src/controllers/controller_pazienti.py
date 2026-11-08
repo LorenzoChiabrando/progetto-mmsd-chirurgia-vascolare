@@ -1,5 +1,6 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QListWidgetItem, QMessageBox
+from PySide6.QtWidgets import QListWidgetItem
+from src.views.components import messages
 from src.views.view_nuovo_paziente import DialogNuovoPaziente
 from src.views.dialog_bulk_pazienti import DialogBulkPazienti
 
@@ -38,8 +39,32 @@ class ControllerPazienti:
         if not paz:
             return
         self._paz_corrente = paz
-        self.view.imposta_dettaglio(paz)
+        stato, data_intervento = self._stato_e_data_intervento(paz)
+        self.view.imposta_dettaglio(
+            paz,
+            stato_effettivo=stato,
+            data_intervento=data_intervento,
+        )
         self.view.stacked_widget.setCurrentIndex(1)
+
+    def _pianificazioni(self) -> dict:
+        if not self.model_sale_op:
+            return {}
+        getter = getattr(self.model_sale_op, "get_pianificazioni_pazienti", None)
+        if getter is not None:
+            return getter()
+        return {
+            patient_id: ()
+            for patient_id in self.model_sale_op.get_pazienti_pianificati_ids()
+        }
+
+    def _stato_e_data_intervento(self, paz: dict) -> tuple[str, str | None]:
+        stato = paz.get("stato", "In Attesa")
+        dates = self._pianificazioni().get(paz.get("id"), ())
+        if stato == "In Attesa" and dates:
+            stato = "Pianificato"
+        data_intervento = dates[0].strftime("%d/%m/%Y") if dates else None
+        return stato, data_intervento
 
     def torna_alla_lista(self):
         self._paz_corrente = None
@@ -52,10 +77,7 @@ class ControllerPazienti:
         testo = self.view.search_bar.text().lower().strip()
         termini = testo.split() if testo else []
 
-        pianificati_ids = (
-            self.model_sale_op.get_pazienti_pianificati_ids()
-            if self.model_sale_op else set()
-        )
+        pianificazioni = self._pianificazioni()
 
         urgenze = []
         if self.view.chk_urg_alta.isChecked():
@@ -78,7 +100,7 @@ class ControllerPazienti:
 
         for paz in tutti:
             paz_stato_base = paz.get("stato", "In Attesa")
-            if paz_stato_base == "In Attesa" and paz.get("id") in pianificati_ids:
+            if paz_stato_base == "In Attesa" and paz.get("id") in pianificazioni:
                 paz_stato = "Pianificato"
             else:
                 paz_stato = paz_stato_base
@@ -88,7 +110,7 @@ class ControllerPazienti:
             elif paz_stato == "Pianificato":
                 n_pianificati += 1
 
-            if paz.get("urgenza") not in urgenze:
+            if paz.get("urgenza") not in urgenze and paz.get("urgenza") != "Da classificare":
                 continue
             if paz_stato not in stati_filtro:
                 continue
@@ -156,11 +178,12 @@ class ControllerPazienti:
             for dati in pazienti:
                 self.model.crea_nuovo_paziente(dati)
             if pazienti:
-                QMessageBox.information(
+                messages.show_message(
                     self.view,
                     "Inserimento completato",
                     f"{len(pazienti)} pazient{'e' if len(pazienti) == 1 else 'i'} "
-                    f"aggiunt{'o' if len(pazienti) == 1 else 'i'} alla lista d'attesa."
+                    f"aggiunt{'o' if len(pazienti) == 1 else 'i'} alla lista d'attesa.",
+                    section="pazienti",
                 )
             self.aggiorna_lista()
 
@@ -174,7 +197,12 @@ class ControllerPazienti:
             )
             if aggiornato:
                 self._paz_corrente = aggiornato
-                self.view.imposta_dettaglio(aggiornato)
+                stato, data_intervento = self._stato_e_data_intervento(aggiornato)
+                self.view.imposta_dettaglio(
+                    aggiornato,
+                    stato_effettivo=stato,
+                    data_intervento=data_intervento,
+                )
             self.aggiorna_lista()
 
     def elimina_paziente(self):
@@ -184,14 +212,15 @@ class ControllerPazienti:
             f"{self._paz_corrente.get('cognome','').upper()} "
             f"{self._paz_corrente.get('nome','')}"
         )
-        risposta = QMessageBox.question(
+        if messages.ask_confirmation(
             self.view,
             "Conferma Eliminazione",
             f"Vuoi eliminare definitivamente il paziente {nome_display}?\n\n"
             "Questa operazione non è reversibile.",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-        )
-        if risposta == QMessageBox.StandardButton.Yes:
+            section="pazienti",
+            confirm_text="Elimina",
+            destructive=True,
+        ):
             self.model.elimina_paziente(self._paz_corrente["id"])
             self._paz_corrente = None
             self.aggiorna_lista()

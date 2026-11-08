@@ -1,15 +1,35 @@
 {
     "id": "PZ0032",
-    "nome": "Simona",
-    "cognome": "Longo",
-    "diagnosi": "Aneurisma iliaco bilaterale",
-    "codice_intervento": "38.44",
-    "descrizione_intervento": "EVAR con estensioni iliache bilaterali",
+    "nome": "Paziente",
+    "cognome": "Demo 0032",
+    "codice_diagnosi": "D0032",
+    "descrizione_diagnosi": "Diagnosi sintetica 0032",
+    "diagnosi": "[D0032] Diagnosi sintetica 0032",
+    "interventi": [
+        {
+            "codice": "DEMO-0032-1",
+            "descrizione": "Procedura sintetica 0032, parte 1",
+            "durata": 30
+        },
+        {
+            "codice": "DEMO-0032-2",
+            "descrizione": "Procedura sintetica 0032, parte 2",
+            "durata": 30
+        }
+    ],
+    "codice_intervento": "DEMO-0032-1",
+    "descrizione_intervento": "Procedura sintetica 0032, parte 1",
+    "durata_intervento": 60,
     "tipo_chirurgia": "Endovascolare",
     "complessita": "Alta",
-    "urgenza": "Alta",
+    "urgenza": "Media",
     "stato": "Completato",
-    "data_inserimento": "26/04/2026",
-    "note": "",
-    "durata_intervento": 120
+    "data_inserimento": "21/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
 }

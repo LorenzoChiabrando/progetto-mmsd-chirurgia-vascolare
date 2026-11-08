@@ -1,8 +1,188 @@
 {
     "id": "SP008",
-    "matricola": "SP193913",
     "nome": "Lorenzo",
     "cognome": "Parco",
-    "livello": "Junior",
-    "stato": "Altra Sede"
+    "matricola": "DEMO-008",
+    "livello": "Senior",
+    "stato": "Molinette",
+    "dati_sintetici": true,
+    "attivita": [
+        {
+            "data": "2026-09-07",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0002 Paziente",
+            "id_paziente": "PZ0002",
+            "diagnosi": "[D0002] Diagnosi sintetica 0002",
+            "intervento": "Procedura sintetica 0002, parte 1",
+            "codice_intervento": "DEMO-0002-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0002-1",
+                    "descrizione": "Procedura sintetica 0002, parte 1",
+                    "durata": 60
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
+            "ora_inizio": "08:00",
+            "ora_fine": "09:00",
+            "durata": 60,
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-09-09",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0004 Paziente",
+            "id_paziente": "PZ0004",
+            "diagnosi": "[D0004] Diagnosi sintetica 0004",
+            "intervento": "Procedura sintetica 0004, parte 1",
+            "codice_intervento": "DEMO-0004-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0004-1",
+                    "descrizione": "Procedura sintetica 0004, parte 1",
+                    "durata": 120
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
+            "ora_inizio": "08:00",
+            "ora_fine": "10:00",
+            "durata": 120,
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-09-11",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0006 Paziente",
+            "id_paziente": "PZ0006",
+            "diagnosi": "[D0006] Diagnosi sintetica 0006",
+            "intervento": "Procedura sintetica 0006, parte 1",
+            "codice_intervento": "DEMO-0006-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0006-1",
+                    "descrizione": "Procedura sintetica 0006, parte 1",
+                    "durata": 180
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Endovascolare",
+            "ora_inizio": "08:00",
+            "ora_fine": "11:00",
+            "durata": 180,
+            "ruolo": "OR II"
+        },
+        {
+            "data": "2026-09-14",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0007 Paziente",
+            "id_paziente": "PZ0007",
+            "diagnosi": "[D0007] Diagnosi sintetica 0007",
+            "intervento": "Procedura sintetica 0007, parte 1",
+            "codice_intervento": "DEMO-0007-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0007-1",
+                    "descrizione": "Procedura sintetica 0007, parte 1",
+                    "durata": 45
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Aperta",
+            "ora_inizio": "08:00",
+            "ora_fine": "08:45",
+            "durata": 45,
+            "ruolo": "OR I"
+        },
+        {
+            "data": "2026-09-16",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0009 Paziente",
+            "id_paziente": "PZ0009",
+            "diagnosi": "[D0009] Diagnosi sintetica 0009",
+            "intervento": "Procedura sintetica 0009, parte 1",
+            "codice_intervento": "DEMO-0009-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0009-1",
+                    "descrizione": "Procedura sintetica 0009, parte 1",
+                    "durata": 90
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Aperta",
+            "ora_inizio": "08:00",
+            "ora_fine": "09:30",
+            "durata": 90,
+            "ruolo": "OR I"
+        },
+        {
+            "data": "2026-09-18",
+            "slot": "08:00",
+            "nome_paziente": "Demo 0011 Paziente",
+            "id_paziente": "PZ0011",
+            "diagnosi": "[D0011] Diagnosi sintetica 0011",
+            "intervento": "Procedura sintetica 0011, parte 1",
+            "codice_intervento": "DEMO-0011-1",
+            "chirurgo": "Chirurgo demo",
+            "interventi": [
+                {
+                    "codice": "DEMO-0011-1",
+                    "descrizione": "Procedura sintetica 0011, parte 1",
+                    "durata": 150
+                }
+            ],
+            "complessita": "Alta",
+            "tipo_chirurgia": "Aperta",
+            "ora_inizio": "08:00",
+            "ora_fine": "10:30",
+            "durata": 150,
+            "ruolo": "OR I"
+        }
+    ],
+    "attivita_extra": [
+        {
+            "data": "2026-09-01",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-09-02",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-09-03",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        },
+        {
+            "data": "2026-09-04",
+            "ora_inizio": "08:00",
+            "ora_fine": "18:00",
+            "sede": "Reparto",
+            "attivita": "Giro Visite",
+            "ruolo": "Giro Visite",
+            "note": "Attività sintetica confermata per la demo."
+        }
+    ],
+    "meta_giorni": {}
 }

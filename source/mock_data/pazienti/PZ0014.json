@@ -1,15 +1,30 @@
 {
     "id": "PZ0014",
-    "nome": "Giovanna",
-    "cognome": "Ferraro",
-    "diagnosi": "Stenosi arteria renale bilaterale",
-    "codice_intervento": "39.50",
-    "descrizione_intervento": "Angioplastica + stent renale bilaterale",
+    "nome": "Paziente",
+    "cognome": "Demo 0014",
+    "codice_diagnosi": "D0014",
+    "descrizione_diagnosi": "Diagnosi sintetica 0014",
+    "diagnosi": "[D0014] Diagnosi sintetica 0014",
+    "interventi": [
+        {
+            "codice": "DEMO-0014-1",
+            "descrizione": "Procedura sintetica 0014, parte 1",
+            "durata": 60
+        }
+    ],
+    "codice_intervento": "DEMO-0014-1",
+    "descrizione_intervento": "Procedura sintetica 0014, parte 1",
+    "durata_intervento": 60,
     "tipo_chirurgia": "Endovascolare",
     "complessita": "Alta",
     "urgenza": "Media",
     "stato": "Completato",
-    "data_inserimento": "14/04/2026",
-    "note": "Ipertensione renovascolare",
-    "durata_intervento": 90
+    "data_inserimento": "02/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
 }

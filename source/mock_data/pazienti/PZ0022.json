@@ -1,15 +1,30 @@
 {
     "id": "PZ0022",
-    "nome": "Paola",
-    "cognome": "Riva",
-    "diagnosi": "Fistola arterovenosa dialisi non funzionante",
-    "codice_intervento": "39.42",
-    "descrizione_intervento": "Revisione FAV brachiocefalica",
-    "tipo_chirurgia": "Aperta",
-    "complessita": "Bassa",
-    "urgenza": "Media",
+    "nome": "Paziente",
+    "cognome": "Demo 0022",
+    "codice_diagnosi": "D0022",
+    "descrizione_diagnosi": "Diagnosi sintetica 0022",
+    "diagnosi": "[D0022] Diagnosi sintetica 0022",
+    "interventi": [
+        {
+            "codice": "DEMO-0022-1",
+            "descrizione": "Procedura sintetica 0022, parte 1",
+            "durata": 120
+        }
+    ],
+    "codice_intervento": "DEMO-0022-1",
+    "descrizione_intervento": "Procedura sintetica 0022, parte 1",
+    "durata_intervento": 120,
+    "tipo_chirurgia": "Endovascolare",
+    "complessita": "Alta",
+    "urgenza": "Alta",
     "stato": "Completato",
-    "data_inserimento": "26/04/2026",
-    "note": "test modifica note",
-    "durata_intervento": 90
+    "data_inserimento": "16/09/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 30
+    }
 }

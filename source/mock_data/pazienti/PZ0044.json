@@ -1,15 +1,30 @@
 {
     "id": "PZ0044",
-    "nome": "Elena",
-    "cognome": "Marchese",
-    "diagnosi": "Sindrome ischemica cronica arto superiore",
-    "codice_intervento": "39.29",
-    "descrizione_intervento": "Bypass ascello-radiale con vena safena",
-    "tipo_chirurgia": "Aperta",
+    "nome": "Paziente",
+    "cognome": "Demo 0044",
+    "codice_diagnosi": "D0044",
+    "descrizione_diagnosi": "Diagnosi sintetica 0044",
+    "diagnosi": "[D0044] Diagnosi sintetica 0044",
+    "interventi": [
+        {
+            "codice": "DEMO-0044-1",
+            "descrizione": "Procedura sintetica 0044, parte 1",
+            "durata": 60
+        }
+    ],
+    "codice_intervento": "DEMO-0044-1",
+    "descrizione_intervento": "Procedura sintetica 0044, parte 1",
+    "durata_intervento": 60,
+    "tipo_chirurgia": "Endovascolare",
     "complessita": "Media",
     "urgenza": "Media",
-    "stato": "In Attesa",
-    "data_inserimento": "26/04/2026",
-    "note": "",
-    "durata_intervento": 90
+    "stato": "Pianificato",
+    "data_inserimento": "08/10/2026",
+    "note": "Dati inventati per la demo; nessuna persona o procedura reale.",
+    "dati_sintetici": true,
+    "modello_ottimizzazione": {
+        "versione_schema": 1,
+        "categoria_paper": "I'",
+        "attesa_massima_giorni": 60
+    }
 }

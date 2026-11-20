@@ -12,8 +12,10 @@ from uuid import uuid4
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 APP_DIRECTORY_NAME = "ScadenzarioCV"
-# The previous executable kept data in an older format directly in ScadenzarioCV.
-USER_DATA_VERSION = "v2"
+# The first executable kept data in an older format directly in ScadenzarioCV; v2 holds
+# the data of the November 2026 demo before the reviewer fixes. A new folder makes every
+# reviewer start again from the current demo data.
+USER_DATA_VERSION = "v3"
 
 
 def is_frozen() -> bool:

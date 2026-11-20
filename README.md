@@ -31,8 +31,8 @@ Works on any x86-64 Linux with **glibc 2.28 or newer** — Ubuntu 20.04+, Linux 
 Debian 10+, Fedora, RHEL / AlmaLinux / Rocky 8+ — on both X11 and Wayland desktops. Python
 is not needed, and neither are extra Qt libraries: they are inside the executable.
 
-Your data is kept in `~/.local/share/ScadenzarioCV/v2/dati` (logs in
-`~/.local/share/ScadenzarioCV/v2/logs`). On the first start it is filled with the demo
+Your data is kept in `~/.local/share/ScadenzarioCV/v3/dati` (logs in
+`~/.local/share/ScadenzarioCV/v3/logs`). On the first start it is filled with the demo
 data; delete the `dati` folder to start again from the demo data. If you started an
 earlier version of the executable, delete or rename that folder to load the current demo.
 

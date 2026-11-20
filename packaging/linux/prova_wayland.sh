@@ -12,7 +12,7 @@ sleep 3
 WAYLAND_DISPLAY=wayland-test QT_QPA_PLATFORM=wayland /repo/ScadenzarioCV >/tmp/app.log 2>&1 &
 APP=$!
 sleep 25
-if kill -0 "$APP" 2>/dev/null && [ -d "$HOME/.local/share/ScadenzarioCV/v2/dati" ] \
+if kill -0 "$APP" 2>/dev/null && [ -d "$HOME/.local/share/ScadenzarioCV/v3/dati" ] \
     && ! grep -qi "could not\|failed\|error" /tmp/app.log; then
     echo "OK: app in esecuzione su Wayland da 25s, nessun errore Qt"
     kill "$APP"; exit 0

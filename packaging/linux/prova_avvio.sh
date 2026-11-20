@@ -14,11 +14,11 @@ secondi=0
 while [ "$secondi" -lt 60 ]; do
     if xwininfo -root -tree 2>/dev/null | grep -q "MMSD CV"; then
         kill "$APP" 2>/dev/null || true
-        if [ ! -d "$HOME/.local/share/ScadenzarioCV/v2/dati/scadenzario" ]; then
+        if [ ! -d "$HOME/.local/share/ScadenzarioCV/v3/dati/scadenzario" ]; then
             echo "KO: finestra aperta ma dati demo non creati"
             exit 1
         fi
-        echo "OK: finestra aperta in ${secondi}s, dati in ~/.local/share/ScadenzarioCV/v2"
+        echo "OK: finestra aperta in ${secondi}s, dati in ~/.local/share/ScadenzarioCV/v3"
         exit 0
     fi
     kill -0 "$APP" 2>/dev/null || break

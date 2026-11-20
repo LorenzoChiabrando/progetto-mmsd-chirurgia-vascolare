@@ -3,7 +3,7 @@ from src.data_paths import PROJECT_ROOT
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame,
     QLineEdit, QPushButton, QGraphicsDropShadowEffect,
-    QStackedWidget, QListWidget, QTextEdit
+    QStackedWidget, QListWidget, QTextEdit, QSpinBox
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
@@ -158,6 +158,26 @@ class ViewPazienti(QWidget):
 
         chips_row.addStretch()
         card.addLayout(chips_row)
+
+        # Durata prevista (totale degli interventi), in un intervallo di minuti. Sta su una
+        # riga sua: accanto agli altri filtri la pagina diventerebbe più larga dello schermo
+        # e la finestra non si potrebbe più massimizzare.
+        durata_row = QHBoxLayout()
+        durata_row.setSpacing(10)
+        lbl_durata = QLabel("DURATA")
+        lbl_durata.setObjectName("LblFiltri")
+        durata_row.addWidget(lbl_durata)
+        self.spin_durata_min = self._campo_durata("Durata minima in minuti")
+        self.spin_durata_max = self._campo_durata("Durata massima in minuti")
+        # 0 nel campo «a» vuol dire nessun limite.
+        self.spin_durata_max.setSpecialValueText("qualsiasi")
+        for testo, campo in (("da", self.spin_durata_min), ("a", self.spin_durata_max)):
+            etichetta = QLabel(testo)
+            etichetta.setObjectName("LblDurataFiltro")
+            durata_row.addWidget(etichetta)
+            durata_row.addWidget(campo)
+        durata_row.addStretch()
+        card.addLayout(durata_row)
 
         body = QHBoxLayout()
         body.setSpacing(24)
@@ -325,15 +345,32 @@ class ViewPazienti(QWidget):
         bl.addWidget(val)
         return box, val
 
-    def crea_item_lista(self, cognome, nome, codice, urgenza, stato):
+    @staticmethod
+    def _campo_durata(nome_accessibile: str) -> QSpinBox:
+        campo = QSpinBox()
+        campo.setObjectName("FiltroDurata")
+        campo.setRange(0, 600)
+        campo.setSingleStep(15)
+        campo.setSuffix(" min")
+        campo.setFixedSize(108, 34)
+        campo.setAccessibleName(nome_accessibile)
+        campo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        campo.setToolTip(
+            "Durata prevista dell'intervento (totale): scrivi i minuti o usa la rotellina, "
+            "a passi di 15"
+        )
+        return campo
+
+    def crea_item_lista(self, cognome, nome, codice, urgenza, stato, durata=None):
         """Elemento della lista d'attesa, nello stesso stile dell'anagrafica del Libretto."""
         _inizio, _fine, accento, tinta = TONI_MODALITA["PAZIENTI"]
         etichette = []
         for testo, colori in ((urgenza, _COLORI_URGENZA), (stato, _COLORI_STATO)):
             sfondo, colore = colori.get(testo, ("#f1f5f9", "#475569"))
             etichette.append((testo, sfondo, colore))
+        sottotitolo = f"Codice {codice}" + (f"  ·  {durata} min" if durata else "")
         return crea_elemento_elenco(
-            cognome=cognome, nome=nome, sottotitolo=f"Codice {codice}",
+            cognome=cognome, nome=nome, sottotitolo=sottotitolo,
             etichette=etichette, accento=accento, tinta=tinta,
         )
 

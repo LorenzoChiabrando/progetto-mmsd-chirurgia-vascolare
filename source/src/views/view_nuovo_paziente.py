@@ -1,13 +1,16 @@
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame,
     QLineEdit, QComboBox, QPushButton, QTextEdit,
-    QSpinBox, QAbstractSpinBox,
+    QSpinBox,
 )
 from PySide6.QtCore import Qt
 
 from src.patient_fields import DEFAULT_INTERVENTION_MINUTES, UNCLASSIFIED, normalize_diagnosis
 from src.views.components import messages
 from src.views.components.modal_dialog import ModalDialog
+
+# Colonna dei codici ICD-9-CM, uguale per diagnosi e interventi così le caselle si allineano.
+_LARGHEZZA_CODICE = 135
 
 
 class DialogNuovoPaziente(ModalDialog):
@@ -49,20 +52,28 @@ class DialogNuovoPaziente(ModalDialog):
         nome_cogn.addWidget(self._campo("COGNOME *", "input_cognome", "Es. Ferretti"))
         layout.addLayout(nome_cogn)
 
+        # Diagnosi e interventi hanno la stessa struttura: il titolo della sezione e,
+        # sopra le caselle, le etichette piccole delle colonne.
+        grp_diag = QVBoxLayout()
+        grp_diag.setSpacing(6)
+        grp_diag.addWidget(self._titolo_sezione("DIAGNOSI"))
+        diag_hdr, _ = self._intestazione_colonne([
+            ("CODICE ICD-9-CM", _LARGHEZZA_CODICE, 0),
+            ("DESCRIZIONE", 0, 1),
+        ])
+        grp_diag.addLayout(diag_hdr)
         diagnosi_row = QHBoxLayout()
-        diagnosi_row.setSpacing(12)
-        diagnosi_row.addWidget(
-            self._campo("CODICE ICD-9-CM", "input_codice_diagnosi", "Se disponibile")
+        diagnosi_row.setSpacing(8)
+        self.input_codice_diagnosi = self._casella_riga(
+            "Se disponibile", "Codice ICD-9-CM della diagnosi", _LARGHEZZA_CODICE
         )
-        diagnosi_row.addWidget(
-            self._campo(
-                "DIAGNOSI ICD9 / DESCRIZIONE",
-                "input_descrizione_diagnosi",
-                "Es. Stenosi carotidea sintomatica",
-            ),
-            2,
+        self.input_descrizione_diagnosi = self._casella_riga(
+            "Es. Stenosi carotidea sintomatica", "Descrizione della diagnosi"
         )
-        layout.addLayout(diagnosi_row)
+        diagnosi_row.addWidget(self.input_codice_diagnosi)
+        diagnosi_row.addWidget(self.input_descrizione_diagnosi, 1)
+        grp_diag.addLayout(diagnosi_row)
+        layout.addLayout(grp_diag)
         self.input_descrizione_diagnosi.setToolTip(
             "Puoi incollare Diagnosi ICD9 dal CSV, anche con il codice fra parentesi. "
             "Il codice separato e la descrizione non sono obbligatori."
@@ -70,26 +81,13 @@ class DialogNuovoPaziente(ModalDialog):
 
         grp_int = QVBoxLayout()
         grp_int.setSpacing(6)
-
-        lbl_int_hdr = QLabel("INTERVENTI")
-        lbl_int_hdr.setObjectName("LblCampo")
-        grp_int.addWidget(lbl_int_hdr)
-
-        col_hdr = QHBoxLayout()
-        col_hdr.setContentsMargins(0, 0, 0, 0)
-        col_hdr.setSpacing(8)
-        for txt, w, stretch in [
-            ("CODICE INTERVENTO", 135, 0),
-            ("INTERVENTO / PROCEDURA ICD9", 0, 1),
+        grp_int.addWidget(self._titolo_sezione("INTERVENTI"))
+        col_hdr, etichette = self._intestazione_colonne([
+            ("CODICE ICD-9-CM", _LARGHEZZA_CODICE, 0),
+            ("DESCRIZIONE", 0, 1),
             ("DURATA [minuti]", 120, 0),
-        ]:
-            lbl = QLabel(txt)
-            lbl.setObjectName("LblCampoSmall")
-            if w:
-                lbl.setFixedWidth(w)
-            if txt == "DURATA [minuti]":
-                self._duration_header = lbl
-            col_hdr.addWidget(lbl, stretch=stretch)
+        ])
+        self._duration_header = etichette[-1]
         col_hdr.addSpacing(36)  # space for − button
         grp_int.addLayout(col_hdr)
 
@@ -233,6 +231,43 @@ class DialogNuovoPaziente(ModalDialog):
         grp_layout.addWidget(inp)
         return grp
 
+    @staticmethod
+    def _titolo_sezione(testo: str) -> QLabel:
+        lbl = QLabel(testo)
+        lbl.setObjectName("LblCampo")
+        return lbl
+
+    @staticmethod
+    def _intestazione_colonne(colonne) -> tuple[QHBoxLayout, list[QLabel]]:
+        """Etichette piccole sopra le caselle di una riga: ``(testo, larghezza, stretch)``,
+        con larghezza ``0`` per la colonna che si allarga."""
+
+        riga = QHBoxLayout()
+        riga.setContentsMargins(0, 0, 0, 0)
+        riga.setSpacing(8)
+        etichette = []
+        for testo, larghezza, stretch in colonne:
+            lbl = QLabel(testo)
+            lbl.setObjectName("LblCampoSmall")
+            if larghezza:
+                lbl.setFixedWidth(larghezza)
+            riga.addWidget(lbl, stretch=stretch)
+            etichette.append(lbl)
+        return riga, etichette
+
+    @staticmethod
+    def _casella_riga(placeholder: str, nome_accessibile: str, larghezza: int = 0) -> QLineEdit:
+        """Casella di testo delle righe con intestazione a colonne (diagnosi, interventi)."""
+
+        inp = QLineEdit()
+        inp.setObjectName("InputDialog")
+        inp.setPlaceholderText(placeholder)
+        inp.setAccessibleName(nome_accessibile)
+        inp.setFixedHeight(38)
+        if larghezza:
+            inp.setFixedWidth(larghezza)
+        return inp
+
     def _mostra_dati_aggiuntivi(self, visible: bool) -> None:
         self.dati_aggiuntivi.setVisible(visible)
         self._duration_header.setVisible(visible)
@@ -273,24 +308,22 @@ class DialogNuovoPaziente(ModalDialog):
         hl.setContentsMargins(0, 0, 0, 0)
         hl.setSpacing(8)
 
-        inp_codice = QLineEdit()
-        inp_codice.setObjectName("InputDialog")
-        inp_codice.setPlaceholderText("Es. 38.12")
+        inp_codice = self._casella_riga(
+            "Es. 38.12", "Codice ICD-9-CM dell'intervento", _LARGHEZZA_CODICE
+        )
         inp_codice.setText(codice)
-        inp_codice.setFixedHeight(38)
-        inp_codice.setFixedWidth(135)
 
-        inp_desc = QLineEdit()
-        inp_desc.setObjectName("InputDialog")
-        inp_desc.setPlaceholderText("Es. Endoarterectomia carotidea")
+        inp_desc = self._casella_riga(
+            "Es. Endoarterectomia carotidea", "Descrizione dell'intervento"
+        )
         inp_desc.setText(descrizione)
-        inp_desc.setFixedHeight(38)
 
         input_dur = QSpinBox()
         input_dur.setObjectName("InputDialog")
         input_dur.setRange(1, 10080)
         input_dur.setValue(max(1, int(durata)))
-        input_dur.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
+        # Frecce nascoste dal foglio di stile (vedi dialog.qss), non con NoButtons.
+        input_dur.setProperty("senzaPulsanti", True)
         input_dur.setAlignment(Qt.AlignmentFlag.AlignCenter)
         input_dur.setFixedHeight(38)
         input_dur.setFixedWidth(120)

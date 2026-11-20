@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 import os
+from collections.abc import Iterable
 from copy import deepcopy
 from datetime import date, timedelta
 from pathlib import Path
@@ -18,6 +19,17 @@ from src.models.patient_plan_state import write_json_batch
 from src.planning_schema import OPTIMIZATION_KEY, default_schedule_optimization
 
 _LOGGER = logging.getLogger(__name__)
+
+VALIDATED_WEEKS_KEY = "settimane_convalidate"
+"""Nei metadati di un mese Effettivo: i lunedì delle settimane già convalidate.
+
+Una settimana a cavallo di due mesi si convalida in ciascun mese per i suoi giorni; quando
+tutte le settimane del mese sono convalidate il mese diventa ``CONVALIDATO``.
+"""
+
+
+def _lunedi(day: date) -> date:
+    return day - timedelta(days=day.weekday())
 
 
 class DataManager:
@@ -96,6 +108,25 @@ class DataManager:
             and previous.get("metadata", {}).get("stato") != "CONVALIDATO"
         ):
             raise CalendarVersionError("Usare convalida_mese per convalidare il mese.")
+        settimane = set(previous.get("metadata", {}).get(VALIDATED_WEEKS_KEY, []))
+        if set(data.get("metadata", {}).get(VALIDATED_WEEKS_KEY, [])) != settimane:
+            raise CalendarVersionError("Usare convalida_settimane per convalidare le settimane.")
+        if settimane:
+            prima, dopo = previous.get("turni", {}), data.get("turni", {})
+            for day_text in set(prima) | set(dopo):
+                if (
+                    _lunedi(date.fromisoformat(day_text)).isoformat() in settimane
+                    and prima.get(day_text) != dopo.get(day_text)
+                ):
+                    raise CalendarVersionError(
+                        "La settimana è già convalidata e non può essere modificata."
+                    )
+            for lunedi in settimane:
+                if (previous.get("giro_visite", {}).get(lunedi)
+                        != data.get("giro_visite", {}).get(lunedi)):
+                    raise CalendarVersionError(
+                        "La settimana è già convalidata e non può essere modificata."
+                    )
 
     def save_mese(self, anno, mese, data):
         try:
@@ -110,6 +141,7 @@ class DataManager:
             raise CalendarVersionError("La copia Effettivo del mese esiste già.")
         copied = deepcopy(source)
         copied.setdefault("metadata", {})["stato"] = "BOZZA"
+        copied["metadata"].pop(VALIDATED_WEEKS_KEY, None)
         return {Path(actual._get_filepath(anno, mese)): copied}
 
     def crea_effettivo_mese(self, anno: int, mese: int) -> None:
@@ -143,6 +175,57 @@ class DataManager:
             write_json_batch(updates)
         finally:
             self.invalidate_cache()
+
+    def settimane_convalidate(self, anno: int, mese: int) -> set[date]:
+        """Lunedì delle settimane convalidate nel mese (tutte, se il mese è convalidato)."""
+        from src.calendar_presentation import month_weeks
+
+        metadata = self.load_mese(anno, mese).get("metadata", {})
+        if metadata.get("stato") == "CONVALIDATO":
+            return {week[0] for week in month_weeks(anno, mese)}
+        return {date.fromisoformat(text) for text in metadata.get(VALIDATED_WEEKS_KEY, [])}
+
+    def giorno_convalidato(self, giorno: date) -> bool:
+        """Vero se il giorno è in un mese o in una settimana (di quel mese) convalidati."""
+        if not self.has_mese(giorno.year, giorno.month):
+            return False
+        return _lunedi(giorno) in self.settimane_convalidate(giorno.year, giorno.month)
+
+    def convalida_settimane(self, anno: int, mese: int, lunedi: Iterable[date]) -> bool:
+        """Convalida alcune settimane dell'Effettivo del mese, per i giorni di quel mese.
+
+        Restituisce vero se così tutte le settimane sono convalidate e il mese diventa
+        ``CONVALIDATO``. Il Previsto si convalida solo per mese (:meth:`convalida_mese`).
+
+        Raises:
+            CalendarVersionError: versione Previsto, mese assente o già convalidato.
+            ValueError: nessuna settimana, o una settimana che non è del mese.
+        """
+        from src.calendar_presentation import month_weeks
+
+        if self.version != CalendarVersion.EFFETTIVO:
+            raise CalendarVersionError("Per settimana si convalida solo l'Effettivo.")
+        self.invalidate_cache()
+        if not self.has_mese(anno, mese):
+            raise CalendarVersionError("Il mese da convalidare non esiste.")
+        source = self.load_mese(anno, mese)
+        metadata = source.setdefault("metadata", {})
+        if metadata.get("stato") == "CONVALIDATO":
+            raise CalendarVersionError("Il mese è già convalidato.")
+        del_mese = {week[0].isoformat() for week in month_weeks(anno, mese)}
+        richieste = {giorno.isoformat() for giorno in lunedi}
+        if not richieste or not richieste <= del_mese:
+            raise ValueError("Scegli una o più settimane del mese da convalidare.")
+        convalidate = set(metadata.get(VALIDATED_WEEKS_KEY, [])) | richieste
+        metadata[VALIDATED_WEEKS_KEY] = sorted(convalidate)
+        completo = convalidate >= del_mese
+        if completo:
+            metadata["stato"] = "CONVALIDATO"
+        try:
+            write_json_batch({Path(self._get_filepath(anno, mese)): source})
+        finally:
+            self.invalidate_cache()
+        return completo
 
     @property
     def specializzandi(self):
@@ -220,8 +303,13 @@ class DataManager:
         }
         for data in months.values():
             previous = data.get("giro_visite", {}).get(lun_str, "")
-            if data.get("metadata", {}).get("stato") == "CONVALIDATO" and previous != valore:
+            metadata = data.get("metadata", {})
+            if previous == valore:
+                continue
+            if metadata.get("stato") == "CONVALIDATO":
                 raise ValueError("La settimana comprende giorni di un mese già convalidato.")
+            if lun_str in metadata.get(VALIDATED_WEEKS_KEY, []):
+                raise ValueError("La settimana è già convalidata e non può essere modificata.")
         if not valore:
             return
         for offset in range(5):

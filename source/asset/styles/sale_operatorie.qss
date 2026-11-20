@@ -381,26 +381,16 @@ QFrame#CellaOperazione:hover {
     background-color: #f0f4ff;
     border-color: #a5b4fc;
 }
-QFrame#CellaOperazioneOggi {
-    background-color: #fffbeb;
-    border: 1px solid #fcd34d;
-    border-radius: 0px;
-}
-QFrame#CellaOperazioneOggi:hover {
-    background-color: #fef3c7;
-}
 QFrame#CellaVuota {
     background-color: #f8fafc;
     border: none;
     border-radius: 0px;
 }
 /* ── Blocchi per sala (colori in calendar_presentation.ROOM_COLORS) ── */
-QFrame#CellaOperazione[sala="OR-1"], QFrame#CellaOperazioneOggi[sala="OR-1"],
-QFrame#CellaOperazione[sala="OR-1"]:hover, QFrame#CellaOperazioneOggi[sala="OR-1"]:hover {
+QFrame#CellaOperazione[sala="OR-1"], QFrame#CellaOperazione[sala="OR-1"]:hover {
     border-left: 4px solid #0284c7;
 }
-QFrame#CellaOperazione[sala="OR-2"], QFrame#CellaOperazioneOggi[sala="OR-2"],
-QFrame#CellaOperazione[sala="OR-2"]:hover, QFrame#CellaOperazioneOggi[sala="OR-2"]:hover {
+QFrame#CellaOperazione[sala="OR-2"], QFrame#CellaOperazione[sala="OR-2"]:hover {
     border-left: 4px solid #0d9488;
 }
 QFrame#CellaVuota[sala="OR-1"], QFrame#SlotVuotoClickable[sala="OR-1"] {
@@ -420,6 +410,9 @@ QLabel#LblOraOp {
     color: #4338ca;
     background: transparent;
     border: none;
+}
+QLabel#LblOraOp[manuale="true"] {
+    color: #b45309;
 }
 QLabel#LblCompactOp {
     color: #4c1d95;

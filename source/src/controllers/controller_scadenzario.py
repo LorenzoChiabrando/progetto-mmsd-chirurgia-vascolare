@@ -40,8 +40,11 @@ from src.roster_month import (
 )
 from src.views.components import messages
 from src.views.dialog_assegnazione_turno import DialogAssegnazioneSpecializzando, DialogTipoGuardia
-from src.views.dialog_esporta_pdf import Vista, chiedi_esportazione, intervalli_mese
+from src.views.dialog_esporta_pdf import (
+    Vista, chiedi_esportazione, intervalli_mese, mostra_pdf_creato, nome_file_settimane,
+)
 from src.views.dialog_mese_anno import DialogMeseAnno
+from src.views.dialog_convalida_settimane import DialogConvalidaSettimane
 
 
 _SEZIONE = "scadenzario"
@@ -443,14 +446,75 @@ class ControllerScadenzario:
             )
 
     def convalida_mese(self):
+        """Convalida il Previsto per mese; l'Effettivo una o più settimane alla volta."""
         if not self._puo_modificare():
             return
+        if self.versione_corrente == CalendarVersion.EFFETTIVO:
+            self._convalida_settimane_effettivo()
+            return
         month_data = self.model.load_mese(self.anno_corrente, self.mese_corrente)
-        missing = _missing_operating_room_assignments(
-            month_data,
-            self.anno_corrente,
-            self.mese_corrente,
+        if not self._sale_assegnate(month_data):
+            return
+        self._conferma_convalida_mese()
+
+    def _convalida_settimane_effettivo(self) -> None:
+        """Sceglie le settimane dell'Effettivo da convalidare e le convalida."""
+        anno, mese = self.anno_corrente, self.mese_corrente
+        weeks = month_weeks(anno, mese)
+        voci = intervalli_mese(
+            anno, mese, weeks, nomi_mesi=self.mesi_ita, prefisso="scadenzario",
+        )[1:]
+        dialog = DialogConvalidaSettimane(
+            riepilogo=f"Scadenzario · {self.mesi_ita[mese - 1]} {anno} · Effettivo",
+            settimane=voci,
+            lunedi=[week[0] for week in weeks],
+            convalidate=self.model.settimane_convalidate(anno, mese),
+            parent=self.view,
         )
+        if dialog.exec() != QDialog.DialogCode.Accepted or not dialog.scelte:
+            return
+        giorni = {
+            day for week in weeks if week[0] in dialog.scelte
+            for day in week if (day.year, day.month) == (anno, mese)
+        }
+        if not self._sale_assegnate(self.model.load_mese(anno, mese), giorni):
+            return
+        try:
+            completo = self.model.convalida_settimane(anno, mese, dialog.scelte)
+        except (OSError, ValueError) as error:
+            messages.show_message(
+                self.view,
+                f"Convalida {self._nome_versione} non riuscita",
+                describe_error(error),
+                section=_SEZIONE,
+                kind="warning",
+            )
+            self.aggiorna_tabella()
+            return
+        if completo:
+            messages.show_message(
+                self.view,
+                f"Mese {self._nome_versione} convalidato",
+                f"Tutte le settimane di {self.mesi_ita[mese - 1].lower()} {anno} sono "
+                "convalidate: il mese è convalidato.",
+                section=_SEZIONE,
+            )
+        self.aggiorna_tabella()
+
+    def _sale_assegnate(self, month_data: dict, giorni: set | None = None) -> bool:
+        """Controlla Sala Op. I e II nei giorni da convalidare (tutto il mese se ``None``).
+
+        Se mancano o coincidono avvisa e restituisce falso.
+        """
+        def nei_giorni(voce: str) -> bool:
+            return giorni is None or datetime.date.fromisoformat(voce[:10]) in giorni
+
+        missing = [
+            voce for voce in _missing_operating_room_assignments(
+                month_data, self.anno_corrente, self.mese_corrente,
+            )
+            if nei_giorni(voce)
+        ]
         if missing:
             preview = "\n".join(f"• {item}" for item in missing[:8])
             remaining = len(missing) - 8
@@ -464,13 +528,14 @@ class ControllerScadenzario:
                 section=_SEZIONE,
                 kind="warning",
             )
-            return
+            return False
 
-        duplicates = _duplicate_operating_room_assignments(
-            month_data,
-            self.anno_corrente,
-            self.mese_corrente,
-        )
+        duplicates = [
+            voce for voce in _duplicate_operating_room_assignments(
+                month_data, self.anno_corrente, self.mese_corrente,
+            )
+            if nei_giorni(voce)
+        ]
         if duplicates:
             preview = "\n".join(f"• {item}" for item in duplicates[:8])
             remaining = len(duplicates) - 8
@@ -484,8 +549,10 @@ class ControllerScadenzario:
                 section=_SEZIONE,
                 kind="warning",
             )
-            return
+            return False
+        return True
 
+    def _conferma_convalida_mese(self) -> None:
         explanation = (
             "Il Previsto non sarà più modificabile. Verrà creata una copia Effettivo "
             "modificabile separatamente."
@@ -614,12 +681,18 @@ class ControllerScadenzario:
         if not self._puo_modificare():
             return False
         day = datetime.date(self.anno_corrente, self.mese_corrente, column + 1)
-        return day.weekday() < 5
+        return day.weekday() < 5 and not self.model.giorno_convalidato(day)
 
     def _gestisci_click_cella(self, row: int, column: int) -> None:
         self._mostra_nome_completo(row, column)
         if self._cella_modificabile(row, column):
             self._apri_modal_assegnazione(row, column)
+        elif (row >= 1 and column >= 0 and self._puo_modificare()
+              and self.model.giorno_convalidato(
+                  datetime.date(self.anno_corrente, self.mese_corrente, column + 1))):
+            self.view.lbl_dettaglio_cella.setText(
+                "Questa settimana dell'Effettivo è già convalidata e non si può modificare."
+            )
 
     def _specializzandi_occupati(self, day: datetime.date, role: str) -> dict[str, str]:
         """Specializzandi già impegnati nel giorno (o nella settimana del giro visite)."""
@@ -680,7 +753,7 @@ class ControllerScadenzario:
         )
 
     def esporta_pdf(self) -> None:
-        """Esporta il mese o una settimana in PDF."""
+        """Esporta in PDF il mese o una o più settimane, una per pagina."""
 
         if self._effettivo_assente():
             return
@@ -688,9 +761,10 @@ class ControllerScadenzario:
         weeks = month_weeks(self.anno_corrente, self.mese_corrente)
         days = month_dates(self.anno_corrente, self.mese_corrente)
         nome_mese = self.mesi_ita[self.mese_corrente - 1]
+        prefisso = f"scadenzario-{self.versione_corrente.value}"
         intervalli = intervalli_mese(
             self.anno_corrente, self.mese_corrente, weeks,
-            nomi_mesi=self.mesi_ita, prefisso=f"scadenzario-{self.versione_corrente.value}",
+            nomi_mesi=self.mesi_ita, prefisso=prefisso,
             mese_presente=self.model.has_mese,
         )
         scelta = chiedi_esportazione(
@@ -705,21 +779,28 @@ class ControllerScadenzario:
             viste=_VISTE_PDF,
             # Propone le righe che si stanno guardando.
             vista_predefinita=1 if self.view.btn_per_specializzando.isChecked() else 0,
+            nome_combinato=nome_file_settimane(
+                prefisso, self.anno_corrente, self.mese_corrente
+            ),
         )
         if scelta is None:
             return
-        dates = days if scelta.indice == 0 else weeks[scelta.indice - 1]
+        # La voce 0 è il mese intero, la voce i la settimana i: una pagina ciascuna.
+        periodi = [days if indice == 0 else weeks[indice - 1] for indice in scelta.indici]
         path = scelta.percorso
         build = (
             build_scadenzario_residents_pdf_document
             if scelta.vista == "SPECIALIZZANDI" else build_scadenzario_pdf_document
         )
         try:
-            document = build(
-                self._mesi_per_pdf(dates), dates, self.model.specializzandi,
-                version=self.versione_corrente,
-            )
-            output_path = write_calendar_pdf(path, document)
+            documents = [
+                build(
+                    self._mesi_per_pdf(dates), dates, self.model.specializzandi,
+                    version=self.versione_corrente,
+                )
+                for dates in periodi
+            ]
+            output_path = write_calendar_pdf(path, *documents)
         except (OSError, ValueError, RuntimeError) as error:
             messages.show_message(
                 self.view,
@@ -729,11 +810,8 @@ class ControllerScadenzario:
                 kind="error",
             )
             return
-        messages.show_message(
-            self.view,
-            f"PDF {self._nome_versione} creato",
-            f"Calendario esportato in:\n{output_path}",
-            section=_SEZIONE,
+        mostra_pdf_creato(
+            self.view, f"PDF {self._nome_versione} creato", output_path, sezione=_SEZIONE
         )
 
     def _mesi_per_pdf(self, dates) -> list[RosterMonth]:
@@ -785,14 +863,25 @@ class ControllerScadenzario:
 
         self.gestisci_navigazione()
         self.view.btn_convalida.setVisible(can_edit)
+        effettivo = self.versione_corrente == CalendarVersion.EFFETTIVO
         self.view.btn_convalida.setText(
-            f"CONVALIDA IL MESE {self.versione_corrente.value.upper()}"
+            "CONVALIDA SETTIMANE DELL'EFFETTIVO" if effettivo
+            else f"CONVALIDA IL MESE {self.versione_corrente.value.upper()}"
+        )
+        convalidate = (
+            self.model.settimane_convalidate(self.anno_corrente, self.mese_corrente)
+            if effettivo and not absent else set()
         )
         self.view.btn_esporta_pdf.setEnabled(not absent)
         self.view.btn_crea_effettivo.setVisible(can_create)
-        self.view.lbl_versione_info.setText(
-            self._messaggio_versione(absent, can_create, stato_json)
-        )
+        messaggio = self._messaggio_versione(absent, can_create, stato_json)
+        if convalidate and stato_json != "CONVALIDATO":
+            totale = len(month_weeks(self.anno_corrente, self.mese_corrente))
+            messaggio = (
+                f"Settimane convalidate: {len(convalidate)} di {totale} "
+                "(segnate con ✓ nella riga Giorno). " + messaggio
+            )
+        self.view.lbl_versione_info.setText(messaggio)
         self.view.aggiorna_badge_modalita(
             self.modalita_corrente, stato_json, self.versione_corrente.value
         )
@@ -805,10 +894,20 @@ class ControllerScadenzario:
         specializzandi = self.model.specializzandi
         modello.set_roster(self.roster, specializzandi)
         modello.set_today(oggi)
+        giorni_bloccati = {
+            day for day in self.roster.dates
+            if day - datetime.timedelta(days=day.weekday()) in convalidate
+        } if stato_json != "CONVALIDATO" else set()
+        modello.set_locked_days(giorni_bloccati)
+        self.view.modello_specializzandi.set_locked_days(giorni_bloccati)
         self.view.modello_specializzandi.set_rows(
             self.roster, resident_rows(self.roster, specializzandi)
         )
         self.view.modello_specializzandi.set_today(oggi)
+        self.view.imposta_giorno_corrente(
+            oggi.day if (oggi.year, oggi.month) == (self.anno_corrente, self.mese_corrente)
+            else None
+        )
 
     def _avviso(self, titolo: str, messaggio: str) -> None:
         messages.show_message(self.view, titolo, messaggio, section=_SEZIONE, kind="warning")
@@ -826,7 +925,7 @@ class ControllerScadenzario:
         if riga == 0 or not self._puo_modificare():
             return
         data_corrente = datetime.date(self.anno_corrente, self.mese_corrente, colonna + 1)
-        if data_corrente.weekday() >= 5:
+        if data_corrente.weekday() >= 5 or self.model.giorno_convalidato(data_corrente):
             return
         data_str = data_corrente.isoformat()
         nome_riga = self.view.row_labels[riga]

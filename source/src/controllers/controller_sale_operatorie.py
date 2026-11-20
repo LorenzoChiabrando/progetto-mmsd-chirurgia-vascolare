@@ -6,20 +6,24 @@ from pathlib import Path
 from threading import Event
 
 from PySide6.QtCore import QObject, Signal, QSize, Qt, Slot
+from PySide6.QtCore import QTime
 from PySide6.QtWidgets import (
     QTableWidget, QVBoxLayout, QHBoxLayout,
-    QLabel, QFrame, QListWidget, QListWidgetItem, QComboBox,
+    QLabel, QFrame, QListWidget, QListWidgetItem, QComboBox, QTimeEdit,
 )
 
 from src.calendar_presentation import (
     ROOM_COLORS,
     month_dates,
+    month_weeks,
     person_initials,
     resident_legend,
     resolve_resident_name,
 )
 from src.calendar_versions import CalendarVersion, CalendarVersionError
-from src.exports.calendar_pdf import CalendarPdfDocument, CalendarPdfRow, write_calendar_pdf
+from src.exports.calendar_pdf import (
+    CalendarPdfCard, CalendarPdfDocument, CalendarPdfRow, write_calendar_pdf,
+)
 from src.models.json_files import CorruptedDataError
 from src.models.model_plans import operazioni_del_piano
 from src.optimization.exceptions import OptimizationError
@@ -32,8 +36,11 @@ from src.error_messages import describe_error
 from src.planning_schema import OPTIMIZATION_KEY
 from src.views.components import messages
 from src.views.components.modal_dialog import ModalDialog
-from src.views.dialog_esporta_pdf import Intervallo, Vista, chiedi_esportazione
+from src.views.dialog_esporta_pdf import (
+    Vista, chiedi_esportazione, intervalli_mese, mostra_pdf_creato, nome_file_settimane,
+)
 from src.views.dialog_attesa_pianificazione import DialogAttesaPianificazione
+from src.views.view_sale_operatorie import etichetta_durata, varianti_codici
 from src.views.dialog_pianificazione import chiedi_parametri_pianificazione
 from src.workers.platform_planning_worker import (
     PlanningService,
@@ -72,7 +79,14 @@ def build_sale_operatorie_pdf_document(
     *,
     rooms: tuple[str, ...] = ROOM_IDS,
 ) -> CalendarPdfDocument:
-    """Prepara i dati delle sale operatorie per il PDF: un blocco per ciascuna di ``rooms``."""
+    """Prepara i dati delle sale operatorie per il PDF: un blocco per ciascuna di ``rooms``.
+
+    Come a schermo: per ogni sala la riga dello specializzando di turno e una riga per
+    intervento, con gli stessi colori. Per settimana ogni intervento è una scheda
+    (sala, orario, durata, paziente, codici ICD-9, complessità); per mese, con colonne
+    strette, le iniziali del paziente. Ogni sala ha una riga vuota in più, un po' più
+    bassa, per aggiungere a mano interventi o note sulla stampa.
+    """
 
     if not dates:
         raise ValueError("Serve almeno una data da esportare.")
@@ -116,32 +130,35 @@ def build_sale_operatorie_pdf_document(
             )
         rows.append(
             CalendarPdfRow(
-                label=f"{room_id} · Spec.",
+                label=f"Sala {room_id}",
                 values=tuple(specialist_values),
                 background=colori["intestazione"],
+                cell_background=colori["etichetta"],
+                height=1.0 if compact else 0.6,
             )
         )
         max_operations = max((len(operations) for operations in operations_by_day), default=0)
-        for operation_index in range(max_operations):
+        for operation_index in range(max_operations + 1):
+            extra = operation_index == max_operations
             values: list[str] = []
+            cards: list[CalendarPdfCard | None] = []
             for operations in operations_by_day:
                 if operation_index >= len(operations):
                     values.append("-")
+                    cards.append(None)
                     continue
                 operation = operations[operation_index]
                 patient_name = operation.get("nome_paziente", "")
-                if compact:
-                    values.append(person_initials(patient_name) or "-")
-                else:
-                    time_range = (
-                        f"{operation.get('ora_inizio', '')}-{operation.get('ora_fine', '')}"
-                    ).strip("-")
-                    values.append(" · ".join(filter(None, (time_range, patient_name))))
+                values.append(person_initials(patient_name) or "-" if compact else patient_name)
+                cards.append(None if compact else _scheda_pdf(operation, room_id))
             rows.append(
                 CalendarPdfRow(
-                    label=f"{room_id} · {operation_index + 1}",
+                    label=f"Op. {operation_index + 1}",
                     values=tuple(values),
                     background=colori["etichetta"],
+                    cell_background=colori["sfondo"],
+                    cards=() if compact else tuple(cards),
+                    height=0.7 if extra else 1.0,
                 )
             )
 
@@ -155,6 +172,26 @@ def build_sale_operatorie_pdf_document(
         column_headers=columns,
         rows=tuple(rows),
         legend=tuple(resident_legend(residents).items()) if compact else (),
+        label_header="",
+    )
+
+
+def _scheda_pdf(operation: dict, room_id: str) -> CalendarPdfCard:
+    """La scheda di un intervento nel PDF, con gli stessi dati della scheda a schermo."""
+
+    codici = [i.get("codice", "") for i in operation.get("interventi", []) if i.get("codice")]
+    if not codici and operation.get("codice_intervento"):
+        codici = [operation["codice_intervento"]]
+    orario = f"{operation.get('ora_inizio', '?')}–{operation.get('ora_fine', '?')}"
+    return CalendarPdfCard(
+        time=orario,
+        title=operation.get("nome_paziente", "") or "—",
+        detail=varianti_codici(codici)[0] if codici else "",
+        duration=etichetta_durata(operation.get("durata", "")) if operation.get("durata") else "",
+        badge=room_id,
+        tag=operation.get("complessita", ""),
+        accent=ROOM_COLORS[room_id]["accento"],
+        badge_background=ROOM_COLORS[room_id]["etichetta"],
     )
 
 
@@ -174,6 +211,21 @@ def _str_to_min(s: str) -> int:
 
 def _min_to_str(m: int) -> str:
     return f"{m // 60:02d}:{m % 60:02d}"
+
+
+MANUAL_START_KEY = "ora_inizio_manuale"
+"""Orario di inizio scelto a mano per un intervento (``"HH:MM"``); senza, l'orario segue
+l'intervento precedente della sala."""
+_STANDARD_START = "08:00"
+
+
+def _orario_manuale(operation: dict) -> int | None:
+    """Minuti dell'orario impostato a mano, se c'è ed è valido."""
+    value = operation.get(MANUAL_START_KEY)
+    try:
+        return _str_to_min(value) if value else None
+    except (TypeError, ValueError):
+        return None
 
 
 class ControllerSaleOperatorie(QObject):
@@ -566,33 +618,33 @@ class ControllerSaleOperatorie(QObject):
         return f"{lun.day} {ml} – {ven.day} {mv} {lun.year}"
 
     def esporta_pdf(self) -> None:
-        """Esporta in PDF il periodo mostrato, con tutte le sale o con una sola.
+        """Esporta in PDF il mese o una o più sue settimane, con tutte le sale o una sola.
 
-        Dalla vista settimanale la settimana, dall'«Intero mese» il mese: nel dialog si
-        sceglie soltanto quali sale, proponendo quella che si sta guardando.
+        Propone ciò che si sta guardando: il mese dalla vista «Intero mese», la
+        settimana mostrata (fra quelle del suo mese) dalla vista settimanale, e la sala
+        del filtro. Ogni settimana scelta va su una pagina del PDF.
         """
 
         prefisso = f"sale-operatorie-{self.versione_label.lower()}"
-        if self.visualizzazione == "MESE":
-            mese = self.mese_display
-            days = month_dates(mese.year, mese.month)
-            nome_mese = MESI_ITA_COMPLETI[mese.month - 1]
-            periodo = f"{nome_mese} {mese.year}"
-            intervallo = Intervallo(
-                "Mese intero",
-                f"1 – {days[-1].day} {nome_mese.lower()} {mese.year}",
-                f"{prefisso}-{mese.year:04d}-{mese.month:02d}-mese.pdf",
-            )
-        else:
-            days = tuple(
-                self.settimana_display + datetime.timedelta(days=offset) for offset in range(5)
-            )
-            periodo = f"Settimana {self._label_settimana()}"
-            intervallo = Intervallo(
-                "Settimana",
-                f"{days[0]:%d/%m} – {days[-1]:%d/%m}",
-                f"{prefisso}-settimana-{days[0].isoformat()}.pdf",
-            )
+        mese_vista = self.visualizzazione == "MESE"
+        mese = self.mese_display if mese_vista else self.settimana_display.replace(day=1)
+        # Settimane da lunedì a venerdì, come a schermo; quelle a cavallo di due mesi
+        # restano intere (vedi month_weeks).
+        weeks = month_weeks(mese.year, mese.month, days=5)
+        days = month_dates(mese.year, mese.month)
+        intervalli = intervalli_mese(
+            mese.year, mese.month, weeks,
+            nomi_mesi=MESI_ITA_COMPLETI, prefisso=prefisso,
+            nota_settimana=lambda settimana: (
+                "" if self._week_exists(settimana[0])
+                else "vuota: Effettivo non ancora creato"
+            ),
+        )
+        predefinito = 0 if mese_vista else next(
+            (numero for numero, week in enumerate(weeks, 1)
+             if week[0] == self.settimana_display),
+            0,
+        )
         viste = [Vista("TUTTE", "Tutte le sale", "OR-1 e OR-2")] + [
             Vista(room_id, f"Sala {room_id}", f"Solo {room_id}", f"-{room_id.lower()}")
             for room_id in ROOM_IDS
@@ -601,8 +653,12 @@ class ControllerSaleOperatorie(QObject):
             self.view,
             sezione=_SEZIONE,
             titolo="Esporta PDF",
-            riepilogo=f"Sale Operatorie · {periodo} · {self.versione_label}",
-            intervalli=[intervallo],
+            riepilogo=(
+                f"Sale Operatorie · {MESI_ITA_COMPLETI[mese.month - 1]} {mese.year} · "
+                f"{self.versione_label}"
+            ),
+            intervalli=intervalli,
+            predefinito=predefinito,
             viste=viste,
             # Propone la sala che si sta guardando (o tutte).
             vista_predefinita=next(
@@ -610,24 +666,30 @@ class ControllerSaleOperatorie(QObject):
                 0,
             ),
             titolo_viste="Sale da esportare",
+            nome_combinato=nome_file_settimane(prefisso, mese.year, mese.month),
         )
         if scelta is None:
             return
-        dates = days
+        # La voce 0 è il mese intero, la voce i la settimana i: una pagina ciascuna.
+        periodi = [days if indice == 0 else weeks[indice - 1] for indice in scelta.indici]
         rooms = ROOM_IDS if scelta.vista in (None, "TUTTE") else (scelta.vista,)
         path = scelta.percorso
         residents = getattr(self.model_scad, "specializzandi", None)
         if residents is None:
             residents = getattr(self.model, "specializzandi", [])
         try:
-            document = build_sale_operatorie_pdf_document(
-                self.model,
-                dates,
-                residents,
-                rooms=rooms,
-            )
-            document = replace(document, title=f"{document.title} · {self.versione_label}")
-            output_path = write_calendar_pdf(path, document)
+            documents = []
+            for dates in periodi:
+                document = build_sale_operatorie_pdf_document(
+                    self.model,
+                    dates,
+                    residents,
+                    rooms=rooms,
+                )
+                documents.append(
+                    replace(document, title=f"{document.title} · {self.versione_label}")
+                )
+            output_path = write_calendar_pdf(path, *documents)
         except (OSError, ValueError, RuntimeError) as error:
             messages.show_message(
                 self.view,
@@ -637,12 +699,7 @@ class ControllerSaleOperatorie(QObject):
                 kind="error",
             )
             return
-        messages.show_message(
-            self.view,
-            "PDF creato",
-            f"Calendario esportato in:\n{output_path}",
-            section=_SEZIONE,
-        )
+        mostra_pdf_creato(self.view, "PDF creato", output_path, sezione=_SEZIONE)
 
     def _avviso(self, titolo: str, messaggio: str, tipo: str = "info", parent=None):
         """Messaggio della sezione con la versione nel titolo; ``tipo="warning"`` usa il tono di avviso."""
@@ -791,6 +848,10 @@ class ControllerSaleOperatorie(QObject):
             # Una riga in più per il «+» del primo intervento libero della sala.
             righe = massimo + (1 if can_edit and massimo < MAX_OPERATIONS_PER_ROOM else 0)
             blocchi.append((sala, max(righe, 1 if month_mode else MIN_RIGHE_SALA)))
+        # Si riparte da una tabella vuota: quando un blocco cambia numero di righe, le
+        # righe sotto scorrono e un elemento rimasto sotto un riquadro (per esempio
+        # l'intestazione verde di OR-2) colorerebbe una riga intervento di OR-1.
+        self.view.tabella.clearContents()
         self.view.imposta_blocchi(blocchi)
         righe_sala = self.view.righe_sala
 
@@ -825,9 +886,6 @@ class ControllerSaleOperatorie(QObject):
                     spec_val, is_weekend, is_oggi, compact=month_mode, sala=sala,
                 )
                 item_spec.setFlags(item_spec.flags() & ~Qt.ItemFlag.ItemIsEditable)
-                # Cambiando vista o settimana questa riga può essere stata una riga
-                # intervento: il suo riquadro coprirebbe il nome.
-                self.view.tabella.removeCellWidget(intestazione, col)
                 self.view.tabella.setItem(intestazione, col, item_spec)
 
                 della_sala = [
@@ -864,6 +922,10 @@ class ControllerSaleOperatorie(QObject):
             mappa[col] = {"interventi": interventi, "libere": libere}
 
         self.view.tabella.imposta_mappa(mappa if can_edit else {})
+        # Dopo i widget delle celle, così il bordo del giorno corrente resta sopra.
+        self.view.imposta_giorno_corrente(
+            dates.index(self.oggi) if self.oggi in dates else None
+        )
         self.view.tabella.blockSignals(False)
 
     def _aggiorna_riepilogo_ottimizzazione(self, month_mode: bool, stato: str) -> None:
@@ -1308,16 +1370,84 @@ class ControllerSaleOperatorie(QObject):
             self.model_lib.registra_attivita_settimana(attivita_per_spec)
 
     def _ricalcola_orari(self, operazioni: list):
-        """Recalculate two independent room timelines including changeover."""
+        """Ricalcola gli orari delle due sale, ognuna in fila con il cambio sala.
 
-        min_corrente = {room_id: _str_to_min("08:00") for room_id in ROOM_IDS}
+        Il primo intervento di una sala comincia alle 08:00, gli altri appena finito il
+        precedente più il cambio sala. Un intervento con l'orario impostato a mano
+        (:data:`MANUAL_START_KEY`) comincia a quell'ora, o appena possibile se il
+        precedente finisce dopo; quelli che lo seguono si mettono in fila dopo di lui.
+        """
+
+        libera_da: dict[str, int | None] = {room_id: None for room_id in ROOM_IDS}
         for op in operazioni:
             room_id = self._room_id(op)
             durata = int(op.get("durata", 0))
+            precedente = libera_da[room_id]
+            manuale = _orario_manuale(op)
+            if manuale is None:
+                inizio = _str_to_min(_STANDARD_START) if precedente is None else precedente
+            else:
+                inizio = manuale if precedente is None else max(manuale, precedente)
             op["sala_operatoria"] = room_id
-            op["ora_inizio"] = _min_to_str(min_corrente[room_id])
-            op["ora_fine"] = _min_to_str(min_corrente[room_id] + durata)
-            min_corrente[room_id] += durata + CHANGEOVER_MINUTES
+            op["ora_inizio"] = _min_to_str(inizio)
+            op["ora_fine"] = _min_to_str(inizio + durata)
+            libera_da[room_id] = inizio + durata + CHANGEOVER_MINUTES
+
+    def _imposta_orario_inizio(
+        self, dialog, data_str: str, op_idx: int, orario: str | None
+    ) -> None:
+        """Fissa a mano l'orario di inizio di un intervento (``None``: torna standard).
+
+        L'orario non può precedere la fine dell'intervento prima, più il cambio sala, e
+        la sala non deve andare oltre la sua capacità; gli interventi dopo si spostano.
+        """
+        if not self._can_edit_week():
+            return
+        day = datetime.date.fromisoformat(data_str)
+        operazioni = copy.deepcopy(self.model.get_operazioni(data_str))
+        if not 0 <= op_idx < len(operazioni):
+            return
+        op = operazioni[op_idx]
+        room_id = self._room_id(op)
+        if orario is None:
+            op.pop(MANUAL_START_KEY, None)
+        else:
+            precedenti = [
+                other for other in operazioni[:op_idx] if self._room_id(other) == room_id
+            ]
+            if precedenti:
+                minimo = _str_to_min(precedenti[-1]["ora_fine"]) + CHANGEOVER_MINUTES
+                if _str_to_min(orario) < minimo:
+                    self._avviso(
+                        "Orario non disponibile",
+                        f"In {room_id} l'intervento precedente termina alle "
+                        f"{precedenti[-1]['ora_fine']}: con il cambio sala questo può "
+                        f"iniziare dalle {_min_to_str(minimo)}.\n\n"
+                        "Per anticiparlo, trascinalo prima nell'ordine della sala.",
+                        tipo="warning",
+                        parent=dialog,
+                    )
+                    return
+            op[MANUAL_START_KEY] = orario
+        self._ricalcola_orari(operazioni)
+        fine_sala = _str_to_min(_STANDARD_START) + self._capacity_for_room(day, room_id)
+        ultima_fine = max(
+            _str_to_min(other["ora_fine"])
+            for other in operazioni if self._room_id(other) == room_id
+        )
+        if ultima_fine > fine_sala:
+            self._avviso(
+                "Orario non disponibile",
+                f"Con questo orario gli interventi di {room_id} finirebbero alle "
+                f"{_min_to_str(ultima_fine)}, oltre la disponibilità della sala "
+                f"(fino alle {_min_to_str(fine_sala)}).",
+                tipo="warning",
+                parent=dialog,
+            )
+            return
+        self.model.set_operazioni(data_str, operazioni)
+        self.aggiorna_tabella()
+        dialog.accept()
 
     @staticmethod
     def _room_id(operation: dict) -> str:
@@ -1499,6 +1629,8 @@ class ControllerSaleOperatorie(QObject):
                 self.model_lib.trova_id_specializzando(nome)
                 if nome and self.model_lib is not None else ""
             )
+        # In un altro giorno l'orario scelto a mano non ha più senso: segue la sala.
+        op.pop(MANUAL_START_KEY, None)
         dst_ops.append(op)
 
         self._ricalcola_orari(src_ops)
@@ -1887,6 +2019,47 @@ class ControllerSaleOperatorie(QObject):
             data_str, data_col, starts_by_room, sala=self._sala_della_riga(riga)
         )
 
+    def _riga_orario_inizio(self, dialog, root, slot: dict, data_str: str, op_idx: int):
+        """Campo per scegliere l'orario di inizio e, se scelto a mano, tornare a quello standard."""
+        row = QHBoxLayout()
+        row.setSpacing(12)
+        etichetta = QLabel("ORARIO DI INIZIO")
+        etichetta.setObjectName("LblCampo")
+        etichetta.setFixedWidth(175)
+        campo = QTimeEdit(QTime.fromString(slot.get("ora_inizio", _STANDARD_START), "HH:mm"))
+        campo.setObjectName("InputDialog")
+        campo.setDisplayFormat("HH:mm")
+        campo.setFixedSize(120, 40)
+        campo.setAccessibleName("Orario di inizio dell'intervento")
+        imposta = dialog.make_button("Imposta", "secondary")
+        imposta.setMinimumWidth(0)
+        imposta.setToolTip("Fissa l'orario di inizio: gli interventi dopo si spostano")
+        imposta.clicked.connect(
+            lambda: self._imposta_orario_inizio(
+                dialog, data_str, op_idx, campo.time().toString("HH:mm")
+            )
+        )
+        row.addWidget(etichetta)
+        row.addWidget(campo)
+        row.addWidget(imposta)
+        row.addStretch(1)
+        root.addLayout(row)
+        if slot.get(MANUAL_START_KEY):
+            # Sotto il campo: sulla stessa riga non entrerebbe nella larghezza della scheda.
+            standard = dialog.make_button("Ripristina orario standard", "secondary")
+            standard.setToolTip(
+                "L'intervento torna a seguire il precedente della sala (o le 08:00)"
+            )
+            standard.clicked.connect(
+                lambda: self._imposta_orario_inizio(dialog, data_str, op_idx, None)
+            )
+            sotto = QHBoxLayout()
+            sotto.setSpacing(12)
+            sotto.addSpacing(etichetta.width() + row.spacing())
+            sotto.addWidget(standard)
+            sotto.addStretch(1)
+            root.addLayout(sotto)
+
     def _mostra_popup_paziente(self, slot: dict, paz_full: dict | None,
                                data_str: str = None, op_idx: int = None):
         dialog = ModalDialog(
@@ -1926,7 +2099,13 @@ class ControllerSaleOperatorie(QObject):
                 data_operazione = data_str
             _riga("Data operazione", data_operazione)
         if ora_i and ora_f:
-            _riga("Orario", f"{ora_i} – {ora_f}  ({durata} min)" if durata else f"{ora_i} – {ora_f}")
+            orario = f"{ora_i} – {ora_f}  ({durata} min)" if durata else f"{ora_i} – {ora_f}"
+            if slot.get(MANUAL_START_KEY):
+                orario += "  · inizio impostato a mano"
+            _riga("Orario", orario)
+        if (self._can_edit_week() and data_str is not None and op_idx is not None
+                and ora_i):
+            self._riga_orario_inizio(dialog, root, slot, data_str, op_idx)
 
         _riga("Sala operatoria", slot.get("sala_operatoria", "OR-1"))
         specializzandi = []

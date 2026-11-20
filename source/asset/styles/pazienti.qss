@@ -83,6 +83,23 @@ QLineEdit#SearchBar::placeholder {
    CHIP FILTRI
 ========================================= */
 /* Titolo dei gruppi di filtri, come nel pannello filtri di Scadenzario e Sale. */
+QLabel#LblDurataFiltro {
+    font-size: 12px;
+    color: #64748b;
+}
+QSpinBox#FiltroDurata {
+    background-color: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0 6px;
+    font-size: 13px;
+    color: #1e293b;
+}
+QSpinBox#FiltroDurata:focus { border-color: #38bdf8; }
+/* Senza frecce (si scrive o si usa la rotellina): non NoButtons, che con Qt 6.12 e un
+   foglio di stile riduce il campo di testo a 1 px. */
+QSpinBox#FiltroDurata::up-button, QSpinBox#FiltroDurata::down-button { width: 0px; border: none; }
+QSpinBox#FiltroDurata::up-arrow, QSpinBox#FiltroDurata::down-arrow { image: none; width: 0px; height: 0px; }
 QLabel#LblFiltri {
     font-size: 11px;
     font-weight: bold;

@@ -5,6 +5,8 @@ from datetime import date as _date, timedelta as _td
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QListWidgetItem
 from src.calendar_versions import CalendarVersion
+from src.planning_schema import OPTIMIZATION_KEY
+from src.resident_sites import etichetta_sede, sede_di
 from src.views.components import messages
 from src.views.view_nuovo_specializzando import DialogNuovoSpecializzando
 
@@ -24,6 +26,10 @@ _ROW_SEDE = {
     "Day Surgery":  "Day Surgery",
     "Giro Visite":  "Reparto",
 }
+_MESI = (
+    "gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno",
+    "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre",
+)
 _ROW_ATTIVITA = {
     "Sala Op. I":   "Intervento Chirurgico",
     "Sala Op. II":  "Intervento Chirurgico",
@@ -105,8 +111,47 @@ class ControllerLibretto:
         self.view.btn_tab_pianificate.setChecked(not is_c)
 
     def _aggiorna_cache(self, spec):
-        self._cache_completate = self._get_completate(spec)
-        self._cache_pianificate = self._get_pianificate(spec)
+        """Divide le attività in completate e pianificate.
+
+        Un'attività del calendario è completata quando il suo giorno è convalidato
+        nell'Effettivo dello Scadenzario (tutto il mese o la sua settimana): vale per le
+        attività non chirurgiche e per i turni di sala senza interventi. Gli interventi restano legati alla convalida settimanale
+        dell'Effettivo delle Sale Operatorie, che li registra nel libretto.
+        """
+        dal_calendario = self._get_pianificate(spec)
+        convalidate = [att for att in dal_calendario if self._completata_dal_mese(att)]
+        self._cache_completate = self._get_completate(spec) + [
+            self._come_completata(att) for att in convalidate
+        ]
+        self._cache_pianificate = [
+            att for att in dal_calendario if not self._completata_dal_mese(att)
+        ]
+
+    @staticmethod
+    def _completata_dal_mese(att: dict) -> bool:
+        return bool(att.get("mese_convalidato")) and not (
+            att.get("or_pianificata") and att.get("slots")
+        )
+
+    @staticmethod
+    def _come_completata(att: dict) -> dict:
+        giorno = _date.fromisoformat(att["data"])
+        lunedi = giorno - _td(days=giorno.weekday())
+        completata = {
+            **att,
+            "tipo": "completata",
+            "convalida": (
+                f"Effettivo dello Scadenzario di {_MESI[giorno.month - 1]} "
+                f"{giorno.year} convalidato"
+                if att.get("convalida_mese_intero") else
+                f"Settimana dal {lunedi:%d/%m/%Y} convalidata nell'Effettivo dello "
+                "Scadenzario"
+            ),
+        }
+        if att.get("or_pianificata"):
+            # Solo il titolo mostrato: ``attivita`` resta la chiave delle conferme.
+            completata["etichetta"] = "Turno in sala operatoria (nessun intervento)"
+        return completata
 
     def _get_completate(self, spec: dict) -> list:
         """
@@ -146,7 +191,9 @@ class ControllerLibretto:
     def _get_pianificate(self, spec: dict) -> list:
         """
         Legge l'Effettivo dove esiste, altrimenti il Previsto, senza confermare attività.
-        Le attività non operatorie mantengono la conferma manuale nel libretto.
+        Le attività non operatorie mantengono la conferma manuale nel libretto. Ogni voce
+        dice se il suo mese ha l'Effettivo convalidato (``mese_convalidato``): in quel
+        caso :meth:`_aggiorna_cache` la conta tra le completate.
         """
         if not self.model_scad:
             return []
@@ -190,7 +237,16 @@ class ControllerLibretto:
         mesi.update(mesi_sale_effettive)
 
         for anno, mese in sorted(mesi):
-            scad = scad_effettivo if scad_effettivo.has_mese(anno, mese) else scad_previsto
+            effettivo_presente = scad_effettivo.has_mese(anno, mese)
+            # Lunedì delle settimane convalidate nell'Effettivo (tutte se lo è il mese).
+            settimane_convalidate = (
+                scad_effettivo.settimane_convalidate(anno, mese) if effettivo_presente
+                else set()
+            )
+            mese_intero = effettivo_presente and (
+                scad_effettivo.get_stato_mese(anno, mese) == "CONVALIDATO"
+            )
+            scad = scad_effettivo if effettivo_presente else scad_previsto
             dati = scad.load_mese(anno, mese)
             turni = dict(dati.get("turni", {}))
             giorni_effettivi = mesi_sale_effettive.get((anno, mese), {}).get("turni", {})
@@ -221,6 +277,7 @@ class ControllerLibretto:
                     data_str = giorno.isoformat()
                     if ("Reparto", "Giro Visite") in {(k[1], k[2]) for k in confirmed_keys if k[0] == data_str}:
                         continue
+                    mese_convalidato = lun_date in settimane_convalidate
                     result.append({
                         "data":       data_str,
                         "tipo":       "pianificata",
@@ -231,6 +288,8 @@ class ControllerLibretto:
                         "intervento": "",
                         "ruolo":      "Giro Visite",
                         "note":       "",
+                        "mese_convalidato": mese_convalidato,
+                        "convalida_mese_intero": mese_intero,
                     })
 
             for data_str, turno in turni.items():
@@ -239,6 +298,7 @@ class ControllerLibretto:
                 except ValueError:
                     continue
                 lunedi = giorno - _td(days=giorno.weekday())
+                mese_convalidato = lunedi in settimane_convalidate
                 for row_name, valore in turno.items():
                     if row_name == "Tipo Guardia":
                         continue
@@ -262,20 +322,37 @@ class ControllerLibretto:
                         "intervento": "",
                         "ruolo":      row_name,
                         "note":       "",
+                        "mese_convalidato": mese_convalidato,
+                        "convalida_mese_intero": mese_intero,
                     }
                     if row_name in ("Sala Op. I", "Sala Op. II"):
                         entry["or_pianificata"] = True
                         slots = []
                         if lunedi.isoformat() in settimane_effettive:
                             mese_sale = mesi_sale_effettive.get((anno, mese), {})
+                            settimana_pianificata = True
                         elif sale_previste:
                             if (anno, mese) not in mesi_sale_previste:
                                 mesi_sale_previste[anno, mese] = sale_previste.load_mese(anno, mese)
                             mese_sale = mesi_sale_previste[anno, mese]
+                            settimana_pianificata = sale_previste.has_settimana(lunedi)
                         else:
                             mese_sale = {}
+                            settimana_pianificata = False
+                        entry.update(self._dati_turno_sala(dati, turno, data_str, row_name))
+                        entry["settimana_pianificata"] = settimana_pianificata
                         operations = mese_sale.get("turni", {}).get(data_str, {}).get("operazioni", [])
+                        sala = "OR-1" if row_name == "Sala Op. I" else "OR-2"
                         for op in operations:
+                            # Solo gli interventi dello specializzando (o, se l'intervento
+                            # non ne indica uno, quelli della sua sala), non tutti quelli
+                            # del giorno.
+                            esecutore = op.get("specializzando", "")
+                            if not (
+                                self._nome_match(esecutore, nome_form) if esecutore
+                                else op.get("sala_operatoria") == sala
+                            ):
+                                continue
                             if op.get("nome_paziente") or op.get("intervento"):
                                 slots.append({
                                     "label": f"{op.get('ora_inizio','?')}–{op.get('ora_fine','?')}",
@@ -286,6 +363,27 @@ class ControllerLibretto:
 
         result.sort(key=lambda a: (a["data"], a.get("sede", "")))
         return result
+
+    @staticmethod
+    def _dati_turno_sala(dati_mese: dict, turno: dict, data_str: str, row_name: str) -> dict:
+        """Quello che lo Scadenzario sa già di un turno in sala: sala, orario disponibile,
+        guardia del giorno e chi è nell'altra sala. Precompila la scheda nel libretto
+        anche quando gli interventi non sono ancora pianificati."""
+        sala = "OR-1" if row_name == "Sala Op. I" else "OR-2"
+        altra = "Sala Op. II" if row_name == "Sala Op. I" else "Sala Op. I"
+        configurazione = dati_mese.get(OPTIMIZATION_KEY, {})
+        minuti = configurazione.get("capacita_sessioni", {}).get(data_str, {}).get(
+            sala,
+            configurazione.get("sale_operatorie", {}).get(sala, {}).get("capacita_minuti", 600),
+        )
+        fine = 8 * 60 + int(minuti)
+        return {
+            "sala_operatoria": sala,
+            "orario_sala": f"08:00 – {fine // 60:02d}:{fine % 60:02d}",
+            "guardia": str(turno.get("Tipo Guardia", "") or ""),
+            "altra_sala": f"{'OR-2' if sala == 'OR-1' else 'OR-1'}: "
+                          f"{turno.get(altra, '') or '—'}",
+        }
 
     @staticmethod
     def _nome_match(nome_in_scad: str, nome_form: str) -> bool:
@@ -359,10 +457,41 @@ class ControllerLibretto:
             self._aggiorna_cache(self._spec_corrente)
             self._popola_lista_attivita(self._categoria_corrente)
 
+        def _on_note(att_data, note):
+            """Note di un'attività svolta: nell'intervento registrato o nella conferma."""
+            if att_data.get("ruolo") in ("OR I", "OR II"):
+                salvata = self.model.aggiorna_nota_intervento(spec_id, att_data, note)
+            else:
+                chiave = (att_data["data"], att_data["sede"], att_data["attivita"])
+                # Completata dalla convalida dello Scadenzario senza conferma a mano: la
+                # nota crea la conferma, così resta nel libretto.
+                record = dict(extra_dict.get(chiave) or {
+                    "data": att_data["data"],
+                    "sede": att_data["sede"],
+                    "attivita": att_data["attivita"],
+                    "ruolo": att_data.get("ruolo", ""),
+                    "descrizione": att_data.get("descrizione", ""),
+                    "tipo": "extra",
+                    **{
+                        campo: att_data[campo]
+                        for campo in ("etichetta", "convalida") if att_data.get(campo)
+                    },
+                })
+                record["note"] = note
+                self.model.salva_attivita_extra(spec_id, record)
+                extra_dict[chiave] = record
+                salvata = True
+            if salvata:
+                att_data["note"] = note
+                self._aggiorna_cache(self._spec_corrente)
+                self._popola_lista_attivita(self._categoria_corrente)
+            return salvata
+
         self.view.popola_dettaglio_giorno(
             data_str, attivita, extra_dict,
             on_save=_on_save,
             meta=meta,
+            on_note=_on_note,
         )
         self.view.stacked_widget.setCurrentIndex(2)
 
@@ -386,7 +515,7 @@ class ControllerLibretto:
             if termini:
                 match_str = (
                     f"{spec.get('nome','')} {spec.get('cognome','')} "
-                    f"{spec.get('matricola','')}".lower()
+                    f"{spec.get('matricola','')} {sede_di(spec)}".lower()
                 )
                 if any(t not in match_str for t in termini):
                     continue
@@ -397,6 +526,7 @@ class ControllerLibretto:
                 matricola=spec.get("matricola", "N/D"),
                 livello=spec.get("livello", ""),
                 stato=spec.get("stato", ""),
+                sede=etichetta_sede(spec),
             )
             item.setData(Qt.ItemDataRole.UserRole, spec.get("id"))
             self.view.lista_risultati.addItem(item)

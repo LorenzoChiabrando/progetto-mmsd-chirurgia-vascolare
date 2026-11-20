@@ -11,6 +11,7 @@ from src.data_paths import resolve_data_directory
 from src.models.id_generator import next_available_id
 from src.models.json_files import CorruptedDataError, read_json_object, write_json_atomic
 from src.models.patient_plan_state import write_json_batch
+from src.resident_names import format_given_name, format_surname
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -47,10 +48,12 @@ class DataManagerLibretto:
         nuovo_specializzando = {
             "id": "",
             "matricola": dati_form["matricola"],
-            "nome": dati_form["nome"],
-            "cognome": dati_form["cognome"],
+            "nome": format_given_name(dati_form["nome"]),
+            "cognome": format_surname(dati_form["cognome"]),
             "livello": dati_form["livello"],
             "stato": dati_form["stato"],
+            "sede": dati_form.get("sede", ""),
+            "sede_estero": dati_form.get("sede_estero", ""),
         }
 
         while True:
@@ -74,10 +77,12 @@ class DataManagerLibretto:
         spec = read_json_object(filepath)
         spec.update({
             "matricola": dati["matricola"],
-            "nome":      dati["nome"],
-            "cognome":   dati["cognome"],
+            "nome":      format_given_name(dati["nome"]),
+            "cognome":   format_surname(dati["cognome"]),
             "livello":   dati["livello"],
             "stato":     dati["stato"],
+            "sede":      dati.get("sede", ""),
+            "sede_estero": dati.get("sede_estero", ""),
         })
         write_json_atomic(filepath, spec)
         return spec
@@ -200,6 +205,23 @@ class DataManagerLibretto:
             dati["attivita_extra"].append(att_data)
         dati["attivita_extra"].sort(key=lambda a: (a.get("data", ""), a.get("sede", "")))
         write_json_atomic(filepath, dati)
+
+    def aggiorna_nota_intervento(self, spec_id: str, attivita: dict, note: str) -> bool:
+        """Scrive le note di un intervento registrato (stesso giorno, orario e paziente).
+
+        Restituisce falso se l'intervento non è nel libretto.
+        """
+        filepath = os.path.join(self.dir_libretti, f"{spec_id}.json")
+        if not os.path.exists(filepath):
+            return False
+        dati = read_json_object(filepath)
+        chiave = (self._activity_key(attivita), attivita.get("id_paziente", ""))
+        for registrata in dati.get("attivita", []):
+            if (self._activity_key(registrata), registrata.get("id_paziente", "")) == chiave:
+                registrata["note"] = note
+                write_json_atomic(filepath, dati)
+                return True
+        return False
 
     def get_meta_giorno(self, spec_id: str, data_str: str) -> dict:
         spec = self.get_specializzando_by_id(spec_id)

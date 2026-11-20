@@ -14,7 +14,7 @@
         "2026-11-02": {
             "specializzandi": {
                 "OR I": "JAZZ B.",
-                "OR II": "Parco L."
+                "OR II": "PARCO L."
             },
             "operazioni": [
                 {
@@ -65,7 +65,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Parco L.",
+                    "specializzando": "PARCO L.",
                     "id_specializzando": "SP008",
                     "ruolo_specializzando": "OR II"
                 }
@@ -74,7 +74,7 @@
         "2026-11-03": {
             "specializzandi": {
                 "OR I": "JAZZ B.",
-                "OR II": "Parco L."
+                "OR II": "PARCO L."
             },
             "operazioni": [
                 {
@@ -108,7 +108,7 @@
         "2026-11-04": {
             "specializzandi": {
                 "OR I": "JAZZ B.",
-                "OR II": "Parco L."
+                "OR II": "PARCO L."
             },
             "operazioni": [
                 {
@@ -138,7 +138,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Parco L.",
+                    "specializzando": "PARCO L.",
                     "id_specializzando": "SP008",
                     "ruolo_specializzando": "OR II"
                 }
@@ -147,7 +147,7 @@
         "2026-11-05": {
             "specializzandi": {
                 "OR I": "JAZZ B.",
-                "OR II": "Parco L."
+                "OR II": "PARCO L."
             },
             "operazioni": [
                 {
@@ -198,7 +198,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Parco L.",
+                    "specializzando": "PARCO L.",
                     "id_specializzando": "SP008",
                     "ruolo_specializzando": "OR II"
                 }
@@ -207,7 +207,7 @@
         "2026-11-06": {
             "specializzandi": {
                 "OR I": "JAZZ B.",
-                "OR II": "Parco L."
+                "OR II": "PARCO L."
             },
             "operazioni": [
                 {
@@ -240,8 +240,8 @@
         },
         "2026-11-09": {
             "specializzandi": {
-                "OR I": "Parco L.",
-                "OR II": "Gasparri A."
+                "OR I": "PARCO L.",
+                "OR II": "GASPARRI A."
             },
             "operazioni": [
                 {
@@ -266,7 +266,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Bassa",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Gasparri A.",
+                    "specializzando": "GASPARRI A.",
                     "id_specializzando": "SP001",
                     "ruolo_specializzando": "OR II"
                 }
@@ -274,8 +274,8 @@
         },
         "2026-11-10": {
             "specializzandi": {
-                "OR I": "Parco L.",
-                "OR II": "Gasparri A."
+                "OR I": "PARCO L.",
+                "OR II": "GASPARRI A."
             },
             "operazioni": [
                 {
@@ -300,7 +300,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Parco L.",
+                    "specializzando": "PARCO L.",
                     "id_specializzando": "SP008",
                     "ruolo_specializzando": "OR I"
                 },
@@ -326,7 +326,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Gasparri A.",
+                    "specializzando": "GASPARRI A.",
                     "id_specializzando": "SP001",
                     "ruolo_specializzando": "OR II"
                 }
@@ -334,8 +334,8 @@
         },
         "2026-11-11": {
             "specializzandi": {
-                "OR I": "Parco L.",
-                "OR II": "Gasparri A."
+                "OR I": "PARCO L.",
+                "OR II": "GASPARRI A."
             },
             "operazioni": [
                 {
@@ -360,7 +360,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Parco L.",
+                    "specializzando": "PARCO L.",
                     "id_specializzando": "SP008",
                     "ruolo_specializzando": "OR I"
                 }
@@ -368,8 +368,8 @@
         },
         "2026-11-12": {
             "specializzandi": {
-                "OR I": "Parco L.",
-                "OR II": "Gasparri A."
+                "OR I": "PARCO L.",
+                "OR II": "GASPARRI A."
             },
             "operazioni": [
                 {
@@ -399,7 +399,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Media",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Gasparri A.",
+                    "specializzando": "GASPARRI A.",
                     "id_specializzando": "SP001",
                     "ruolo_specializzando": "OR II"
                 }
@@ -407,8 +407,8 @@
         },
         "2026-11-13": {
             "specializzandi": {
-                "OR I": "Parco L.",
-                "OR II": "Gasparri A."
+                "OR I": "PARCO L.",
+                "OR II": "GASPARRI A."
             },
             "operazioni": [
                 {
@@ -433,7 +433,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Parco L.",
+                    "specializzando": "PARCO L.",
                     "id_specializzando": "SP008",
                     "ruolo_specializzando": "OR I"
                 },
@@ -459,7 +459,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Bassa",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Gasparri A.",
+                    "specializzando": "GASPARRI A.",
                     "id_specializzando": "SP001",
                     "ruolo_specializzando": "OR II"
                 }
@@ -467,8 +467,8 @@
         },
         "2026-11-16": {
             "specializzandi": {
-                "OR I": "Gasparri A.",
-                "OR II": "Bello M."
+                "OR I": "GASPARRI A.",
+                "OR II": "BELLO M."
             },
             "operazioni": [
                 {
@@ -493,7 +493,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Media",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Gasparri A.",
+                    "specializzando": "GASPARRI A.",
                     "id_specializzando": "SP001",
                     "ruolo_specializzando": "OR I"
                 }
@@ -501,8 +501,8 @@
         },
         "2026-11-17": {
             "specializzandi": {
-                "OR I": "Gasparri A.",
-                "OR II": "Bello M."
+                "OR I": "GASPARRI A.",
+                "OR II": "BELLO M."
             },
             "operazioni": [
                 {
@@ -527,7 +527,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Bello M.",
+                    "specializzando": "BELLO M.",
                     "id_specializzando": "SP002",
                     "ruolo_specializzando": "OR II"
                 }
@@ -535,8 +535,8 @@
         },
         "2026-11-18": {
             "specializzandi": {
-                "OR I": "Gasparri A.",
-                "OR II": "Bello M."
+                "OR I": "GASPARRI A.",
+                "OR II": "BELLO M."
             },
             "operazioni": [
                 {
@@ -561,7 +561,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Bassa",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Gasparri A.",
+                    "specializzando": "GASPARRI A.",
                     "id_specializzando": "SP001",
                     "ruolo_specializzando": "OR I"
                 },
@@ -587,7 +587,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Bello M.",
+                    "specializzando": "BELLO M.",
                     "id_specializzando": "SP002",
                     "ruolo_specializzando": "OR II"
                 }
@@ -595,8 +595,8 @@
         },
         "2026-11-19": {
             "specializzandi": {
-                "OR I": "Gasparri A.",
-                "OR II": "Bello M."
+                "OR I": "GASPARRI A.",
+                "OR II": "BELLO M."
             },
             "operazioni": [
                 {
@@ -621,7 +621,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Gasparri A.",
+                    "specializzando": "GASPARRI A.",
                     "id_specializzando": "SP001",
                     "ruolo_specializzando": "OR I"
                 }
@@ -629,8 +629,8 @@
         },
         "2026-11-20": {
             "specializzandi": {
-                "OR I": "Gasparri A.",
-                "OR II": "Bello M."
+                "OR I": "GASPARRI A.",
+                "OR II": "BELLO M."
             },
             "operazioni": [
                 {
@@ -660,7 +660,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Bello M.",
+                    "specializzando": "BELLO M.",
                     "id_specializzando": "SP002",
                     "ruolo_specializzando": "OR II"
                 }
@@ -668,8 +668,8 @@
         },
         "2026-11-23": {
             "specializzandi": {
-                "OR I": "Bello M.",
-                "OR II": "Verdone V."
+                "OR I": "BELLO M.",
+                "OR II": "VERDONE V."
             },
             "operazioni": [
                 {
@@ -694,7 +694,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Bello M.",
+                    "specializzando": "BELLO M.",
                     "id_specializzando": "SP002",
                     "ruolo_specializzando": "OR I"
                 },
@@ -720,7 +720,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Verdone V.",
+                    "specializzando": "VERDONE V.",
                     "id_specializzando": "SP003",
                     "ruolo_specializzando": "OR II"
                 }
@@ -728,8 +728,8 @@
         },
         "2026-11-24": {
             "specializzandi": {
-                "OR I": "Bello M.",
-                "OR II": "Verdone V."
+                "OR I": "BELLO M.",
+                "OR II": "VERDONE V."
             },
             "operazioni": [
                 {
@@ -754,7 +754,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Bello M.",
+                    "specializzando": "BELLO M.",
                     "id_specializzando": "SP002",
                     "ruolo_specializzando": "OR I"
                 }
@@ -762,8 +762,8 @@
         },
         "2026-11-25": {
             "specializzandi": {
-                "OR I": "Bello M.",
-                "OR II": "Verdone V."
+                "OR I": "BELLO M.",
+                "OR II": "VERDONE V."
             },
             "operazioni": [
                 {
@@ -788,7 +788,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Verdone V.",
+                    "specializzando": "VERDONE V.",
                     "id_specializzando": "SP003",
                     "ruolo_specializzando": "OR II"
                 }
@@ -796,8 +796,8 @@
         },
         "2026-11-26": {
             "specializzandi": {
-                "OR I": "Bello M.",
-                "OR II": "Verdone V."
+                "OR I": "BELLO M.",
+                "OR II": "VERDONE V."
             },
             "operazioni": [
                 {
@@ -822,7 +822,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Bello M.",
+                    "specializzando": "BELLO M.",
                     "id_specializzando": "SP002",
                     "ruolo_specializzando": "OR I"
                 },
@@ -848,7 +848,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Verdone V.",
+                    "specializzando": "VERDONE V.",
                     "id_specializzando": "SP003",
                     "ruolo_specializzando": "OR II"
                 }
@@ -856,8 +856,8 @@
         },
         "2026-11-27": {
             "specializzandi": {
-                "OR I": "Bello M.",
-                "OR II": "Verdone V."
+                "OR I": "BELLO M.",
+                "OR II": "VERDONE V."
             },
             "operazioni": [
                 {
@@ -882,7 +882,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Bello M.",
+                    "specializzando": "BELLO M.",
                     "id_specializzando": "SP002",
                     "ruolo_specializzando": "OR I"
                 }
@@ -890,8 +890,8 @@
         },
         "2026-11-30": {
             "specializzandi": {
-                "OR I": "Verdone V.",
-                "OR II": "Silvestre P."
+                "OR I": "VERDONE V.",
+                "OR II": "SILVESTRE P."
             },
             "operazioni": [
                 {
@@ -921,7 +921,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Silvestre P.",
+                    "specializzando": "SILVESTRE P.",
                     "id_specializzando": "SP004",
                     "ruolo_specializzando": "OR II"
                 }

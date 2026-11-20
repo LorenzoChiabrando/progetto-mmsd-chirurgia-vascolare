@@ -22,6 +22,8 @@ class ControllerPazienti:
         self.view.chk_pianificato.toggled.connect(self.aggiorna_lista)
         self.view.chk_completato.toggled.connect(self.aggiorna_lista)
         self.view.search_bar.textChanged.connect(self.aggiorna_lista)
+        self.view.spin_durata_min.valueChanged.connect(self.aggiorna_lista)
+        self.view.spin_durata_max.valueChanged.connect(self.aggiorna_lista)
         self.view.lista_risultati.itemSelectionChanged.connect(self.gestisci_selezione)
         self.view.btn_aggiungi.clicked.connect(self.apri_form_aggiunta)
         self.view.btn_bulk.clicked.connect(self.apri_form_bulk)
@@ -95,6 +97,10 @@ class ControllerPazienti:
         if self.view.chk_completato.isChecked():
             stati_filtro.append("Completato")
 
+        # Intervallo di durata prevista; 0 nel massimo vuol dire nessun limite.
+        durata_min = self.view.spin_durata_min.value()
+        durata_max = self.view.spin_durata_max.value()
+
         n_attesa = 0
         n_pianificati = 0
 
@@ -116,6 +122,9 @@ class ControllerPazienti:
                 continue
 
             interventi = paz.get("interventi", [])
+            durata = self._durata_prevista(paz)
+            if durata < durata_min or (durata_max and durata > durata_max):
+                continue
             all_codici_str = " ".join(i.get("codice", "") for i in interventi)
             if termini:
                 match_str = (
@@ -134,6 +143,7 @@ class ControllerPazienti:
                 codice=codice_display,
                 urgenza=paz.get("urgenza", ""),
                 stato=paz_stato,
+                durata=durata,
             )
             item.setData(Qt.ItemDataRole.UserRole, paz.get("id"))
             self.view.lista_risultati.addItem(item)
@@ -141,6 +151,16 @@ class ControllerPazienti:
 
         self.view.btn_apri.setEnabled(False)
         self.view.aggiorna_conteggi(n_attesa, n_pianificati, len(tutti))
+
+    @staticmethod
+    def _durata_prevista(paz: dict) -> int:
+        """Durata prevista in minuti: il totale salvato o la somma degli interventi."""
+        try:
+            return int(paz.get("durata_intervento") or sum(
+                int(intervento.get("durata", 0)) for intervento in paz.get("interventi", [])
+            ))
+        except (TypeError, ValueError):
+            return 0
 
     def gestisci_selezione(self):
         lista = self.view.lista_risultati

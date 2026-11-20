@@ -1,4 +1,5 @@
 import os
+from src.resident_sites import descrizione_sede, etichetta_sede
 from src.data_paths import PROJECT_ROOT
 from datetime import date as _date
 
@@ -294,7 +295,7 @@ class ViewLibretto(QWidget):
         info_row.setSpacing(16)
         box_mat, self.val_matricola = self._crea_info_box("Matricola", "-")
         box_liv, self.val_livello   = self._crea_info_box("Livello", "-")
-        box_sta, self.val_stato     = self._crea_info_box("Stato", "-")
+        box_sta, self.val_stato     = self._crea_info_box("Sede", "-")
         for box in [box_mat, box_liv, box_sta]:
             info_row.addWidget(box)
         cd.addLayout(info_row)
@@ -585,7 +586,7 @@ class ViewLibretto(QWidget):
 
     def popola_dettaglio_giorno(self, data_str: str, attivita: list,
                                 extra_dict: dict, on_save,
-                                meta: dict = None):
+                                meta: dict = None, on_note=None):
         self.banda_giorno.imposta_intestazione(
             _fmt_data(data_str),
             f"{self._nome_corrente} · attività della giornata" if self._nome_corrente
@@ -611,9 +612,9 @@ class ViewLibretto(QWidget):
         for att in attivita:
             if att.get("tipo") == "completata":
                 if att.get("ruolo") in ("OR I", "OR II"):
-                    card = self._crea_card_or(att)
+                    card = self._crea_card_or(att, on_note)
                 else:
-                    card = self._crea_card_completata_semplice(att)
+                    card = self._crea_card_completata_semplice(att, on_note)
             elif att.get("or_pianificata"):
                 key   = (att["data"], att["sede"], att["attivita"])
                 saved = extra_dict.get(key, {})
@@ -626,8 +627,71 @@ class ViewLibretto(QWidget):
 
         self.giorno_cards_layout.addStretch()
 
-    def _crea_card_or(self, att: dict) -> QFrame:
-        """Read-only card for a convalidated OR activity."""
+    def _riga_note(self, layout, att: dict, on_note) -> None:
+        """Note di un'attività svolta, modificabili e salvate con «Salva note».
+
+        Senza ``on_note`` le note si mostrano soltanto (se ci sono).
+        """
+        if on_note is None:
+            if att.get("note"):
+                testo = QLabel(f"Note: {att['note']}")
+                testo.setWordWrap(True)
+                testo.setStyleSheet("font-size:14px; color:#1e293b; border:none; background:transparent;")
+                layout.addWidget(testo)
+            return
+        etichetta = QLabel("NOTE")
+        etichetta.setStyleSheet("font-size:11px; font-weight:bold; color:#94a3b8; "
+                                "letter-spacing:0.8px; border:none; background:transparent;")
+        layout.addWidget(etichetta)
+        riga = QHBoxLayout()
+        riga.setSpacing(10)
+        campo = QLineEdit(att.get("note", ""))
+        campo.setPlaceholderText("Aggiungi una nota sull'attività svolta...")
+        campo.setAccessibleName("Note sull'attività svolta")
+        campo.setStyleSheet(
+            "QLineEdit { background:#ffffff; border:1.5px solid #cbd5e1; "
+            "border-radius:8px; padding:0 10px; font-size:14px; color:#1e293b; "
+            "min-height:34px; }"
+            "QLineEdit:focus { border-color:#4338ca; }"
+        )
+        salva = QPushButton("Salva note")
+        salva.setFixedHeight(36)
+        salva.setCursor(Qt.CursorShape.PointingHandCursor)
+        salva.setEnabled(False)
+        salva.setStyleSheet(
+            "QPushButton { background:#4338ca; color:#fff; font-weight:bold; "
+            "font-size:13px; border:none; border-radius:8px; padding:0 16px; }"
+            "QPushButton:hover { background:#3730a3; }"
+            "QPushButton:disabled { background:#e2e8f0; color:#94a3b8; }"
+        )
+        esito = QLabel("")
+        esito.setStyleSheet("font-size:12px; color:#15803d; border:none; background:transparent;")
+        salvata = [att.get("note", "")]
+
+        def _cambiata(testo):
+            salva.setEnabled(testo.strip() != salvata[0])
+            esito.setText("")
+
+        def _salva():
+            nota = campo.text().strip()
+            if on_note(att, nota):
+                salvata[0] = nota
+                salva.setEnabled(False)
+                esito.setText("✔ Note salvate")
+            else:
+                esito.setStyleSheet("font-size:12px; color:#b91c1c; border:none; background:transparent;")
+                esito.setText("Note non salvate: attività non trovata nel libretto")
+
+        campo.textChanged.connect(_cambiata)
+        campo.returnPressed.connect(lambda: salva.isEnabled() and _salva())
+        salva.clicked.connect(_salva)
+        riga.addWidget(campo, 1)
+        riga.addWidget(salva)
+        layout.addLayout(riga)
+        layout.addWidget(esito)
+
+    def _crea_card_or(self, att: dict, on_note=None) -> QFrame:
+        """Card of a convalidated OR activity: data read-only, notes editable."""
         card = QFrame()
         card.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         card.setStyleSheet(
@@ -712,9 +776,9 @@ class ViewLibretto(QWidget):
               "RUOLO",      att.get("ruolo", ""))
         _pair("COMPLESSITÀ", att.get("complessita", ""),
               "TIPO CHIRURGIA", att.get("tipo_chirurgia", ""))
-        _span("NOTE", att.get("note", ""))
 
         vl.addLayout(grid)
+        self._riga_note(vl, att, on_note)
         return card
 
     def _crea_card_or_pianificata(self, att: dict, saved: dict, on_save) -> QFrame:
@@ -777,6 +841,31 @@ class ViewLibretto(QWidget):
         sep1.setStyleSheet("background:#bfdbfe; border:none;")
         vl.addWidget(sep1)
 
+        # Dati del turno già noti dallo Scadenzario, anche senza interventi pianificati.
+        turno = [
+            (etichetta, att.get(chiave, ""))
+            for etichetta, chiave in (
+                ("SALA", "sala_operatoria"),
+                ("ORARIO SALA", "orario_sala"),
+                ("GUARDIA", "guardia"),
+                ("ALTRA SALA", "altra_sala"),
+            )
+            if att.get(chiave)
+        ]
+        if turno:
+            griglia_turno = QGridLayout()
+            griglia_turno.setHorizontalSpacing(20)
+            griglia_turno.setVerticalSpacing(8)
+            griglia_turno.setColumnMinimumWidth(0, 110)
+            griglia_turno.setColumnStretch(1, 2)
+            griglia_turno.setColumnMinimumWidth(2, 110)
+            griglia_turno.setColumnStretch(3, 2)
+            for posizione, (etichetta, valore) in enumerate(turno):
+                riga, colonna = divmod(posizione, 2)
+                griglia_turno.addWidget(_lbl_key(etichetta), riga, 2 * colonna)
+                griglia_turno.addWidget(_lbl_val(valore), riga, 2 * colonna + 1)
+            vl.addLayout(griglia_turno)
+
         slots = att.get("slots", [])
         if slots:
             for slot in slots:
@@ -829,7 +918,13 @@ class ViewLibretto(QWidget):
                 sf.addLayout(grid)
                 vl.addWidget(slot_frame)
         else:
-            lbl_empty = QLabel("Nessun dettaglio intervento disponibile per questo giorno.")
+            lbl_empty = QLabel(
+                f"Nessun intervento pianificato in {att.get('sala_operatoria', 'sala')} "
+                "per questo giorno."
+                if att.get("settimana_pianificata", True) else
+                "Gli interventi di questa settimana non sono ancora stati pianificati "
+                "nelle Sale Operatorie: compariranno qui."
+            )
             lbl_empty.setStyleSheet("font-size:13px; color:#64748b; border:none; background:transparent;")
             vl.addWidget(lbl_empty)
 
@@ -987,8 +1082,8 @@ class ViewLibretto(QWidget):
         btn_salva.clicked.connect(_do_save)
         return card
 
-    def _crea_card_completata_semplice(self, att: dict) -> QFrame:
-        """Read-only card for a manually confirmed (non-OR) activity."""
+    def _crea_card_completata_semplice(self, att: dict, on_note=None) -> QFrame:
+        """Card of a completed non-OR activity: data read-only, notes editable."""
         card = QFrame()
         card.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         card.setStyleSheet(
@@ -1007,7 +1102,9 @@ class ViewLibretto(QWidget):
             "background:#dcfce7; color:#15803d; font-weight:bold; font-size:12px;"
             "padding:3px 14px; border-radius:10px; border:1px solid #86efac;"
         )
-        lbl_tipo = QLabel(att.get("attivita", att.get("sede", "Attività")))
+        lbl_tipo = QLabel(
+            att.get("etichetta") or att.get("attivita", att.get("sede", "Attività"))
+        )
         lbl_tipo.setStyleSheet("font-size:15px; font-weight:bold; color:#1e293b; border:none; background:transparent;")
         hdr.addWidget(badge_c)
         hdr.addWidget(lbl_tipo, stretch=1)
@@ -1055,14 +1152,16 @@ class ViewLibretto(QWidget):
             grid.addWidget(_lbl_key("DESCRIZIONE"), row, 0)
             grid.addWidget(_lbl_val(descrizione), row, 1)
             row += 1
-        note = att.get("note", "")
-        if note:
-            grid.addWidget(_lbl_key("NOTE"), row, 0)
-            grid.addWidget(_lbl_val(note), row, 1)
+        # Completata dalla convalida del mese nello Scadenzario, non a mano.
+        convalida = att.get("convalida", "")
+        if convalida:
+            grid.addWidget(_lbl_key("CONVALIDA"), row, 0)
+            grid.addWidget(_lbl_val(convalida), row, 1)
             row += 1
 
         if row > 0:
             vl.addLayout(grid)
+        self._riga_note(vl, att, on_note)
 
         return card
 
@@ -1088,12 +1187,18 @@ class ViewLibretto(QWidget):
         bl.addWidget(val)
         return box, val
 
-    def crea_item_lista(self, cognome, nome, matricola, livello, stato):
-        """Elemento dell'anagrafica, nello stesso stile dell'elenco dei pazienti."""
+    def crea_item_lista(self, cognome, nome, matricola, livello, stato, sede=""):
+        """Elemento dell'anagrafica, nello stesso stile dell'elenco dei pazienti.
+
+        L'etichetta della sede mostra ``sede`` (nome breve della struttura o «Estero»)
+        con il colore dello ``stato``.
+        """
         _inizio, _fine, accento, tinta = TONI_MODALITA["LIBRETTO"]
         etichette = []
-        for testo, colori in ((livello, _COLORI_LIVELLO), (stato, _COLORI_STATO)):
-            sfondo, colore = colori.get(testo, ("#f1f5f9", "#475569"))
+        for testo, chiave, colori in (
+            (livello, livello, _COLORI_LIVELLO), (sede or stato, stato, _COLORI_STATO),
+        ):
+            sfondo, colore = colori.get(chiave, ("#f1f5f9", "#475569"))
             etichette.append((testo, sfondo, colore))
         return crea_elemento_elenco(
             cognome=cognome, nome=nome, sottotitolo=f"Matricola {matricola}",
@@ -1117,7 +1222,7 @@ class ViewLibretto(QWidget):
         self._nome_corrente = f"{cognome} {nome}".strip()
         self.banda_dettaglio.imposta_intestazione(
             self._nome_corrente,
-            f"Matricola {spec.get('matricola', 'N/D')} · {livello} · {stato}",
+            f"Matricola {spec.get('matricola', 'N/D')} · {livello} · {etichetta_sede(spec)}",
             "LIBRETTO",
         )
         self.val_matricola.setText(spec.get("matricola", "N/D"))
@@ -1131,7 +1236,8 @@ class ViewLibretto(QWidget):
         )
 
         bg2, fg2 = _COLORI_STATO.get(stato, ("#f1f5f9", "#475569"))
-        self.val_stato.setText(stato)
+        # Nella scheda la sede completa, con il dettaglio dell'estero.
+        self.val_stato.setText(descrizione_sede(spec))
         self.val_stato.setStyleSheet(
             f"background-color:{bg2}; color:{fg2}; font-size:18px; "
             f"font-weight:bold; padding:10px 16px; border-radius:10px; "

@@ -4,8 +4,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout, QLabel, QTableWidget, QTableWidgetItem, QHeaderView,
     QFileDialog, QComboBox, QScroller, QLineEdit,
 )
-from PySide6.QtCore import Qt
-from PySide6.QtGui import QColor, QIntValidator
+from PySide6.QtCore import QRegularExpression, Qt
+from PySide6.QtGui import QColor, QRegularExpressionValidator
 
 from src.importers.patient_csv import (
     PatientCsvError, build_csv_interventions, read_patient_csv,
@@ -40,6 +40,11 @@ _BG_OK  = QColor("#ffffff")
 _BG_ERR = QColor("#fef2f2")
 _FG_ERR = QColor("#b91c1c")
 _FG_OK  = QColor("#1e293b")
+
+# Durata totale (90) o una per intervento (60;90): i valori li controlla
+# build_csv_interventions, qui si accettano solo cifre e punti e virgola.
+_DURATA_RE = QRegularExpression(r"[0-9]{1,5}(;[0-9]{1,5})*")
+_SUGGERIMENTO_DURATA = "Minuti: il totale (90) oppure uno per intervento (60;90)."
 
 
 _SOTTOTITOLO = (
@@ -245,7 +250,8 @@ class DialogBulkPazienti(ModalDialog):
 
         duration_input = QLineEdit(duration_text)
         duration_input.setObjectName("InputDialog")
-        duration_input.setValidator(QIntValidator(1, 10080, duration_input))
+        duration_input.setValidator(QRegularExpressionValidator(_DURATA_RE, duration_input))
+        duration_input.setToolTip(_SUGGERIMENTO_DURATA)
         duration_input.textChanged.connect(
             lambda text, rw=row: self._on_durata_totale_cambiata(rw, text)
         )
@@ -277,17 +283,21 @@ class DialogBulkPazienti(ModalDialog):
             item = self.tabella.item(row, column)
             if not item or not item.text().strip():
                 return False
+        return not self._errore_durata(row)
+
+    def _errore_durata(self, row: int) -> str:
+        """Perché la durata non va bene per gli interventi della riga; vuoto se va bene."""
         duration = self.tabella.cellWidget(row, _COL_DUR)
         if duration is None or not duration.hasAcceptableInput():
-            return False
+            return "Durata incompleta. " + _SUGGERIMENTO_DURATA
         try:
             build_csv_interventions(
                 self.tabella.item(row, _COL_CODICE).text(),
                 self.tabella.item(row, _COL_INTERVENTO).text(), duration.text(),
             )
-        except PatientCsvError:
-            return False
-        return True
+        except PatientCsvError as error:
+            return f"{error} {_SUGGERIMENTO_DURATA}"
+        return ""
 
     def _valida_riga(self, row: int):
         previous_signals = self.tabella.blockSignals(True)
@@ -321,7 +331,14 @@ class DialogBulkPazienti(ModalDialog):
         self.tabella.blockSignals(previous_signals)
         duration = self.tabella.cellWidget(row, _COL_DUR)
         if duration is not None:
-            duration.setStyleSheet("" if self._riga_valida(row) else "background: #fef2f2;")
+            # Rossa solo se è sbagliata la durata (un nome mancante si vede già nella sua
+            # cella). Una proprietà e non setStyleSheet(""): con Qt 6.9 lo sfondo rosso
+            # restava anche dopo aver corretto il valore.
+            errore = self._errore_durata(row)
+            duration.setProperty("errore", bool(errore))
+            duration.setToolTip(errore or _SUGGERIMENTO_DURATA)
+            duration.style().unpolish(duration)
+            duration.style().polish(duration)
         self._aggiorna_stato()
 
     def _on_cella_cambiata(self, row: int, col: int):
@@ -398,14 +415,14 @@ class DialogBulkPazienti(ModalDialog):
                 w = self.tabella.cellWidget(_row, col)
                 return w.currentText() if w else ""
 
-            durata = int(self.tabella.cellWidget(row, _COL_DUR).text())
-
             # Ricostruisce dalle celle se l'anteprima è stata modificata.
             interventi = deepcopy(self._interventi_per_riga.get(row))
             if not interventi:
                 interventi = build_csv_interventions(
-                    _txt(_COL_CODICE), _txt(_COL_INTERVENTO), str(durata)
+                    _txt(_COL_CODICE), _txt(_COL_INTERVENTO),
+                    self.tabella.cellWidget(row, _COL_DUR).text(),
                 )
+            durata = sum(intervento["durata"] for intervento in interventi)
 
             primo = interventi[0] if interventi else {}
 

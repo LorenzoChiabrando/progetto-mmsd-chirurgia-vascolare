@@ -329,9 +329,9 @@ limiti dei test sono descritti in [PLANNER_VERIFICATION.md](PLANNER_VERIFICATION
 - Per recuperare un file danneggiato: rimettere la copia da `.demo_backups/` oppure rigenerare i
   dati con `reset_demo_data.py --write` (vedi sopra).
 - L'eseguibile (PyInstaller) non scrive accanto a sé: al primo avvio copia i dati demo inclusi in
-  `~/.local/share/ScadenzarioCV/v2/dati` (Windows: `%APPDATA%\ScadenzarioCV\v2\dati`, macOS:
-  `~/Library/Application Support/ScadenzarioCV/v2/dati`) e da lì in poi usa quella cartella; i log
-  vanno in `.../ScadenzarioCV/v2/logs`. Per ripartire dai dati demo basta cancellare `dati`.
+  `~/.local/share/ScadenzarioCV/v3/dati` (Windows: `%APPDATA%\ScadenzarioCV\v3\dati`, macOS:
+  `~/Library/Application Support/ScadenzarioCV/v3/dati`) e da lì in poi usa quella cartella; i log
+  vanno in `.../ScadenzarioCV/v3/logs`. Per ripartire dai dati demo basta cancellare `dati`.
   `--data-dir` e `MMSD_DATA_DIR` restano validi anche per l'eseguibile.
 
 ## Ottimizzazione Pyomo + HiGHS

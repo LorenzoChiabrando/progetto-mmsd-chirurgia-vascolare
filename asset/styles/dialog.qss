@@ -61,6 +61,11 @@ QDialog[sezione] QTextEdit#NoteDialog {
     font-size: 15px;
     color: #1e293b;
 }
+QDialog[sezione] QLineEdit#InputDialog[errore="true"] {
+    background-color: #fef2f2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+}
 QDialog[sezione] QTextEdit#NoteDialog {
     padding: 8px 12px;
     font-size: 14px;
@@ -71,6 +76,18 @@ QDialog[sezione] QAbstractSpinBox#InputDialog::down-button {
     width: 28px;
     border: none;
     background: transparent;
+}
+/* Casella numerica senza frecce. Non si usa NoButtons: con Qt 6.12 e questo foglio di
+   stile ridurrebbe il campo di testo a 1 px e il valore non si vedrebbe. */
+QDialog[sezione] QAbstractSpinBox#InputDialog[senzaPulsanti="true"]::up-button,
+QDialog[sezione] QAbstractSpinBox#InputDialog[senzaPulsanti="true"]::down-button {
+    width: 0px;
+}
+QDialog[sezione] QAbstractSpinBox#InputDialog[senzaPulsanti="true"]::up-arrow,
+QDialog[sezione] QAbstractSpinBox#InputDialog[senzaPulsanti="true"]::down-arrow {
+    image: none;
+    width: 0px;
+    height: 0px;
 }
 QDialog[sezione] QAbstractSpinBox#InputDialog::up-button { subcontrol-position: top right; }
 QDialog[sezione] QAbstractSpinBox#InputDialog::down-button { subcontrol-position: bottom right; }

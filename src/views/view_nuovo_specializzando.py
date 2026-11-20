@@ -1,7 +1,11 @@
-from PySide6.QtWidgets import QComboBox, QLabel, QLineEdit
+from PySide6.QtWidgets import QComboBox, QLabel, QLineEdit, QWidget, QVBoxLayout
 
+from src.resident_sites import ESTERO, SEDI, sede_di, stato_da_sede
 from src.views.components import messages
 from src.views.components.modal_dialog import ModalDialog
+
+
+_ALTRA_SEDE_NON_SPECIFICATA = "Altra sede (da specificare)"
 
 
 class DialogNuovoSpecializzando(ModalDialog):
@@ -42,7 +46,7 @@ class DialogNuovoSpecializzando(ModalDialog):
                 True,
                 ["Junior", "Intermediate", "Senior"],
             ),
-            ("SEDE ATTUALE",      "combo_stato",     True,  ["Molinette", "Altra Sede", "Storico"]),
+            ("SEDE ATTUALE",      "combo_sede",      True,  list(SEDI)),
         ]
 
         for label_text, attr_name, is_combo, items in _campi:
@@ -65,6 +69,23 @@ class DialogNuovoSpecializzando(ModalDialog):
             layout.addSpacing(12)
             setattr(self, attr_name, widget)
 
+        # Solo per l'estero: la sede precisa, che si vede nella scheda e non nell'elenco.
+        self.box_sede_estero = QWidget()
+        box = QVBoxLayout(self.box_sede_estero)
+        box.setContentsMargins(0, 0, 0, 12)
+        box.setSpacing(4)
+        lbl_estero = QLabel("SEDE ALL'ESTERO")
+        lbl_estero.setObjectName("LblCampo")
+        self.input_sede_estero = QLineEdit()
+        self.input_sede_estero.setObjectName("InputDialog")
+        self.input_sede_estero.setPlaceholderText("Es. Karolinska University Hospital, Stoccolma")
+        self.input_sede_estero.setFixedHeight(44)
+        box.addWidget(lbl_estero)
+        box.addWidget(self.input_sede_estero)
+        layout.addWidget(self.box_sede_estero)
+        self.combo_sede.currentTextChanged.connect(self._aggiorna_sede_estero)
+        self._aggiorna_sede_estero(self.combo_sede.currentText())
+
         self.btn_annulla = self.make_button("Annulla", "secondary")
         self.btn_annulla.clicked.connect(self.reject)
 
@@ -81,10 +102,21 @@ class DialogNuovoSpecializzando(ModalDialog):
         self.input_nome.setText(self._spec_dati.get("nome", ""))
         self.input_cognome.setText(self._spec_dati.get("cognome", ""))
 
-        for combo, chiave in [(self.combo_livello, "livello"), (self.combo_stato, "stato")]:
-            idx = combo.findText(self._spec_dati.get(chiave, ""))
-            if idx >= 0:
-                combo.setCurrentIndex(idx)
+        idx = self.combo_livello.findText(self._spec_dati.get("livello", ""))
+        if idx >= 0:
+            self.combo_livello.setCurrentIndex(idx)
+        sede = sede_di(self._spec_dati)
+        if not sede:
+            # Libretto precedente con «Altra Sede» senza struttura: resta così finché
+            # non se ne sceglie una.
+            self.combo_sede.insertItem(0, _ALTRA_SEDE_NON_SPECIFICATA)
+            sede = _ALTRA_SEDE_NON_SPECIFICATA
+        self.combo_sede.setCurrentIndex(max(0, self.combo_sede.findText(sede)))
+        self.input_sede_estero.setText(self._spec_dati.get("sede_estero", ""))
+
+    def _aggiorna_sede_estero(self, sede: str) -> None:
+        self.box_sede_estero.setVisible(sede == ESTERO)
+        self.adjustSize()
 
     def valida_e_salva(self):
         matricola = self.input_matricola.text().strip()
@@ -108,5 +140,16 @@ class DialogNuovoSpecializzando(ModalDialog):
             "nome":      self.input_nome.text().strip(),
             "cognome":   self.input_cognome.text().strip(),
             "livello":   self.combo_livello.currentText(),
-            "stato":     self.combo_stato.currentText(),
+            **self._dati_sede(),
+        }
+
+    def _dati_sede(self) -> dict:
+        """Sede scelta, stato che ne deriva e testo dell'estero (vuoto se non è l'estero)."""
+        sede = self.combo_sede.currentText()
+        if sede == _ALTRA_SEDE_NON_SPECIFICATA:
+            return {"sede": "", "stato": "Altra Sede", "sede_estero": ""}
+        return {
+            "sede": sede,
+            "stato": stato_da_sede(sede),
+            "sede_estero": self.input_sede_estero.text().strip() if sede == ESTERO else "",
         }

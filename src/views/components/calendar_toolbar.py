@@ -70,7 +70,7 @@ def pulsante_esporta_pdf(colore: str) -> QPushButton:
     pulsante.setIcon(icona_colorata("file-pdf.svg", colore))
     pulsante.setIconSize(QSize(18, 18))
     pulsante.setCursor(Qt.CursorShape.PointingHandCursor)
-    pulsante.setToolTip("Esporta il mese o una sua settimana in un file PDF")
+    pulsante.setToolTip("Esporta il mese o una o più settimane in un file PDF")
     return pulsante
 
 

@@ -11,8 +11,8 @@
     "turni": {
         "2026-12-01": {
             "specializzandi": {
-                "OR I": "Verdone V.",
-                "OR II": "Silvestre P."
+                "OR I": "VERDONE V.",
+                "OR II": "SILVESTRE P."
             },
             "operazioni": [
                 {
@@ -37,7 +37,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Media",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Verdone V.",
+                    "specializzando": "VERDONE V.",
                     "id_specializzando": "SP003",
                     "ruolo_specializzando": "OR I"
                 },
@@ -63,7 +63,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Media",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Silvestre P.",
+                    "specializzando": "SILVESTRE P.",
                     "id_specializzando": "SP004",
                     "ruolo_specializzando": "OR II"
                 }
@@ -71,8 +71,8 @@
         },
         "2026-12-02": {
             "specializzandi": {
-                "OR I": "Verdone V.",
-                "OR II": "Silvestre P."
+                "OR I": "VERDONE V.",
+                "OR II": "SILVESTRE P."
             },
             "operazioni": [
                 {
@@ -97,7 +97,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Media",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Verdone V.",
+                    "specializzando": "VERDONE V.",
                     "id_specializzando": "SP003",
                     "ruolo_specializzando": "OR I"
                 }
@@ -105,8 +105,8 @@
         },
         "2026-12-03": {
             "specializzandi": {
-                "OR I": "Verdone V.",
-                "OR II": "Silvestre P."
+                "OR I": "VERDONE V.",
+                "OR II": "SILVESTRE P."
             },
             "operazioni": [
                 {
@@ -131,7 +131,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Media",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Verdone V.",
+                    "specializzando": "VERDONE V.",
                     "id_specializzando": "SP003",
                     "ruolo_specializzando": "OR I"
                 },
@@ -157,7 +157,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Bassa",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Silvestre P.",
+                    "specializzando": "SILVESTRE P.",
                     "id_specializzando": "SP004",
                     "ruolo_specializzando": "OR II"
                 }
@@ -165,8 +165,8 @@
         },
         "2026-12-04": {
             "specializzandi": {
-                "OR I": "Verdone V.",
-                "OR II": "Silvestre P."
+                "OR I": "VERDONE V.",
+                "OR II": "SILVESTRE P."
             },
             "operazioni": [
                 {
@@ -191,7 +191,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Silvestre P.",
+                    "specializzando": "SILVESTRE P.",
                     "id_specializzando": "SP004",
                     "ruolo_specializzando": "OR II"
                 }
@@ -199,8 +199,8 @@
         },
         "2026-12-07": {
             "specializzandi": {
-                "OR I": "Silvestre P.",
-                "OR II": "Massima A."
+                "OR I": "SILVESTRE P.",
+                "OR II": "MASSIMA A."
             },
             "operazioni": [
                 {
@@ -225,7 +225,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Bassa",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Silvestre P.",
+                    "specializzando": "SILVESTRE P.",
                     "id_specializzando": "SP004",
                     "ruolo_specializzando": "OR I"
                 },
@@ -256,7 +256,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Massima A.",
+                    "specializzando": "MASSIMA A.",
                     "id_specializzando": "SP005",
                     "ruolo_specializzando": "OR II"
                 }
@@ -264,8 +264,8 @@
         },
         "2026-12-08": {
             "specializzandi": {
-                "OR I": "Silvestre P.",
-                "OR II": "Massima A."
+                "OR I": "SILVESTRE P.",
+                "OR II": "MASSIMA A."
             },
             "operazioni": [
                 {
@@ -290,7 +290,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Silvestre P.",
+                    "specializzando": "SILVESTRE P.",
                     "id_specializzando": "SP004",
                     "ruolo_specializzando": "OR I"
                 }
@@ -298,8 +298,8 @@
         },
         "2026-12-09": {
             "specializzandi": {
-                "OR I": "Silvestre P.",
-                "OR II": "Massima A."
+                "OR I": "SILVESTRE P.",
+                "OR II": "MASSIMA A."
             },
             "operazioni": [
                 {
@@ -324,7 +324,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Media",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Silvestre P.",
+                    "specializzando": "SILVESTRE P.",
                     "id_specializzando": "SP004",
                     "ruolo_specializzando": "OR I"
                 },
@@ -350,7 +350,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Massima A.",
+                    "specializzando": "MASSIMA A.",
                     "id_specializzando": "SP005",
                     "ruolo_specializzando": "OR II"
                 }
@@ -358,8 +358,8 @@
         },
         "2026-12-10": {
             "specializzandi": {
-                "OR I": "Silvestre P.",
-                "OR II": "Massima A."
+                "OR I": "SILVESTRE P.",
+                "OR II": "MASSIMA A."
             },
             "operazioni": [
                 {
@@ -384,7 +384,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Massima A.",
+                    "specializzando": "MASSIMA A.",
                     "id_specializzando": "SP005",
                     "ruolo_specializzando": "OR II"
                 }
@@ -392,8 +392,8 @@
         },
         "2026-12-11": {
             "specializzandi": {
-                "OR I": "Silvestre P.",
-                "OR II": "Massima A."
+                "OR I": "SILVESTRE P.",
+                "OR II": "MASSIMA A."
             },
             "operazioni": [
                 {
@@ -418,7 +418,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Bassa",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Silvestre P.",
+                    "specializzando": "SILVESTRE P.",
                     "id_specializzando": "SP004",
                     "ruolo_specializzando": "OR I"
                 },
@@ -444,7 +444,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Massima A.",
+                    "specializzando": "MASSIMA A.",
                     "id_specializzando": "SP005",
                     "ruolo_specializzando": "OR II"
                 }
@@ -452,8 +452,8 @@
         },
         "2026-12-14": {
             "specializzandi": {
-                "OR I": "Massima A.",
-                "OR II": "Alga S."
+                "OR I": "MASSIMA A.",
+                "OR II": "ALGA S."
             },
             "operazioni": [
                 {
@@ -478,7 +478,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Massima A.",
+                    "specializzando": "MASSIMA A.",
                     "id_specializzando": "SP005",
                     "ruolo_specializzando": "OR I"
                 }
@@ -486,8 +486,8 @@
         },
         "2026-12-15": {
             "specializzandi": {
-                "OR I": "Massima A.",
-                "OR II": "Alga S."
+                "OR I": "MASSIMA A.",
+                "OR II": "ALGA S."
             },
             "operazioni": [
                 {
@@ -512,7 +512,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Massima A.",
+                    "specializzando": "MASSIMA A.",
                     "id_specializzando": "SP005",
                     "ruolo_specializzando": "OR I"
                 },
@@ -543,7 +543,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Alga S.",
+                    "specializzando": "ALGA S.",
                     "id_specializzando": "SP006",
                     "ruolo_specializzando": "OR II"
                 }
@@ -551,8 +551,8 @@
         },
         "2026-12-16": {
             "specializzandi": {
-                "OR I": "Massima A.",
-                "OR II": "Alga S."
+                "OR I": "MASSIMA A.",
+                "OR II": "ALGA S."
             },
             "operazioni": [
                 {
@@ -577,7 +577,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Alga S.",
+                    "specializzando": "ALGA S.",
                     "id_specializzando": "SP006",
                     "ruolo_specializzando": "OR II"
                 }
@@ -585,8 +585,8 @@
         },
         "2026-12-17": {
             "specializzandi": {
-                "OR I": "Massima A.",
-                "OR II": "Alga S."
+                "OR I": "MASSIMA A.",
+                "OR II": "ALGA S."
             },
             "operazioni": [
                 {
@@ -611,7 +611,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Massima A.",
+                    "specializzando": "MASSIMA A.",
                     "id_specializzando": "SP005",
                     "ruolo_specializzando": "OR I"
                 },
@@ -637,7 +637,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Endovascolare",
-                    "specializzando": "Alga S.",
+                    "specializzando": "ALGA S.",
                     "id_specializzando": "SP006",
                     "ruolo_specializzando": "OR II"
                 }
@@ -645,8 +645,8 @@
         },
         "2026-12-18": {
             "specializzandi": {
-                "OR I": "Massima A.",
-                "OR II": "Alga S."
+                "OR I": "MASSIMA A.",
+                "OR II": "ALGA S."
             },
             "operazioni": [
                 {
@@ -671,7 +671,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Alta",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Massima A.",
+                    "specializzando": "MASSIMA A.",
                     "id_specializzando": "SP005",
                     "ruolo_specializzando": "OR I"
                 }
@@ -679,7 +679,7 @@
         },
         "2026-12-21": {
             "specializzandi": {
-                "OR I": "Alga S.",
+                "OR I": "ALGA S.",
                 "OR II": "JAZZ B."
             },
             "operazioni": [
@@ -705,7 +705,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Media",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Alga S.",
+                    "specializzando": "ALGA S.",
                     "id_specializzando": "SP006",
                     "ruolo_specializzando": "OR I"
                 },
@@ -739,7 +739,7 @@
         },
         "2026-12-22": {
             "specializzandi": {
-                "OR I": "Alga S.",
+                "OR I": "ALGA S.",
                 "OR II": "JAZZ B."
             },
             "operazioni": [
@@ -778,7 +778,7 @@
         },
         "2026-12-23": {
             "specializzandi": {
-                "OR I": "Alga S.",
+                "OR I": "ALGA S.",
                 "OR II": "JAZZ B."
             },
             "operazioni": [
@@ -804,7 +804,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Media",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Alga S.",
+                    "specializzando": "ALGA S.",
                     "id_specializzando": "SP006",
                     "ruolo_specializzando": "OR I"
                 },
@@ -838,7 +838,7 @@
         },
         "2026-12-24": {
             "specializzandi": {
-                "OR I": "Alga S.",
+                "OR I": "ALGA S.",
                 "OR II": "JAZZ B."
             },
             "operazioni": [
@@ -864,7 +864,7 @@
                     "chirurgo": "Chirurgo demo",
                     "complessita": "Media",
                     "tipo_chirurgia": "Aperta",
-                    "specializzando": "Alga S.",
+                    "specializzando": "ALGA S.",
                     "id_specializzando": "SP006",
                     "ruolo_specializzando": "OR I"
                 }
@@ -872,7 +872,7 @@
         },
         "2026-12-25": {
             "specializzandi": {
-                "OR I": "Alga S.",
+                "OR I": "ALGA S.",
                 "OR II": "JAZZ B."
             },
             "operazioni": [
@@ -907,28 +907,28 @@
         "2026-12-28": {
             "specializzandi": {
                 "OR I": "JAZZ B.",
-                "OR II": "Parco L."
+                "OR II": "PARCO L."
             },
             "operazioni": []
         },
         "2026-12-29": {
             "specializzandi": {
                 "OR I": "JAZZ B.",
-                "OR II": "Parco L."
+                "OR II": "PARCO L."
             },
             "operazioni": []
         },
         "2026-12-30": {
             "specializzandi": {
                 "OR I": "JAZZ B.",
-                "OR II": "Parco L."
+                "OR II": "PARCO L."
             },
             "operazioni": []
         },
         "2026-12-31": {
             "specializzandi": {
                 "OR I": "JAZZ B.",
-                "OR II": "Parco L."
+                "OR II": "PARCO L."
             },
             "operazioni": []
         }

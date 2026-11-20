@@ -23,12 +23,38 @@ ROW_KEYS: tuple[str, ...] = (DAY_ROW, *ROLE_KEYS)
 FONT_FAMILY = "Segoe UI"
 REST_BACKGROUND = QColor("#e2e8f0")
 REST_TEXT = QColor("#94a3b8")
-TODAY_CELL_BACKGROUND = QColor("#fef3c7")
 TODAY_DAY_BACKGROUND = QColor("#f59e0b")
 TEXT_COLOR = QColor("#1e293b")
 DAY_TEXT = QColor("#475569")
 _WEEKDAY_NAMES = ("LUN", "MAR", "MER", "GIO", "VEN", "SAB", "DOM")
 _Role = Qt.ItemDataRole
+
+
+def day_cell_data(
+    day: date, role, *, compact: bool, today: date | None, locked: bool = False
+):
+    """Cella della riga «Giorno» (``LUN`` o ``L``), uguale nelle due viste dello scadenzario.
+
+    ``locked`` segna con ✓ i giorni di una settimana dell'Effettivo già convalidata.
+    """
+
+    rest = not RosterMonth.is_workday(day)
+    is_today = day == today and not rest
+    if role == _Role.DisplayRole:
+        name = _WEEKDAY_NAMES[day.weekday()]
+        name = name[:1] if compact else name
+        return f"{name} ✓" if locked and not rest else name
+    if role == _Role.ToolTipRole:
+        return "Settimana convalidata: non modificabile" if locked and not rest else None
+    if role == _Role.BackgroundRole:
+        return TODAY_DAY_BACKGROUND if is_today else REST_BACKGROUND if rest else None
+    if role == _Role.ForegroundRole:
+        return QColor("#ffffff") if is_today else REST_TEXT if rest else DAY_TEXT
+    if role == _Role.FontRole:
+        return QFont(FONT_FAMILY, 8 if compact else 11, QFont.Weight.Bold)
+    if role == _Role.TextAlignmentRole:
+        return Qt.AlignmentFlag.AlignCenter
+    return None
 
 
 class ActivityTableModel(QAbstractTableModel):
@@ -45,6 +71,7 @@ class ActivityTableModel(QAbstractTableModel):
         self._residents: tuple[Mapping[str, object], ...] = ()
         self._compact = False
         self._today: date | None = None
+        self._locked: frozenset[date] = frozenset()
 
     def set_roster(
         self, roster: RosterMonth, residents: Iterable[Mapping[str, object]] = ()
@@ -61,6 +88,11 @@ class ActivityTableModel(QAbstractTableModel):
 
     def set_today(self, today: date | None) -> None:
         self._today = today
+        self._refresh()
+
+    def set_locked_days(self, days) -> None:
+        """Giorni delle settimane convalidate (segnati nella riga «Giorno»)."""
+        self._locked = frozenset(days)
         self._refresh()
 
     def _refresh(self) -> None:
@@ -111,20 +143,9 @@ class ActivityTableModel(QAbstractTableModel):
         return self._cell_data(ROW_KEYS[index.row()], day, role)
 
     def _day_data(self, day: date, role):
-        rest = not RosterMonth.is_workday(day)
-        today = day == self._today and not rest
-        if role == _Role.DisplayRole:
-            name = _WEEKDAY_NAMES[day.weekday()]
-            return name[:1] if self._compact else name
-        if role == _Role.BackgroundRole:
-            return TODAY_DAY_BACKGROUND if today else REST_BACKGROUND if rest else None
-        if role == _Role.ForegroundRole:
-            return QColor("#ffffff") if today else REST_TEXT if rest else DAY_TEXT
-        if role == _Role.FontRole:
-            return QFont(FONT_FAMILY, 8 if self._compact else 11, QFont.Weight.Bold)
-        if role == _Role.TextAlignmentRole:
-            return Qt.AlignmentFlag.AlignCenter
-        return None
+        return day_cell_data(
+            day, role, compact=self._compact, today=self._today, locked=day in self._locked
+        )
 
     def _cell_data(self, role_key: str, day: date, role):
         rest = not RosterMonth.is_workday(day)
@@ -141,8 +162,8 @@ class ActivityTableModel(QAbstractTableModel):
         if role == _Role.BackgroundRole:
             if rest:
                 return REST_BACKGROUND
-            if day == self._today:
-                return TODAY_CELL_BACKGROUND
+            # Il giorno corrente non colora le celle: lo segnano l'intestazione e il
+            # bordo della colonna (vedi components.today_column).
             return QColor(ROLE_CELL_COLORS.get(role_key, "#ffffff"))
         if role == _Role.ForegroundRole:
             if rest:

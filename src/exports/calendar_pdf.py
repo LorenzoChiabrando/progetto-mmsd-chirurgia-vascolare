@@ -5,7 +5,8 @@ un'attività per riga, come a schermo. La griglia occupa tutta l'area stampabile
 non lavorativi hanno colonne strette. I testi non vengono mai tagliati: il carattere è il
 più grande con cui tutti entrano nella colonna e un testo ancora troppo largo viene
 compresso in orizzontale. Se le righe non entrano in una pagina proseguono nella
-successiva, con titolo e intestazione dei giorni ripetuti.
+successiva, con titolo e intestazione dei giorni ripetuti. Un file può contenere più
+calendari (per esempio alcune settimane del mese), ciascuno dalla pagina successiva.
 """
 
 from __future__ import annotations
@@ -60,11 +61,33 @@ class CalendarPdfError(RuntimeError):
 
 
 @dataclass(frozen=True, slots=True)
+class CalendarPdfCard:
+    """Scheda di una cella, come quelle degli interventi a schermo.
+
+    Prima riga: ``badge`` (es. la sala), ``time`` e, a destra, ``duration``; poi ``title``
+    in grassetto; infine ``detail`` e, a destra, ``tag``. ``accent`` colora la barra a
+    sinistra e il testo del badge, ``badge_background`` il fondo del badge.
+    """
+
+    time: str
+    title: str
+    detail: str = ""
+    duration: str = ""
+    badge: str = ""
+    tag: str = ""
+    accent: str = "#4338ca"
+    badge_background: str = "#e0e7ff"
+
+
+@dataclass(frozen=True, slots=True)
 class CalendarPdfRow:
     """Una riga del PDF (un'attività o uno specializzando), con un valore per giorno.
 
     ``value_colors`` colora il testo di valori specifici (es. il tipo di guardia);
     ``value_backgrounds`` lo sfondo della cella (es. la sigla del ruolo, come a schermo).
+    ``cards``, se c'è, ha per ogni giorno una scheda (o ``None``) che prende il posto del
+    valore. ``cell_background`` è lo sfondo delle celle (di norma una tinta di
+    ``background``); ``height`` è l'altezza relativa della riga (1 = normale).
     """
 
     label: str
@@ -72,6 +95,9 @@ class CalendarPdfRow:
     background: str = "#ffffff"
     value_colors: Mapping[str, str] = field(default_factory=dict)
     value_backgrounds: Mapping[str, str] = field(default_factory=dict)
+    cards: tuple[CalendarPdfCard | None, ...] = ()
+    cell_background: str = ""
+    height: float = 1.0
 
 
 @dataclass(frozen=True, slots=True)
@@ -101,8 +127,13 @@ class CalendarPdfDocument:
         if not self.column_headers:
             raise ValueError("Il PDF richiede almeno una colonna del calendario.")
         expected = len(self.column_headers)
-        if any(len(row.values) != expected for row in self.rows):
+        if any(
+            len(row.values) != expected or (row.cards and len(row.cards) != expected)
+            for row in self.rows
+        ):
             raise ValueError("Ogni riga del PDF deve avere lo stesso numero di colonne.")
+        if any(row.height <= 0 for row in self.rows):
+            raise ValueError("L'altezza delle righe del PDF deve essere positiva.")
         if any(not 0 <= index < expected for index in self.rest_columns):
             raise ValueError("Le colonne dei giorni non lavorativi devono esistere nel PDF.")
 
@@ -220,17 +251,29 @@ class _Renderer:
         return self._height - top - self._footer_height()
 
     def pages(self) -> list[range]:
-        """Righe di ogni pagina: quante ne entrano con l'altezza minima di riga."""
+        """Righe di ogni pagina: quante ne entrano con l'altezza minima di riga.
 
-        rows = len(self._document.rows)
-        per_page = max(1, int(self._body_room() // _millimeters(_MIN_ROW_MM)))
-        pages = [range(start, min(start + per_page, rows)) for start in range(0, rows, per_page)]
+        Una riga di altezza relativa ``h`` occupa ``h`` righe normali.
+        """
+
+        capacity = max(1.0, float(int(self._body_room() // _millimeters(_MIN_ROW_MM))))
+        pages: list[range] = []
+        start, used = 0, 0.0
+        for index, row in enumerate(self._document.rows):
+            if index > start and used + row.height > capacity + 1e-9:
+                pages.append(range(start, index))
+                start, used = index, 0.0
+            used += row.height
+        if start < len(self._document.rows):
+            pages.append(range(start, len(self._document.rows)))
         return pages or [range(0)]
 
-    def _row_height(self, rows_on_page: int) -> float:
-        if rows_on_page == 0:
+    def _unit_height(self, rows: range) -> float:
+        """Altezza di una riga normale nella pagina con le righe ``rows``."""
+        weight = sum(self._document.rows[index].height for index in rows)
+        if not weight:
             return 0.0
-        return min(self._body_room() / rows_on_page, _millimeters(_MAX_ROW_MM))
+        return min(self._body_room() / weight, _millimeters(_MAX_ROW_MM))
 
     def _workday_room(self) -> float:
         workdays = [
@@ -244,6 +287,7 @@ class _Renderer:
         texts = [
             line
             for row in self._document.rows
+            if not row.cards
             for value in row.values
             if value.strip() not in _EMPTY_VALUES
             for line in name_lines(value, stacked=self._document.stacked_names)
@@ -261,29 +305,45 @@ class _Renderer:
             texts, room=self._workday_room(), measure=measure, fits_height=fits_height
         )
 
-    def draw(self, painter: QPainter) -> None:
+    def draw(self, painter: QPainter, *, first_page: int = 0, page_count: int = 0) -> None:
+        """Disegna il documento a partire dalla pagina ``first_page`` del file.
+
+        ``page_count`` è il totale delle pagine del file (``0``: quelle di questo
+        documento); le pagine si numerano su tutto il file.
+        """
+
         pages = self.pages()
-        smallest_row = min((self._row_height(len(page)) for page in pages if page), default=0)
+        page_count = page_count or len(pages)
+        # Il carattere dei valori è lo stesso in tutto il documento: quello che entra
+        # nella riga di testo più bassa.
+        smallest_row = min(
+            (
+                self._unit_height(page) * self._document.rows[index].height
+                for page in pages
+                for index in page
+                if not self._document.rows[index].cards
+            ),
+            default=0,
+        )
         value_size = self._value_font_size(smallest_row) if smallest_row else _MAX_FONT_PT
-        for page_index, rows in enumerate(pages):
+        for page_index, rows in enumerate(pages, first_page):
             if page_index:
                 self._writer.newPage()
             self._draw_title(painter)
             table_top = _millimeters(_TITLE_HEIGHT_MM)
             self._draw_header(painter, table_top)
-            row_height = self._row_height(len(rows))
+            unit = self._unit_height(rows)
             body_top = table_top + _millimeters(_HEADER_HEIGHT_MM)
-            for offset, row_index in enumerate(rows):
-                self._draw_row(
-                    painter,
-                    self._document.rows[row_index],
-                    body_top + offset * row_height,
-                    row_height,
-                    value_size,
-                )
-            table_bottom = body_top + len(rows) * row_height
-            self._draw_grid(painter, table_top, table_bottom, len(rows), row_height)
-            self._draw_footer(painter, table_bottom, page_index, len(pages))
+            row_bottoms = []
+            top = body_top
+            for row_index in rows:
+                row = self._document.rows[row_index]
+                height = unit * row.height
+                self._draw_row(painter, row, top, height, value_size)
+                top += height
+                row_bottoms.append(top)
+            self._draw_grid(painter, table_top, top, row_bottoms)
+            self._draw_footer(painter, top, page_index, page_count)
 
     def _draw_text(
         self,
@@ -372,7 +432,9 @@ class _Renderer:
         )
         painter.restore()
 
-        cell_background = _tint(row.background)
+        cell_background = (
+            QColor(row.cell_background) if row.cell_background else _tint(row.background)
+        )
         left = self._label_width
         for index, value in enumerate(row.values):
             width = self._column_widths[index]
@@ -384,6 +446,10 @@ class _Renderer:
             text = value.strip()
             background = row.value_backgrounds.get(text)
             painter.fillRect(rect, QColor(background) if background else cell_background)
+            card = row.cards[index] if row.cards else None
+            if card is not None:
+                self._draw_card(painter, rect, card)
+                continue
             if text in _EMPTY_VALUES:
                 continue
             color = row.value_colors.get(text)
@@ -402,16 +468,115 @@ class _Renderer:
                     _TEXT_COLOR,
                 )
 
+    def _draw_card(self, painter: QPainter, rect: QRectF, card: CalendarPdfCard) -> None:
+        """Scheda bianca con la barra colorata a sinistra e tre righe di testo."""
+
+        inset = _millimeters(0.7)
+        box = rect.adjusted(inset, inset, -inset, -inset)
+        bar = _millimeters(1.0)
+        painter.save()
+        painter.fillRect(box, QColor("#ffffff"))
+        pen = QPen(QColor("#e2e8f0"))
+        pen.setWidthF(1)
+        painter.setPen(pen)
+        painter.drawRect(box)
+        painter.fillRect(QRectF(box.left(), box.top(), bar, box.height()), QColor(card.accent))
+        painter.restore()
+
+        inner = box.adjusted(bar + 1.5 * self._padding, self._padding, -1.5 * self._padding,
+                             -self._padding)
+        sizes = [7.5, 8.5, 6.5]
+        gap = _millimeters(0.6)
+        heights = [self._metrics(_font(size, bold=True)).height() for size in sizes]
+        needed = sum(heights) + 2 * gap
+        if needed > inner.height() > 0:
+            factor = inner.height() / needed
+            sizes = [max(4.5, size * factor) for size in sizes]
+            gap *= factor
+            heights = [self._metrics(_font(size, bold=True)).height() for size in sizes]
+        y = inner.center().y() - (sum(heights) + 2 * gap) / 2
+
+        # Prima riga: badge, orario e, a destra, la durata.
+        line = QRectF(inner.left(), y, inner.width(), heights[0])
+        right = self._draw_side_text(
+            painter, line, card.duration, _font(sizes[0] - 1, bold=True), _MUTED_COLOR
+        )
+        left = line.left()
+        if card.badge:
+            font = _font(sizes[0] - 1.5, bold=True)
+            width = self._metrics(font).horizontalAdvance(card.badge) + 2 * self._padding
+            badge = QRectF(left, line.top() + 0.1 * line.height(), width, 0.8 * line.height())
+            painter.save()
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(QColor(card.badge_background))
+            painter.drawRoundedRect(badge, badge.height() / 3, badge.height() / 3)
+            painter.restore()
+            self._draw_text(painter, badge, card.badge, font, QColor(card.accent))
+            left += width + self._padding
+        self._draw_left_text(
+            painter, QRectF(left, line.top(), right - left, line.height()),
+            card.time, _font(sizes[0], bold=True), QColor("#4338ca"),
+        )
+        y += heights[0] + gap
+
+        self._draw_left_text(
+            painter, QRectF(inner.left(), y, inner.width(), heights[1]),
+            card.title, _font(sizes[1], bold=True), _TEXT_COLOR,
+        )
+        y += heights[1] + gap
+
+        line = QRectF(inner.left(), y, inner.width(), heights[2])
+        right = self._draw_side_text(
+            painter, line, card.tag, _font(sizes[2], bold=True), QColor("#7c3aed")
+        )
+        self._draw_left_text(
+            painter, QRectF(line.left(), line.top(), right - line.left(), line.height()),
+            card.detail, _font(sizes[2]), _MUTED_COLOR,
+        )
+
+    def _draw_side_text(
+        self, painter: QPainter, line: QRectF, text: str, font: QFont, color: QColor
+    ) -> float:
+        """Testo allineato a destra nella riga; restituisce dove finisce lo spazio libero."""
+
+        if not text:
+            return line.right()
+        width = self._metrics(font).horizontalAdvance(text)
+        painter.save()
+        painter.setFont(font)
+        painter.setPen(color)
+        painter.drawText(line, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter, text)
+        painter.restore()
+        return line.right() - width - 2 * self._padding
+
+    def _draw_left_text(
+        self, painter: QPainter, rect: QRectF, text: str, font: QFont, color: QColor
+    ) -> None:
+        """Testo allineato a sinistra; se non entra lo comprime in larghezza."""
+
+        if not text or rect.width() <= 0:
+            return
+        needed = self._metrics(font).horizontalAdvance(text)
+        painter.save()
+        painter.setFont(font)
+        painter.setPen(color)
+        if needed > rect.width():
+            painter.translate(rect.left(), 0)
+            painter.scale(rect.width() / needed, 1)
+            painter.translate(-rect.left(), 0)
+            rect = QRectF(rect.left(), rect.top(), needed, rect.height())
+        painter.drawText(rect, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, text)
+        painter.restore()
+
     def _draw_grid(
-        self, painter: QPainter, top: float, bottom: float, rows: int, row_height: float
+        self, painter: QPainter, top: float, bottom: float, row_bottoms: list[float]
     ) -> None:
         painter.save()
         pen = QPen(_GRID_COLOR)
         pen.setWidthF(1)
         painter.setPen(pen)
         header_bottom = top + _millimeters(_HEADER_HEIGHT_MM)
-        row_lines = (header_bottom + k * row_height for k in range(1, rows + 1))
-        for y in (top, header_bottom, *row_lines):
+        for y in (top, header_bottom, *row_bottoms):
             painter.drawLine(QPointF(0, y), QPointF(self._width, y))
         x = 0.0
         painter.drawLine(QPointF(x, top), QPointF(x, bottom))
@@ -441,13 +606,19 @@ class _Renderer:
         painter.restore()
 
 
-def write_calendar_pdf(path: str | Path, document: CalendarPdfDocument) -> Path:
+def write_calendar_pdf(path: str | Path, *documents: CalendarPdfDocument) -> Path:
     """Crea il PDF su A4 orizzontale e restituisce il percorso del file.
 
+    Con più documenti (per esempio una settimana ciascuno) ognuno comincia su una
+    pagina nuova, nell'ordine dato; il titolo del file è quello del primo.
+
     Raises:
+        ValueError: se non c'è nessun documento.
         CalendarPdfError: se il file non può essere creato o scritto.
     """
 
+    if not documents:
+        raise ValueError("Serve almeno un calendario da esportare.")
     output_path = Path(path)
     if output_path.suffix.casefold() != ".pdf":
         output_path = output_path.with_suffix(".pdf")
@@ -460,7 +631,7 @@ def write_calendar_pdf(path: str | Path, document: CalendarPdfDocument) -> Path:
     writer.setPageMargins(
         QMarginsF(_MARGIN_MM, _MARGIN_MM, _MARGIN_MM, _MARGIN_MM), QPageLayout.Unit.Millimeter
     )
-    writer.setTitle(document.title)
+    writer.setTitle(documents[0].title)
     writer.setCreator("MMSD CV")
 
     painter = QPainter(writer)
@@ -470,7 +641,12 @@ def write_calendar_pdf(path: str | Path, document: CalendarPdfDocument) -> Path:
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         # L'origine del painter è già dentro i margini della pagina e ogni colore è
         # esplicito: il risultato non dipende dal tema del desktop.
-        _Renderer(writer, document).draw(painter)
+        renderers = [_Renderer(writer, document) for document in documents]
+        page_count = sum(len(renderer.pages()) for renderer in renderers)
+        first_page = 0
+        for renderer in renderers:
+            renderer.draw(painter, first_page=first_page, page_count=page_count)
+            first_page += len(renderer.pages())
     finally:
         painter.end()
 

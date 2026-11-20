@@ -20,6 +20,7 @@ from src.views.components.modal_dialog import register_icon_path
 from src.views.components.mode_card import CardModalita
 from src.views.components.optimization_summary import RiepilogoOttimizzazione
 from src.views.components.section_header import BandaSezione, pagina_scorrevole
+from src.views.components.today_column import BordoColonna, IntestazioneGiorni
 
 
 _OPERATION_MIME_TYPE = "application/x-mmsd-operation"
@@ -542,6 +543,10 @@ class ViewSaleOperatorie(QWidget):
         layout.addWidget(barra)
 
         self.tabella = TabellaOperatorie()
+        self.tabella.setHorizontalHeader(IntestazioneGiorni(self.tabella, font_px=14))
+        # Il giorno corrente: bordo attorno alla colonna e intestazione arancione, come
+        # nello Scadenzario mensile.
+        self._bordo_oggi = BordoColonna(self.tabella)
 
         self.tabella.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
         self.tabella.horizontalHeader().setSectionsClickable(False)
@@ -629,6 +634,11 @@ class ViewSaleOperatorie(QWidget):
                 self.tabella.setRowHeight(prima + numero, 38 if self._month_mode else 82)
         self._adatta_altezza_tabella()
 
+    def imposta_giorno_corrente(self, colonna: int | None) -> None:
+        """Evidenzia la colonna del giorno corrente (``None`` se non è nel periodo)."""
+        self.tabella.horizontalHeader().imposta_evidenziata(colonna)
+        self._bordo_oggi.imposta_colonna(colonna)
+
     def _adatta_altezza_tabella(self):
         """La tabella è alta esattamente quanto tutte le sue righe.
 
@@ -695,8 +705,10 @@ class ViewSaleOperatorie(QWidget):
                                op_idx: int = -1,
                                compact: bool = False,
                                sala: str | None = None) -> DraggableOperationFrame:
+        # ``is_oggi`` resta per compatibilità: il giorno corrente lo segna il bordo della
+        # colonna, non il colore della scheda.
         frame = DraggableOperationFrame()
-        frame.setObjectName("CellaOperazioneOggi" if is_oggi else "CellaOperazione")
+        frame.setObjectName("CellaOperazione")
         frame.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         frame.setProperty("sala", sala or "")  # bordo sinistro nel colore della sala
 
@@ -734,6 +746,14 @@ class ViewSaleOperatorie(QWidget):
         # Senza spazi attorno al trattino: a 1280 px sala e orario stanno interi nella colonna.
         lbl_ora = QLabel(f"{op.get('ora_inizio','?')}–{op.get('ora_fine','?')}")
         lbl_ora.setObjectName("LblOraOp")
+        if op.get("ora_inizio_manuale"):
+            # Orario fissato a mano dalla scheda del paziente: si distingue da quelli
+            # calcolati in fila.
+            lbl_ora.setProperty("manuale", True)
+            frame.setToolTip(
+                f"Inizio impostato a mano alle {op['ora_inizio_manuale']}: "
+                "gli interventi dopo seguono questo orario"
+            )
         lbl_ora.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         room_id = op.get("sala_operatoria", "")
         if room_id:

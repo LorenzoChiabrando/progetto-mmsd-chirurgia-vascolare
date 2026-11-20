@@ -6,218 +6,218 @@
     "turni": {
         "2026-12-01": {
             "Tipo Guardia": "PI",
-            "Reparto I": "Gasparri A.",
-            "Reparto II": "Bello M.",
-            "Sala Op. I": "Verdone V.",
-            "Sala Op. II": "Silvestre P.",
-            "Day Hospital": "Alga S.",
+            "Reparto I": "GASPARRI A.",
+            "Reparto II": "BELLO M.",
+            "Sala Op. I": "VERDONE V.",
+            "Sala Op. II": "SILVESTRE P.",
+            "Day Hospital": "ALGA S.",
             "Day Surgery": "JAZZ B."
         },
         "2026-12-02": {
             "Tipo Guardia": "L",
-            "Reparto I": "Gasparri A.",
-            "Reparto II": "Bello M.",
-            "Sala Op. I": "Verdone V.",
-            "Sala Op. II": "Silvestre P.",
-            "Day Hospital": "Alga S.",
+            "Reparto I": "GASPARRI A.",
+            "Reparto II": "BELLO M.",
+            "Sala Op. I": "VERDONE V.",
+            "Sala Op. II": "SILVESTRE P.",
+            "Day Hospital": "ALGA S.",
             "Day Surgery": "JAZZ B."
         },
         "2026-12-03": {
             "Tipo Guardia": "118",
-            "Reparto I": "Gasparri A.",
-            "Reparto II": "Bello M.",
-            "Sala Op. I": "Verdone V.",
-            "Sala Op. II": "Silvestre P.",
-            "Day Hospital": "Alga S.",
+            "Reparto I": "GASPARRI A.",
+            "Reparto II": "BELLO M.",
+            "Sala Op. I": "VERDONE V.",
+            "Sala Op. II": "SILVESTRE P.",
+            "Day Hospital": "ALGA S.",
             "Day Surgery": "JAZZ B."
         },
         "2026-12-04": {
             "Tipo Guardia": "PI",
-            "Reparto I": "Gasparri A.",
-            "Reparto II": "Bello M.",
-            "Sala Op. I": "Verdone V.",
-            "Sala Op. II": "Silvestre P.",
-            "Day Hospital": "Alga S.",
+            "Reparto I": "GASPARRI A.",
+            "Reparto II": "BELLO M.",
+            "Sala Op. I": "VERDONE V.",
+            "Sala Op. II": "SILVESTRE P.",
+            "Day Hospital": "ALGA S.",
             "Day Surgery": "JAZZ B."
         },
         "2026-12-07": {
             "Tipo Guardia": "118",
-            "Reparto I": "Bello M.",
-            "Reparto II": "Verdone V.",
-            "Sala Op. I": "Silvestre P.",
-            "Sala Op. II": "Massima A.",
+            "Reparto I": "BELLO M.",
+            "Reparto II": "VERDONE V.",
+            "Sala Op. I": "SILVESTRE P.",
+            "Sala Op. II": "MASSIMA A.",
             "Day Hospital": "JAZZ B.",
-            "Day Surgery": "Parco L."
+            "Day Surgery": "PARCO L."
         },
         "2026-12-08": {
             "Tipo Guardia": "PI",
-            "Reparto I": "Bello M.",
-            "Reparto II": "Verdone V.",
-            "Sala Op. I": "Silvestre P.",
-            "Sala Op. II": "Massima A.",
+            "Reparto I": "BELLO M.",
+            "Reparto II": "VERDONE V.",
+            "Sala Op. I": "SILVESTRE P.",
+            "Sala Op. II": "MASSIMA A.",
             "Day Hospital": "JAZZ B.",
-            "Day Surgery": "Parco L."
+            "Day Surgery": "PARCO L."
         },
         "2026-12-09": {
             "Tipo Guardia": "L",
-            "Reparto I": "Bello M.",
-            "Reparto II": "Verdone V.",
-            "Sala Op. I": "Silvestre P.",
-            "Sala Op. II": "Massima A.",
+            "Reparto I": "BELLO M.",
+            "Reparto II": "VERDONE V.",
+            "Sala Op. I": "SILVESTRE P.",
+            "Sala Op. II": "MASSIMA A.",
             "Day Hospital": "JAZZ B.",
-            "Day Surgery": "Parco L."
+            "Day Surgery": "PARCO L."
         },
         "2026-12-10": {
             "Tipo Guardia": "118",
-            "Reparto I": "Bello M.",
-            "Reparto II": "Verdone V.",
-            "Sala Op. I": "Silvestre P.",
-            "Sala Op. II": "Massima A.",
+            "Reparto I": "BELLO M.",
+            "Reparto II": "VERDONE V.",
+            "Sala Op. I": "SILVESTRE P.",
+            "Sala Op. II": "MASSIMA A.",
             "Day Hospital": "JAZZ B.",
-            "Day Surgery": "Parco L."
+            "Day Surgery": "PARCO L."
         },
         "2026-12-11": {
             "Tipo Guardia": "PI",
-            "Reparto I": "Bello M.",
-            "Reparto II": "Verdone V.",
-            "Sala Op. I": "Silvestre P.",
-            "Sala Op. II": "Massima A.",
+            "Reparto I": "BELLO M.",
+            "Reparto II": "VERDONE V.",
+            "Sala Op. I": "SILVESTRE P.",
+            "Sala Op. II": "MASSIMA A.",
             "Day Hospital": "JAZZ B.",
-            "Day Surgery": "Parco L."
+            "Day Surgery": "PARCO L."
         },
         "2026-12-14": {
             "Tipo Guardia": "118",
-            "Reparto I": "Verdone V.",
-            "Reparto II": "Silvestre P.",
-            "Sala Op. I": "Massima A.",
-            "Sala Op. II": "Alga S.",
-            "Day Hospital": "Parco L.",
-            "Day Surgery": "Gasparri A."
+            "Reparto I": "VERDONE V.",
+            "Reparto II": "SILVESTRE P.",
+            "Sala Op. I": "MASSIMA A.",
+            "Sala Op. II": "ALGA S.",
+            "Day Hospital": "PARCO L.",
+            "Day Surgery": "GASPARRI A."
         },
         "2026-12-15": {
             "Tipo Guardia": "PI",
-            "Reparto I": "Verdone V.",
-            "Reparto II": "Silvestre P.",
-            "Sala Op. I": "Massima A.",
-            "Sala Op. II": "Alga S.",
-            "Day Hospital": "Parco L.",
-            "Day Surgery": "Gasparri A."
+            "Reparto I": "VERDONE V.",
+            "Reparto II": "SILVESTRE P.",
+            "Sala Op. I": "MASSIMA A.",
+            "Sala Op. II": "ALGA S.",
+            "Day Hospital": "PARCO L.",
+            "Day Surgery": "GASPARRI A."
         },
         "2026-12-16": {
             "Tipo Guardia": "L",
-            "Reparto I": "Verdone V.",
-            "Reparto II": "Silvestre P.",
-            "Sala Op. I": "Massima A.",
-            "Sala Op. II": "Alga S.",
-            "Day Hospital": "Parco L.",
-            "Day Surgery": "Gasparri A."
+            "Reparto I": "VERDONE V.",
+            "Reparto II": "SILVESTRE P.",
+            "Sala Op. I": "MASSIMA A.",
+            "Sala Op. II": "ALGA S.",
+            "Day Hospital": "PARCO L.",
+            "Day Surgery": "GASPARRI A."
         },
         "2026-12-17": {
             "Tipo Guardia": "118",
-            "Reparto I": "Verdone V.",
-            "Reparto II": "Silvestre P.",
-            "Sala Op. I": "Massima A.",
-            "Sala Op. II": "Alga S.",
-            "Day Hospital": "Parco L.",
-            "Day Surgery": "Gasparri A."
+            "Reparto I": "VERDONE V.",
+            "Reparto II": "SILVESTRE P.",
+            "Sala Op. I": "MASSIMA A.",
+            "Sala Op. II": "ALGA S.",
+            "Day Hospital": "PARCO L.",
+            "Day Surgery": "GASPARRI A."
         },
         "2026-12-18": {
             "Tipo Guardia": "PI",
-            "Reparto I": "Verdone V.",
-            "Reparto II": "Silvestre P.",
-            "Sala Op. I": "Massima A.",
-            "Sala Op. II": "Alga S.",
-            "Day Hospital": "Parco L.",
-            "Day Surgery": "Gasparri A."
+            "Reparto I": "VERDONE V.",
+            "Reparto II": "SILVESTRE P.",
+            "Sala Op. I": "MASSIMA A.",
+            "Sala Op. II": "ALGA S.",
+            "Day Hospital": "PARCO L.",
+            "Day Surgery": "GASPARRI A."
         },
         "2026-12-21": {
             "Tipo Guardia": "118",
-            "Reparto I": "Silvestre P.",
-            "Reparto II": "Massima A.",
-            "Sala Op. I": "Alga S.",
+            "Reparto I": "SILVESTRE P.",
+            "Reparto II": "MASSIMA A.",
+            "Sala Op. I": "ALGA S.",
             "Sala Op. II": "JAZZ B.",
-            "Day Hospital": "Gasparri A.",
-            "Day Surgery": "Bello M."
+            "Day Hospital": "GASPARRI A.",
+            "Day Surgery": "BELLO M."
         },
         "2026-12-22": {
             "Tipo Guardia": "PI",
-            "Reparto I": "Silvestre P.",
-            "Reparto II": "Massima A.",
-            "Sala Op. I": "Alga S.",
+            "Reparto I": "SILVESTRE P.",
+            "Reparto II": "MASSIMA A.",
+            "Sala Op. I": "ALGA S.",
             "Sala Op. II": "JAZZ B.",
-            "Day Hospital": "Gasparri A.",
-            "Day Surgery": "Bello M."
+            "Day Hospital": "GASPARRI A.",
+            "Day Surgery": "BELLO M."
         },
         "2026-12-23": {
             "Tipo Guardia": "L",
-            "Reparto I": "Silvestre P.",
-            "Reparto II": "Massima A.",
-            "Sala Op. I": "Alga S.",
+            "Reparto I": "SILVESTRE P.",
+            "Reparto II": "MASSIMA A.",
+            "Sala Op. I": "ALGA S.",
             "Sala Op. II": "JAZZ B.",
-            "Day Hospital": "Gasparri A.",
-            "Day Surgery": "Bello M."
+            "Day Hospital": "GASPARRI A.",
+            "Day Surgery": "BELLO M."
         },
         "2026-12-24": {
             "Tipo Guardia": "118",
-            "Reparto I": "Silvestre P.",
-            "Reparto II": "Massima A.",
-            "Sala Op. I": "Alga S.",
+            "Reparto I": "SILVESTRE P.",
+            "Reparto II": "MASSIMA A.",
+            "Sala Op. I": "ALGA S.",
             "Sala Op. II": "JAZZ B.",
-            "Day Hospital": "Gasparri A.",
-            "Day Surgery": "Bello M."
+            "Day Hospital": "GASPARRI A.",
+            "Day Surgery": "BELLO M."
         },
         "2026-12-25": {
             "Tipo Guardia": "PI",
-            "Reparto I": "Silvestre P.",
-            "Reparto II": "Massima A.",
-            "Sala Op. I": "Alga S.",
+            "Reparto I": "SILVESTRE P.",
+            "Reparto II": "MASSIMA A.",
+            "Sala Op. I": "ALGA S.",
             "Sala Op. II": "JAZZ B.",
-            "Day Hospital": "Gasparri A.",
-            "Day Surgery": "Bello M."
+            "Day Hospital": "GASPARRI A.",
+            "Day Surgery": "BELLO M."
         },
         "2026-12-28": {
             "Tipo Guardia": "118",
-            "Reparto I": "Massima A.",
-            "Reparto II": "Alga S.",
+            "Reparto I": "MASSIMA A.",
+            "Reparto II": "ALGA S.",
             "Sala Op. I": "JAZZ B.",
-            "Sala Op. II": "Parco L.",
-            "Day Hospital": "Bello M.",
-            "Day Surgery": "Verdone V."
+            "Sala Op. II": "PARCO L.",
+            "Day Hospital": "BELLO M.",
+            "Day Surgery": "VERDONE V."
         },
         "2026-12-29": {
             "Tipo Guardia": "PI",
-            "Reparto I": "Massima A.",
-            "Reparto II": "Alga S.",
+            "Reparto I": "MASSIMA A.",
+            "Reparto II": "ALGA S.",
             "Sala Op. I": "JAZZ B.",
-            "Sala Op. II": "Parco L.",
-            "Day Hospital": "Bello M.",
-            "Day Surgery": "Verdone V."
+            "Sala Op. II": "PARCO L.",
+            "Day Hospital": "BELLO M.",
+            "Day Surgery": "VERDONE V."
         },
         "2026-12-30": {
             "Tipo Guardia": "L",
-            "Reparto I": "Massima A.",
-            "Reparto II": "Alga S.",
+            "Reparto I": "MASSIMA A.",
+            "Reparto II": "ALGA S.",
             "Sala Op. I": "JAZZ B.",
-            "Sala Op. II": "Parco L.",
-            "Day Hospital": "Bello M.",
-            "Day Surgery": "Verdone V."
+            "Sala Op. II": "PARCO L.",
+            "Day Hospital": "BELLO M.",
+            "Day Surgery": "VERDONE V."
         },
         "2026-12-31": {
             "Tipo Guardia": "118",
-            "Reparto I": "Massima A.",
-            "Reparto II": "Alga S.",
+            "Reparto I": "MASSIMA A.",
+            "Reparto II": "ALGA S.",
             "Sala Op. I": "JAZZ B.",
-            "Sala Op. II": "Parco L.",
-            "Day Hospital": "Bello M.",
-            "Day Surgery": "Verdone V."
+            "Sala Op. II": "PARCO L.",
+            "Day Hospital": "BELLO M.",
+            "Day Surgery": "VERDONE V."
         }
     },
     "giro_visite": {
-        "2026-11-30": "Massima A.",
-        "2026-12-07": "Alga S.",
+        "2026-11-30": "MASSIMA A.",
+        "2026-12-07": "ALGA S.",
         "2026-12-14": "JAZZ B.",
-        "2026-12-21": "Parco L.",
-        "2026-12-28": "Gasparri A."
+        "2026-12-21": "PARCO L.",
+        "2026-12-28": "GASPARRI A."
     },
     "modello_ottimizzazione": {
         "versione_schema": 1,

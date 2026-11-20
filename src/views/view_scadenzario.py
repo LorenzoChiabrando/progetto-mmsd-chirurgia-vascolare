@@ -18,10 +18,12 @@ from src.views.components.section_header import BandaSezione, pagina_scorrevole
 from src.calendar_presentation import ROLE_HEADER_COLORS, row_display_label
 from src.views.models.activity_table_model import ROW_KEYS, ActivityTableModel
 from src.views.models.resident_table_model import ResidentTableModel
+from src.views.components.today_column import BordoColonna, IntestazioneGiorni
 
 
 _LARGHEZZA_COLONNA_TOTALE = 72
-_LARGHEZZA_GIORNO_SPECIALIZZANDI = 48
+# In Dettaglio le celle per specializzando hanno il nome dell'attività («II Reperibilità»).
+_LARGHEZZA_GIORNO_SPECIALIZZANDI = 112
 # Altezza minima delle righe: la tabella è alta quanto tutte le righe e a scorrere è
 # la pagina intera, non il calendario.
 _ALTEZZA_RIGA_ATTIVITA = 62
@@ -224,6 +226,7 @@ class ViewScadenzario(QWidget):
 
         self.modello_attivita = ActivityTableModel(self)
         self.tabella = QTableView()
+        self.tabella.setHorizontalHeader(IntestazioneGiorni(self.tabella))
         self.tabella.setModel(self.modello_attivita)
         self.tabella.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         # Nelle colonne strette dell'Intero mese le sigle restano leggibili invece di "…".
@@ -257,6 +260,9 @@ class ViewScadenzario(QWidget):
 
         self.modello_specializzandi = ResidentTableModel(self)
         self.tabella_specializzandi = QTableView()
+        self.tabella_specializzandi.setHorizontalHeader(
+            IntestazioneGiorni(self.tabella_specializzandi)
+        )
         self.tabella_specializzandi.setModel(self.modello_specializzandi)
         self.tabella_specializzandi.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         self.tabella_specializzandi.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
@@ -280,6 +286,11 @@ class ViewScadenzario(QWidget):
         self.modello_specializzandi.modelReset.connect(self._applica_colonne_specializzandi)
         self.modello_specializzandi.modelReset.connect(self._adatta_altezza_tabelle)
         self.modello_attivita.modelReset.connect(self._adatta_altezza_tabelle)
+
+        # Il giorno corrente: bordo attorno alla colonna, numero arancione in intestazione.
+        self._bordi_oggi = (
+            BordoColonna(self.tabella), BordoColonna(self.tabella_specializzandi)
+        )
 
         self.stack_tabelle = QStackedWidget()
         self.stack_tabelle.addWidget(self.tabella)
@@ -348,6 +359,19 @@ class ViewScadenzario(QWidget):
                 altezza += tabella.horizontalScrollBar().sizeHint().height()
             tabella.setMinimumHeight(altezza)
 
+    def imposta_giorno_corrente(self, giorno: int | None) -> None:
+        """Evidenzia il giorno ``giorno`` del mese mostrato (``None``: oggi è in un altro mese).
+
+        Nella vista per attività il giorno ``n`` è la colonna ``n - 1``, in quella per
+        specializzando la colonna ``n`` (la prima è il totale).
+        """
+        for tabella, bordo, colonna in (
+            (self.tabella, self._bordi_oggi[0], None if giorno is None else giorno - 1),
+            (self.tabella_specializzandi, self._bordi_oggi[1], giorno),
+        ):
+            tabella.horizontalHeader().imposta_evidenziata(colonna)
+            bordo.imposta_colonna(colonna)
+
     def mostra_vista_specializzandi(self, visibile: bool) -> None:
         """Alterna la vista per attività e quella per specializzando (sola consultazione)."""
 
@@ -367,6 +391,7 @@ class ViewScadenzario(QWidget):
         self.btn_vista_mese.setChecked(compact)
         self.btn_vista_dettaglio.setChecked(not compact)
         self.modello_attivita.set_compact(compact)
+        self.modello_specializzandi.set_compact(compact)
         header = self.tabella.horizontalHeader()
         if compact:
             header.setMinimumSectionSize(20)

@@ -61,8 +61,9 @@ def ask_confirmation(
     section: str,
     confirm_text: str = "Conferma",
     destructive: bool = False,
+    cancel_text: str = "Annulla",
 ) -> bool:
-    """Chiede conferma con i pulsanti Annulla e ``confirm_text``.
+    """Chiede conferma con i pulsanti ``cancel_text`` (Annulla) e ``confirm_text``.
 
     Con ``destructive=True`` il pulsante di conferma è rosso e Invio preme Annulla,
     per le operazioni non reversibili.
@@ -72,7 +73,7 @@ def ask_confirmation(
     """
 
     dialog = _message_dialog(parent, title, text, section, "normale")
-    cancel = dialog.make_button("Annulla", "secondary")
+    cancel = dialog.make_button(cancel_text, "secondary")
     cancel.clicked.connect(dialog.reject)
     confirm = dialog.make_button(confirm_text, "danger" if destructive else "primary")
     confirm.clicked.connect(dialog.accept)

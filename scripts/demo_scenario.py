@@ -18,6 +18,7 @@ from src.planning_schema import (
     default_patient_optimization,
     default_schedule_optimization,
 )
+from src.resident_names import format_given_name, format_surname
 
 JsonObject = dict[str, Any]
 
@@ -110,8 +111,9 @@ def _residents() -> list[JsonObject]:
     return [
         {
             "id": f"SP{index:03d}",
-            "nome": first_name,
-            "cognome": surname,
+            # Lo stesso formato che l'app dà ai nomi inseriti (COGNOME Nome).
+            "nome": format_given_name(first_name),
+            "cognome": format_surname(surname),
             "matricola": f"DEMO-{index:03d}",
             "livello": ("Junior", "Senior", "Intermediate")[(index - 1) % 3],
             "stato": "Molinette",

@@ -108,7 +108,8 @@ def _assert_roster_month(gui: GuiDemo, month: int, *, empty: bool = False) -> No
     days = calendar.monthrange(2026, month)[1]
     assert (controller.anno_corrente, controller.mese_corrente) == (2026, month)
     assert view.modello_attivita.columnCount() == days
-    assert view.modello_specializzandi.rowCount() == 8
+    # Row 0 is the «Giorno» header row, then one row per resident.
+    assert view.modello_specializzandi.rowCount() == 9
     assert view.modello_specializzandi.columnCount() == days + 1
     assigned = sum(
         bool(view.modello_attivita.value_at(row, column))
@@ -119,7 +120,7 @@ def _assert_roster_month(gui: GuiDemo, month: int, *, empty: bool = False) -> No
     assert assigned == (0 if empty else weekdays * 8)
     assert sum(
         int(view.modello_specializzandi.data(view.modello_specializzandi.index(row, 0)))
-        for row in range(8)
+        for row in range(1, 9)
     ) == (0 if empty else weekdays * 7)
 
 
@@ -245,7 +246,10 @@ def test_all_eight_logbooks_open_completed_and_planned_tabs(gui_demo: GuiDemo) -
         assert view.stacked_widget.currentIndex() == 1
         record = read_json(gui.root / "libretti" / f"{identifier}.json")
         completed = controller._cache_completate
-        assert len(completed) == len(record["attivita"]) + len(record["attivita_extra"])
+        registered = len(record["attivita"]) + len(record["attivita_extra"])
+        # Registered entries first, then the days signed off in the actual roster.
+        assert len(completed) > registered
+        assert all(item.get("convalida") for item in completed[registered:])
         total_completed += len(record["attivita"])
         view.btn_tab_pianificate.click()
         assert controller._categoria_corrente == "pianificate"

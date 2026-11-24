@@ -1393,6 +1393,36 @@ class ControllerSaleOperatorie(QObject):
             op["ora_fine"] = _min_to_str(inizio + durata)
             libera_da[room_id] = inizio + durata + CHANGEOVER_MINUTES
 
+    def _orari_in_sessione(
+        self, day: datetime.date, room_id: str, operazioni: list, *, parent=None
+    ) -> bool:
+        """Controlla gli orari ricalcolati, inclusi i tempi vuoti prima degli inizi manuali."""
+        apertura = _str_to_min(_STANDARD_START)
+        fine_sala = apertura + self._capacity_for_room(day, room_id)
+        interventi_sala = [op for op in operazioni if self._room_id(op) == room_id]
+        if any(_str_to_min(op["ora_inizio"]) < apertura for op in interventi_sala):
+            self._avviso(
+                "Orario non disponibile",
+                f"{room_id} apre alle {_STANDARD_START}.",
+                tipo="warning",
+                parent=parent,
+            )
+            return False
+        ultima_fine = max(
+            (_str_to_min(op["ora_fine"]) for op in interventi_sala), default=0
+        )
+        if ultima_fine > fine_sala:
+            self._avviso(
+                "Orario non disponibile",
+                f"Con questo orario gli interventi di {room_id} finirebbero alle "
+                f"{_min_to_str(ultima_fine)}, oltre la disponibilità della sala "
+                f"(fino alle {_min_to_str(fine_sala)}).",
+                tipo="warning",
+                parent=parent,
+            )
+            return False
+        return True
+
     def _imposta_orario_inizio(
         self, dialog, data_str: str, op_idx: int, orario: str | None
     ) -> None:
@@ -1430,20 +1460,7 @@ class ControllerSaleOperatorie(QObject):
                     return
             op[MANUAL_START_KEY] = orario
         self._ricalcola_orari(operazioni)
-        fine_sala = _str_to_min(_STANDARD_START) + self._capacity_for_room(day, room_id)
-        ultima_fine = max(
-            _str_to_min(other["ora_fine"])
-            for other in operazioni if self._room_id(other) == room_id
-        )
-        if ultima_fine > fine_sala:
-            self._avviso(
-                "Orario non disponibile",
-                f"Con questo orario gli interventi di {room_id} finirebbero alle "
-                f"{_min_to_str(ultima_fine)}, oltre la disponibilità della sala "
-                f"(fino alle {_min_to_str(fine_sala)}).",
-                tipo="warning",
-                parent=dialog,
-            )
+        if not self._orari_in_sessione(day, room_id, operazioni, parent=dialog):
             return
         self.model.set_operazioni(data_str, operazioni)
         self.aggiorna_tabella()
@@ -1530,6 +1547,8 @@ class ControllerSaleOperatorie(QObject):
 
         operazioni[src_idx], operazioni[dst_idx] = operazioni[dst_idx], operazioni[src_idx]
         self._ricalcola_orari(operazioni)
+        if not self._orari_in_sessione(data_col, sala, operazioni):
+            return
         self.model.set_operazioni(data_str, operazioni)
         self.aggiorna_tabella()
 
@@ -1600,18 +1619,6 @@ class ControllerSaleOperatorie(QObject):
             )
             return
 
-        capacita_giorno = self._capacity_for_room(dst_date, moved_room)
-        nuovo_numero_operazioni = len(durate_destinazione) + 1
-        minuti_occupati = sum(durate_destinazione) + durata_spostata
-        minuti_occupati += CHANGEOVER_MINUTES * max(0, nuovo_numero_operazioni - 1)
-        if minuti_occupati > capacita_giorno:
-            self._avviso(
-                "Capacità giornaliera superata",
-                f"Lo spostamento supererebbe la capacità di {moved_room}.",
-                tipo="warning",
-            )
-            return
-
         src_ops = copy.deepcopy(original_src_ops)
         dst_ops = copy.deepcopy(original_dst_ops)
         op = src_ops.pop(src_op_idx)
@@ -1635,6 +1642,10 @@ class ControllerSaleOperatorie(QObject):
 
         self._ricalcola_orari(src_ops)
         self._ricalcola_orari(dst_ops)
+        if not self._orari_in_sessione(dst_date, moved_room, dst_ops):
+            return
+        if not self._orari_in_sessione(src_date, moved_room, src_ops):
+            return
 
         try:
             self.model.set_operazioni(src_str, src_ops)
@@ -1929,6 +1940,16 @@ class ControllerSaleOperatorie(QObject):
             "descrizione":  paz.get("descrizione_intervento", ""),
             "durata":       durata,
         }]
+        nome = self._specializzando_di_turno(data_str, room_id)
+        spec_id = self.model_lib.trova_id_specializzando(nome) if nome and self.model_lib else ""
+        if nome and self.model_lib and not spec_id:
+            self._avviso(
+                "Specializzando non identificato",
+                f"Il turno di {room_id} indica {nome}, ma nessun libretto lo identifica "
+                "in modo univoco. Verificare l'assegnazione prima di inserire il paziente.",
+                tipo="warning", parent=dialog,
+            )
+            return
         chirurgo = _rnd.choice(CHIRURGHI_MOCK)
         op = {
             "nome_paziente":    f"{paz.get('cognome','')} {paz.get('nome','')}",
@@ -1944,9 +1965,9 @@ class ControllerSaleOperatorie(QObject):
             "ora_inizio":       _min_to_str(ora_inizio_min),
             "ora_fine":         _min_to_str(ora_fine_min),
             "sala_operatoria":  room_id,
-            "id_specializzando": "",
-            "specializzando": "",
-            "ruolo_specializzando": "",
+            "id_specializzando": spec_id,
+            "specializzando": nome,
+            "ruolo_specializzando": ROOM_ROLES[room_id] if nome else "",
         }
         operazioni.append(op)
         operazioni.sort(
@@ -2028,6 +2049,7 @@ class ControllerSaleOperatorie(QObject):
         etichetta.setFixedWidth(175)
         campo = QTimeEdit(QTime.fromString(slot.get("ora_inizio", _STANDARD_START), "HH:mm"))
         campo.setObjectName("InputDialog")
+        campo.setMinimumTime(QTime.fromString(_STANDARD_START, "HH:mm"))
         campo.setDisplayFormat("HH:mm")
         campo.setFixedSize(120, 40)
         campo.setAccessibleName("Orario di inizio dell'intervento")

@@ -821,10 +821,14 @@ class ViewLibretto(QWidget):
             "padding:3px 14px; border-radius:10px; border:1px solid #93c5fd;"
         )
         hdr.addWidget(badge_ruolo)
-        lbl_tipo = QLabel("Intervento Chirurgico")
+        slots = att.get("slots", [])
+        lbl_tipo = QLabel("Intervento Chirurgico" if slots else "Turno in sala operatoria")
         lbl_tipo.setStyleSheet("font-size:15px; font-weight:bold; color:#1e293b; border:none; background:transparent;")
         hdr.addWidget(lbl_tipo, stretch=1)
-        stato_txt = "In attesa di convalida Effettivo"
+        stato_txt = (
+            "In attesa di convalida delle Sale operatorie" if slots
+            else "In attesa di convalida dello Scadenzario"
+        )
         badge_stato = QLabel(stato_txt)
         badge_stato.setStyleSheet(
             ("background:#f0fdf4; color:#15803d; font-weight:bold; font-size:11px; "
@@ -866,7 +870,6 @@ class ViewLibretto(QWidget):
                 griglia_turno.addWidget(_lbl_val(valore), riga, 2 * colonna + 1)
             vl.addLayout(griglia_turno)
 
-        slots = att.get("slots", [])
         if slots:
             for slot in slots:
                 slot_frame = QFrame()
@@ -919,8 +922,7 @@ class ViewLibretto(QWidget):
                 vl.addWidget(slot_frame)
         else:
             lbl_empty = QLabel(
-                f"Nessun intervento pianificato in {att.get('sala_operatoria', 'sala')} "
-                "per questo giorno."
+                "Nessun intervento attribuito allo specializzando per questo turno."
                 if att.get("settimana_pianificata", True) else
                 "Gli interventi di questa settimana non sono ancora stati pianificati "
                 "nelle Sale Operatorie: compariranno qui."
@@ -952,7 +954,9 @@ class ViewLibretto(QWidget):
 
         confirmation_info = QLabel(
             "Gli interventi saranno registrati dopo la convalida dell'Effettivo "
-            "nelle Sale Operatorie."
+            "nelle Sale Operatorie." if slots else
+            "Il turno viene registrato dopo la convalida della settimana o del mese "
+            "nell'Effettivo dello Scadenzario."
         )
         confirmation_info.setWordWrap(True)
         confirmation_info.setStyleSheet(

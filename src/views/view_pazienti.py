@@ -349,7 +349,7 @@ class ViewPazienti(QWidget):
     def _campo_durata(nome_accessibile: str) -> QSpinBox:
         campo = QSpinBox()
         campo.setObjectName("FiltroDurata")
-        campo.setRange(0, 600)
+        campo.setRange(0, 900)
         campo.setSingleStep(15)
         campo.setSuffix(" min")
         campo.setFixedSize(108, 34)

@@ -168,6 +168,23 @@ def test_main_window_loads_all_sections_and_filters_120_patients(gui_demo: GuiDe
     assert not gui.alerts
 
 
+def test_patient_duration_filter_includes_900_minutes(gui_demo: GuiDemo) -> None:
+    window = gui_demo.window
+    view = window.view_pazienti
+    catalog = window.data_manager_pazienti
+    patients = [
+        catalog.crea_nuovo_paziente({
+            "nome": "Test", "cognome": "Durata", "urgenza": "Media", "durata_intervento": minutes,
+        })
+        for minutes in (899, 900, 901)
+    ]
+    assert view.spin_durata_min.maximum() == view.spin_durata_max.maximum() == 900
+    view.spin_durata_min.setValue(900)
+    view.spin_durata_max.setValue(900)
+    assert view.lista_risultati.count() == 1
+    assert view.lista_risultati.item(0).data(Qt.ItemDataRole.UserRole) == patients[1]["id"]
+
+
 def test_roster_navigation_renders_four_months_and_both_versions(gui_demo: GuiDemo) -> None:
     gui = gui_demo
     before = json_bytes(gui.root)
@@ -261,6 +278,86 @@ def test_all_eight_logbooks_open_completed_and_planned_tabs(gui_demo: GuiDemo) -
     assert total_completed == 38
     assert json_bytes(gui.root) == before
     assert not gui.alerts
+
+
+def test_manual_room_operation_moves_from_planned_to_performed(gui_demo: GuiDemo) -> None:
+    window = gui_demo.window
+    rooms = window.controller_sale_operatorie
+    logbook = window.controller_libretto
+    week = date(2026, 10, 26)
+    day = "2026-10-28"
+    patient_id = "PZ0101"
+    resident = logbook.model.get_specializzando_by_id("SP006")
+    rooms.imposta_versione(CalendarVersion.EFFETTIVO)
+    rooms.apri_vista("CONSULTAZIONE")
+    assert rooms.settimana_display == week
+    dialog = QDialog()
+    rooms._inserisci_paziente_manuale(
+        dialog, rooms.model_paz.get_paziente_by_id(patient_id), day, 8 * 60, "OR-1"
+    )
+    assert dialog.result() == QDialog.DialogCode.Accepted
+    operation = next(
+        op for op in rooms.model.get_operazioni(day) if op["id_paziente"] == patient_id
+    )
+    assert operation["id_specializzando"] == resident["id"]
+    assert operation["ruolo_specializzando"] == "OR I"
+    logbook._aggiorna_cache(resident)
+    assert any(
+        slot["id_paziente"] == patient_id
+        for entry in logbook._cache_pianificate for slot in entry.get("slots", [])
+    )
+    rooms.convalida_settimana()
+    logbook._aggiorna_cache(resident)
+    assert rooms.model.get_stato_settimana(week) == "CONVALIDATO"
+    assert rooms.model_paz.get_paziente_by_id(patient_id)["stato"] == "Completato"
+    assert sum(a.get("id_paziente") == patient_id for a in logbook._cache_completate) == 1
+    assert not any(
+        slot["id_paziente"] == patient_id
+        for entry in logbook._cache_pianificate for slot in entry.get("slots", [])
+    )
+    assert all(kind != "warning" for _, kind in gui_demo.alerts)
+
+
+def test_older_unassigned_operation_is_not_claimed_after_confirmation(gui_demo: GuiDemo) -> None:
+    window = gui_demo.window
+    logbook = window.controller_libretto
+    actual = window.data_manager_sale_operatorie.for_version(CalendarVersion.EFFETTIVO)
+    day = "2026-10-28"
+    operations = actual.get_operazioni(day)
+    old_manual = {
+        **operations[0], "id_paziente": "PZ0101", "nome_paziente": "Demo 0101",
+        "id_specializzando": "", "specializzando": "", "ruolo_specializzando": "",
+        "sala_operatoria": "OR-1",
+    }
+    actual.set_operazioni(day, [*operations, old_manual])
+    actual.convalida_settimana(date(2026, 10, 26))
+    before = json_bytes(gui_demo.root)
+    logbook._aggiorna_cache(logbook.model.get_specializzando_by_id("SP006"))
+    turn = next(
+        a for a in logbook._cache_pianificate if a["data"] == day and a.get("or_pianificata")
+    )
+    assert turn["slots"] == []
+    assert not any(a.get("id_paziente") == "PZ0101" for a in logbook._cache_completate)
+    assert before == json_bytes(gui_demo.root)
+
+
+def test_manual_insertion_preserves_draft_if_resident_label_is_ambiguous(gui_demo: GuiDemo) -> None:
+    window = gui_demo.window
+    rooms = window.controller_sale_operatorie
+    logbooks = window.data_manager_libretto
+    logbooks.crea_nuovo_specializzando({
+        **logbooks.get_specializzando_by_id("SP006"), "nome": "Simona", "matricola": "EXTRA",
+    })
+    rooms.imposta_versione(CalendarVersion.EFFETTIVO)
+    rooms.apri_vista("CONSULTAZIONE")
+    before = json_bytes(gui_demo.root)
+    dialog = QDialog()
+    rooms._inserisci_paziente_manuale(
+        dialog, rooms.model_paz.get_paziente_by_id("PZ0101"), "2026-10-28", 480, "OR-1"
+    )
+    assert dialog.result() != QDialog.DialogCode.Accepted
+    assert gui_demo.alerts[-1] == ("Specializzando non identificato · Effettivo", "warning")
+    assert before == json_bytes(gui_demo.root)
 
 
 def test_real_planning_worker_saves_november_and_restores_gui_controls(

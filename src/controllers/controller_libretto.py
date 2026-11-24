@@ -150,7 +150,7 @@ class ControllerLibretto:
         }
         if att.get("or_pianificata"):
             # Solo il titolo mostrato: ``attivita`` resta la chiave delle conferme.
-            completata["etichetta"] = "Turno in sala operatoria (nessun intervento)"
+            completata["etichetta"] = "Turno in sala operatoria (nessun intervento attribuito)"
         return completata
 
     def _get_completate(self, spec: dict) -> list:
@@ -200,6 +200,7 @@ class ControllerLibretto:
 
         spec_id   = spec["id"]
         nome_form = f"{spec.get('cognome','')} {spec.get('nome','')[:1]}."
+        sigla_univoca = self.model.trova_id_specializzando(nome_form) == spec_id
 
         confirmed_keys: set[tuple] = {
             (e["data"], e["sede"], e["attivita"])
@@ -344,14 +345,23 @@ class ControllerLibretto:
                         operations = mese_sale.get("turni", {}).get(data_str, {}).get("operazioni", [])
                         sala = "OR-1" if row_name == "Sala Op. I" else "OR-2"
                         for op in operations:
-                            # Solo gli interventi dello specializzando (o, se l'intervento
-                            # non ne indica uno, quelli della sua sala), non tutti quelli
-                            # del giorno.
-                            esecutore = op.get("specializzando", "")
-                            if not (
-                                self._nome_match(esecutore, nome_form) if esecutore
-                                else op.get("sala_operatoria") == sala
-                            ):
+                            if op.get("id_specializzando"):
+                                assegnato = op["id_specializzando"] == spec_id
+                            elif op.get("specializzando"):
+                                assegnato = sigla_univoca and self._nome_match(
+                                    op["specializzando"], nome_form
+                                )
+                            else:
+                                # I record storici senza campi individuali seguono il turno.
+                                # Nei record moderni i campi vuoti indicano invece che
+                                # nessuno specializzando è stato attribuito all'intervento.
+                                storico = not any(
+                                    key in op for key in (
+                                        "id_specializzando", "specializzando", "ruolo_specializzando"
+                                    )
+                                )
+                                assegnato = storico and sigla_univoca and op.get("sala_operatoria") == sala
+                            if not assegnato:
                                 continue
                             if op.get("nome_paziente") or op.get("intervento"):
                                 slots.append({

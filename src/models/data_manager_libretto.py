@@ -8,7 +8,7 @@ from unicodedata import normalize
 
 from src.calendar_versions import CalendarVersionError
 from src.data_paths import resolve_data_directory
-from src.models.id_generator import next_available_id
+from src.models.id_generator import next_available_id, remember_existing_id
 from src.models.json_files import CorruptedDataError, read_json_object, write_json_atomic
 from src.models.patient_plan_state import write_json_batch
 from src.resident_names import format_given_name, format_surname
@@ -90,6 +90,7 @@ class DataManagerLibretto:
     def elimina_specializzando(self, spec_id):
         filepath = os.path.join(self.dir_libretti, f"{spec_id}.json")
         if os.path.exists(filepath):
+            remember_existing_id(self.dir_libretti, "SP", spec_id)
             os.remove(filepath)
             return True
         return False

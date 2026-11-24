@@ -4,7 +4,7 @@ import logging
 from datetime import datetime
 
 from src.data_paths import resolve_data_directory
-from src.models.id_generator import next_available_id
+from src.models.id_generator import next_available_id, remember_existing_id
 from src.models.json_files import CorruptedDataError, read_json_object, write_json_atomic
 from src.patient_fields import normalize_diagnosis
 from src.planning_schema import (
@@ -86,7 +86,6 @@ class DataManagerPazienti:
             OPTIMIZATION_KEY: configurazione_modello,
         }
 
-        # Il massimo suffisso evita collisioni quando la sequenza contiene buchi.
         while True:
             nuovo_id = next_available_id(self.dir_pazienti, "PZ", 4)
             nuovo_paziente["id"] = nuovo_id
@@ -97,7 +96,6 @@ class DataManagerPazienti:
                     f.write(payload)
                 break
             except FileExistsError:
-                # Ricalcola l'ID in caso di scritture concorrenti.
                 continue
             
         return nuovo_paziente
@@ -176,6 +174,7 @@ class DataManagerPazienti:
     def elimina_paziente(self, paz_id):
         filepath = os.path.join(self.dir_pazienti, f"{paz_id}.json")
         if os.path.exists(filepath):
+            remember_existing_id(self.dir_pazienti, "PZ", paz_id)
             os.remove(filepath)
             return True
         return False
